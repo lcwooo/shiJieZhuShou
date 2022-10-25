@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -62,6 +63,16 @@ public class RecyclerViewAdapter extends
             }
         });
 
+
+        holder.edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mDragListener!=null){
+                    mDragListener.dragRemove(mList.get(position),holder.edit);
+                }
+            }
+        });
+
     }
 
     @Override
@@ -82,11 +93,8 @@ public class RecyclerViewAdapter extends
 
     @Override
     public void onItemDismiss(int position) {
-        mList.remove(position);
-        notifyItemRemoved(position);
-        if(mDragListener!=null){
-            mDragListener.dragRemove(position);
-        }
+        //mList.remove(position);
+        //notifyItemRemoved(position);
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder implements IItemTouchHelperViewHolder {
@@ -94,6 +102,7 @@ public class RecyclerViewAdapter extends
         private TextView url;
         private TextView remark;
         private RelativeLayout re;
+        private ImageView edit;
 
         ItemViewHolder(View itemView) {
             super(itemView);
@@ -101,6 +110,7 @@ public class RecyclerViewAdapter extends
             url = itemView.findViewById(R.id.url);
             remark = itemView.findViewById(R.id.remark);
             re = itemView.findViewById(R.id.rl);
+            edit = itemView.findViewById(R.id.edit);
         }
 
 

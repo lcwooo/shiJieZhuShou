@@ -7,16 +7,17 @@
 
     <RelativeLayout
         android:id="@+id/rl"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/shap"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:padding="5dp"
-            android:background="@drawable/shap"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:padding="8dp"
+            android:layout_toLeftOf="@id/edit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -47,6 +48,15 @@
                 android:text="baidu.com" />
 
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/url_edit"/>
 
     </RelativeLayout>
 </layout>

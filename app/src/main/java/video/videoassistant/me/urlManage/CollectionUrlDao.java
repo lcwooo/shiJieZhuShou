@@ -1,6 +1,7 @@
 package video.videoassistant.me.urlManage;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -22,6 +23,9 @@ public interface CollectionUrlDao {
 
     @Update
     void update(CollectionUrlEntity entity);
+
+    @Delete
+    void delete(CollectionUrlEntity entity);
 
 
 }

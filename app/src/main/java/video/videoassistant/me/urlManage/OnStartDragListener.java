@@ -1,6 +1,8 @@
 package video.videoassistant.me.urlManage;
 
 
+import android.view.View;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 public interface OnStartDragListener {
@@ -15,5 +17,5 @@ public interface OnStartDragListener {
 
     void dragEnd();
 
-    void dragRemove(int position);
+    void dragRemove(CollectionUrlEntity entity, View view);
 }

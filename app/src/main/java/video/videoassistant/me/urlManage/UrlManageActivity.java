@@ -2,7 +2,9 @@ package video.videoassistant.me.urlManage;
 
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.lifecycle.Observer;
@@ -98,14 +100,34 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
             }
 
             @Override
-            public void dragRemove(int position) {
-
+            public void dragRemove(CollectionUrlEntity entity,View view) {
+                openOptions(view,entity);
             }
         });
         dataBinding.recyc.setAdapter(adapter);
         mItemTouchHelper = new ItemTouchHelper(new MyItemTouchHelperCallback(adapter));
         mItemTouchHelper.attachToRecyclerView(dataBinding.recyc);
 
+    }
+
+    private void openOptions(View view, CollectionUrlEntity entity) {
+        PopupMenu popupMenu = new PopupMenu(context, view);
+        popupMenu.getMenuInflater().inflate(R.menu.url_more, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.delete:
+                        viewModel.deleteUrlType(entity);
+                        break;
+                    case R.id.edit:
+                        UiUtil.showToastSafe("edit");
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void updateSort(List<CollectionUrlEntity> sortList) {

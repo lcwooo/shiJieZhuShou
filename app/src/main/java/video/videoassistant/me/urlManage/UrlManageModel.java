@@ -38,6 +38,18 @@ public class UrlManageModel extends BaseViewModel {
         });
     }
 
+    public void deleteUrlType(CollectionUrlEntity entity) {
+
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                urlTypeDao.delete(entity);
+                getAllUrlType();
+            }
+        });
+
+    }
+
     public void addUrlType(CollectionUrlEntity entity) {
 
 
