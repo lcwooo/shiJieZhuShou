@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--设置Tablayout字体大小-->
+    <style name="TabLayoutTextSize">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+</resources>

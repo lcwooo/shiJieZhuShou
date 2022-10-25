@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <video.videoassistant.viewUtil.NoScrollViewPager
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/page"
+            android:layout_weight="1"
+            android:fitsSystemWindows="false" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigation"
+            app:itemBackground="@null"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:layout_alignParentBottom="true"
+            app:itemIconTint="@drawable/txt_home_bottom_nav_selector"
+            app:itemTextColor="@drawable/txt_home_bottom_nav_selector"
+            app:labelVisibilityMode="labeled"
+            app:itemIconSize="@dimen/dp_18"
+            app:menu="@menu/menu_home_bottom_nav" />
+    </LinearLayout>
+</layout>
