@@ -21,9 +21,11 @@ public class DialogAddUrl {
     public Context mContext;
     public AlertDialog dialog;
     public AddUrlListener listener;
+    CollectionUrlEntity urlEntity;
 
     public interface AddUrlListener{
         void  addUrl(CollectionUrlEntity entity);
+        void editUrl(CollectionUrlEntity entity);
     }
 
     public void addUrl(AddUrlListener listener){
@@ -65,9 +67,27 @@ public class DialogAddUrl {
         entity.setName(binding.name.getText().toString());
         entity.setRemark(binding.remark.getText().toString());
         entity.setPosition(0);
-        if(listener!=null){
-            listener.addUrl(entity);
+
+        if(urlEntity==null){
+            if(listener!=null){
+                listener.addUrl(entity);
+            }
+        }else {
+            urlEntity.setName(binding.name.getText().toString());
+            urlEntity.setUrl(binding.url.getText().toString());
+            urlEntity.setRemark(binding.remark.getText().toString());
+            if(listener!=null){
+                listener.editUrl(urlEntity);
+            }
         }
+
         dialog.dismiss();
+    }
+
+    public void editInit(CollectionUrlEntity entity){
+        urlEntity = entity;
+        binding.name.setText(entity.name);
+        binding.url.setText(entity.url);
+        binding.remark.setText(entity.getRemark());
     }
 }

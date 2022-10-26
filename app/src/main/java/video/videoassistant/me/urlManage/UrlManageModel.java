@@ -86,4 +86,15 @@ public class UrlManageModel extends BaseViewModel {
             }
         });
     }
+
+    public void updateUrl(CollectionUrlEntity entity) {
+
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                urlTypeDao.update(entity);
+                getAllUrlType();
+            }
+        });
+    }
 }

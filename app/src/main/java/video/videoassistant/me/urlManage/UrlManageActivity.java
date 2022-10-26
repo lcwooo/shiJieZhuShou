@@ -29,6 +29,7 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
     private RecyclerViewAdapter adapter;
     private boolean isSort = false;
 
+
     @Override
     protected UrlManageModel initViewModel() {
         return new ViewModelProvider(this).get(UrlManageModel.class);
@@ -122,10 +123,27 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
                         viewModel.deleteUrlType(entity);
                         break;
                     case R.id.edit:
-                        UiUtil.showToastSafe("edit");
+                        editUrl(entity);
                         break;
                 }
                 return true;
+            }
+        });
+    }
+
+    private void editUrl(CollectionUrlEntity entity) {
+       DialogAddUrl dialogAddUrl = new DialogAddUrl(this);
+        dialogAddUrl.show();
+        dialogAddUrl.editInit(entity);
+        dialogAddUrl.addUrl(new DialogAddUrl.AddUrlListener() {
+            @Override
+            public void addUrl(CollectionUrlEntity entity) {
+
+            }
+
+            @Override
+            public void editUrl(CollectionUrlEntity entity) {
+                viewModel.updateUrl(entity);
             }
         });
     }
@@ -140,7 +158,7 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
     }
 
     public void addUrlTypeDialog() {
-        DialogAddUrl dialogAddUrl = new DialogAddUrl(this);
+       DialogAddUrl dialogAddUrl = new DialogAddUrl(this);
         dialogAddUrl.show();
         dialogAddUrl.addUrl(new DialogAddUrl.AddUrlListener() {
             @Override
@@ -150,6 +168,11 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
                     isSort = false;
                 }
                 viewModel.addUrlType(entity);
+            }
+
+            @Override
+            public void editUrl(CollectionUrlEntity entity) {
+
             }
         });
     }
