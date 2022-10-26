@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="view"
+            type="video.videoassistant.me.jointManage.DialogAddJoint" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shap_analysis_back"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="添加网址"
+            android:textColor="@color/red"
+            android:textSize="@dimen/dp_15"
+            android:textStyle="bold" />
+
+
+        <EditText
+            android:id="@+id/name"
+            android:maxLines="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="名称(必填)"
+            android:textSize="@dimen/dp_13" />
+
+        <EditText
+            android:id="@+id/url"
+            android:maxLines="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="接口地址(必填)"
+            android:textSize="@dimen/dp_13" />
+
+        <EditText
+            android:id="@+id/remark"
+            android:maxLines="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:hint="备注(选填)"
+            android:textSize="@dimen/dp_13" />
+
+
+        <Button
+            android:id="@+id/add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/remark"
+            android:layout_marginTop="30dp"
+            android:onClick="@{()->view.commit()}"
+            android:text="添加" />
+
+    </LinearLayout>
+</layout>

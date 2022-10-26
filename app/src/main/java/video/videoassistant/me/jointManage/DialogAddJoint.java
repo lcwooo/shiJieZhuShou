@@ -1,4 +1,4 @@
-package video.videoassistant.me.urlManage;
+package video.videoassistant.me.jointManage;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -11,36 +11,39 @@ import androidx.databinding.DataBindingUtil;
 import com.azhon.basic.dialog.AlertDialog;
 
 import video.videoassistant.R;
+import video.videoassistant.databinding.DialogAddJointBinding;
 import video.videoassistant.databinding.DialogAddUrlTypeBinding;
 import video.videoassistant.util.UiUtil;
 
 
-public class DialogAddUrl {
+public class DialogAddJoint {
 
-    DialogAddUrlTypeBinding binding;
+    DialogAddJointBinding binding;
     public Context mContext;
     public AlertDialog dialog;
     public AddUrlListener listener;
-    CollectionUrlEntity urlEntity;
+    JointEntity urlEntity;
 
-    public interface AddUrlListener{
-        void  addUrl(CollectionUrlEntity entity);
-        void editUrl(CollectionUrlEntity entity);
+    public interface AddUrlListener {
+        void addUrl(JointEntity entity);
+
+        void editUrl(JointEntity entity);
     }
 
-    public void addUrl(AddUrlListener listener){
+    public void addUrl(AddUrlListener listener) {
         this.listener = listener;
     }
 
 
-    public DialogAddUrl(Context mContext) {
+    public DialogAddJoint(Context mContext) {
         this.mContext = mContext;
     }
 
     public void show() {
         binding = DataBindingUtil.inflate(LayoutInflater.from(mContext),
-                R.layout.dialog_add_url_type, null, false);
+                R.layout.dialog_add_joint, null, false);
         binding.setView(this);
+        binding.tt.setText("接口订阅");
         dialog = new AlertDialog.Builder(mContext)
                 .setContentView(binding.getRoot())
                 .setWidthAndHeight(UiUtil.weight(mContext) * 5 / 6,
@@ -49,7 +52,10 @@ public class DialogAddUrl {
                 .setCancelable(true)
                 .create();
         dialog.show();
+
     }
+
+
 
     public void commit() {
 
@@ -64,24 +70,23 @@ public class DialogAddUrl {
         }
 
         if (!binding.url.getText().toString().contains(".")) {
-            UiUtil.showToastSafe("网址不规范");
+            UiUtil.showToastSafe("接口网址不规范");
             return;
         }
-        CollectionUrlEntity entity = new CollectionUrlEntity();
+        JointEntity entity = new JointEntity();
         entity.setUrl(UiUtil.getHttpUrl(binding.url.getText().toString()));
         entity.setName(binding.name.getText().toString());
         entity.setRemark(binding.remark.getText().toString());
         entity.setPosition(0);
-
-        if(urlEntity==null){
-            if(listener!=null){
+        if (urlEntity == null) {
+            if (listener != null) {
                 listener.addUrl(entity);
             }
-        }else {
+        } else {
             urlEntity.setName(binding.name.getText().toString());
             urlEntity.setUrl(binding.url.getText().toString());
             urlEntity.setRemark(binding.remark.getText().toString());
-            if(listener!=null){
+            if (listener != null) {
                 listener.editUrl(urlEntity);
             }
         }
@@ -89,7 +94,7 @@ public class DialogAddUrl {
         dialog.dismiss();
     }
 
-    public void editInit(CollectionUrlEntity entity){
+    public void editInit(JointEntity entity) {
         urlEntity = entity;
         binding.name.setText(entity.name);
         binding.url.setText(entity.url);

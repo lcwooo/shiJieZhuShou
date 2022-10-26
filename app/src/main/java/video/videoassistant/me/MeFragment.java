@@ -6,6 +6,7 @@ import com.azhon.basic.base.BaseFragment;
 
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentMeBinding;
+import video.videoassistant.me.jointManage.JointManageActivity;
 import video.videoassistant.me.urlManage.UrlManageActivity;
 
 
@@ -37,5 +38,9 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
 
     public void urlManage(){
         toActivity(UrlManageActivity.class);
+    }
+
+    public void jointManage(){
+        toActivity(JointManageActivity.class);
     }
 }

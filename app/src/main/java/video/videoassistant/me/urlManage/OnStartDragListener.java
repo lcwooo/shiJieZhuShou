@@ -17,5 +17,5 @@ public interface OnStartDragListener {
 
     void dragEnd();
 
-    void dragRemove(CollectionUrlEntity entity, View view);
+    void dragRemove(Object entity, View view);
 }
