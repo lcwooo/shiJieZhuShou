@@ -126,6 +126,8 @@ public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBind
                     case R.id.edit:
                         editUrl(entity);
                         break;
+                    default:
+
                 }
                 return true;
             }

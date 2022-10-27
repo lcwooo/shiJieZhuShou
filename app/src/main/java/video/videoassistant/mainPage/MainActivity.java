@@ -1,13 +1,11 @@
 package video.videoassistant.mainPage;
 
+import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
-
-import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.azhon.basic.base.BaseFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,6 +15,7 @@ import java.util.List;
 
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
+import video.videoassistant.cloudPage.CloudFragment;
 import video.videoassistant.databinding.ActivityMainBinding;
 import video.videoassistant.indexPage.IndexFragment;
 import video.videoassistant.me.MeFragment;
@@ -45,8 +44,10 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
     private void initPage() {
         fragments.add(new IndexFragment());
+        fragments.add(new CloudFragment());
         fragments.add(new StoreFragment());
         fragments.add(new MeFragment());
+
         mainAdapter = new MainAdapter(getSupportFragmentManager(),
                 FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         mainAdapter.addFragment(fragments);
@@ -73,9 +74,12 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
                 dataBinding.navigation.setSelectedItemId(R.id.index);
                 break;
             case 1:
-                dataBinding.navigation.setSelectedItemId(R.id.store);
+                dataBinding.navigation.setSelectedItemId(R.id.cloud);
                 break;
             case 2:
+                dataBinding.navigation.setSelectedItemId(R.id.store);
+                break;
+            case 3:
                 dataBinding.navigation.setSelectedItemId(R.id.me);
                 break;
         }
@@ -92,11 +96,14 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
             case R.id.index:
                 dataBinding.page.setCurrentItem(0, false);
                 return true;
-            case R.id.store:
+            case R.id.cloud:
                 dataBinding.page.setCurrentItem(1, false);
                 return true;
-            case R.id.me:
+            case R.id.store:
                 dataBinding.page.setCurrentItem(2, false);
+                return true;
+            case R.id.me:
+                dataBinding.page.setCurrentItem(3, false);
                 return true;
         }
         return false;

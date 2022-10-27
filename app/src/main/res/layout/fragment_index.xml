@@ -9,10 +9,45 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="index" />
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/shap_guige3">
+
+            <ImageView
+                android:id="@+id/delete_username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="2dp"
+                android:visibility="gone"
+                android:src="@mipmap/delete" />
+
+            <EditText
+                android:maxLines="1"
+                android:textSize="@dimen/dp_15"
+                android:imeOptions="actionSearch"
+                android:layout_marginRight="30dp"
+                android:textColor="@color/textColor"
+                android:layout_toEndOf="@id/delete_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="请输入名称"
+                android:padding="5dp" />
+
+            <ImageView
+                android:id="@+id/so"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/so_blue" />
+
+        </RelativeLayout>
 
     </RelativeLayout>
 </layout>

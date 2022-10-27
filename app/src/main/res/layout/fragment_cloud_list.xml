@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="view"
+            type="video.videoassistant.cloudPage.CloudListFragment" />
+        <variable
+            name="model"
+            type="video.videoassistant.cloudPage.CloudModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/type"
+                android:maxLines="1"
+                android:maxEms="8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:onClick="@{() -> view.showType()}"
+                android:padding="5dp"
+                android:text="分类"
+                android:textColor="@color/red"
+                android:textSize="@dimen/dp_15" />
+
+            <EditText
+                android:id="@+id/so"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="@={model.keyword}"
+                android:layout_margin="5dp"
+                android:layout_toStartOf="@id/ok"
+                android:layout_toEndOf="@id/type"
+                android:background="@drawable/shap_play_a"
+                android:hint="请输入要搜索的内容"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:padding="8dp"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/dp_13" />
+
+            <TextView
+                android:id="@+id/ok"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="搜索"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/dp_15" />
+        </RelativeLayout>
+
+
+        <me.jingbin.library.ByRecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/ll"
+            tools:layoutManager="LinearLayoutManager" />
+
+    </RelativeLayout>
+</layout>

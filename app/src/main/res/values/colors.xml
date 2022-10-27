@@ -12,4 +12,5 @@
     <color name="red">#f33026</color>
     <color name="textColor">#3E3838</color>
     <color name="line">#DFDFDF</color>
+    <color name="select_type">#9FF4EFEF</color>
 </resources>

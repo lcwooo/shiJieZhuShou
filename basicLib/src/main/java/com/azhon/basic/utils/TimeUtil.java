@@ -1,7 +1,10 @@
 package com.azhon.basic.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 创建者:    阿钟
@@ -113,5 +116,15 @@ public class TimeUtil {
         SimpleDateFormat format = new SimpleDateFormat(pattern);
         Date date = new Date(time);
         return format.format(date);
+    }
+
+    public static List<String> getYears() {
+        List<String> years = new ArrayList<>();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        for (int i = 0; i < 15; i++) {
+            years.add(String.valueOf(year - i));
+        }
+        years.add(0,"全部年份");
+        return years;
     }
 }

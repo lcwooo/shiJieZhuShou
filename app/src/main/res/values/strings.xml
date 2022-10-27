@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">videoAssistant</string>
+    <string name="custom_header_hint_normal">下拉更新</string>
+    <string name="custom_header_hint_release">松开更新</string>
+    <string name="custom_refreshing">更新中…</string>
+    <string name="custom_refresh_done">更新完成</string>
 </resources>

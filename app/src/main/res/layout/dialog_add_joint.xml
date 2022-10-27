@@ -37,7 +37,7 @@
 
         <EditText
             android:id="@+id/url"
-            android:maxLines="1"
+            android:maxLines="3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
