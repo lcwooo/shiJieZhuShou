@@ -1,6 +1,7 @@
 package video.videoassistant.cloudPage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,6 +22,12 @@ import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +46,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     private RecommendMovieAdapter recommendMovieAdapter;
     private static final String TAG = "CloudListFragment";
     private List<TypeBean> typeBeanList = new ArrayList<>();
+    List<XmlMovieBean> moviesList = new ArrayList<>();
     //页码 pg
     int page = 1;
     //搜索的数据 wd=搜索关键字
@@ -47,6 +55,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     private String soType = "";
     //类别 year
     private String soYear = "";
+    private XmlAdapter xmlAdapter;
 
     public static CloudListFragment newInstance(String url, String type) {
         Bundle args = new Bundle();
@@ -94,7 +103,11 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             @Override
             public void onChanged(String s) {
                 if (s.startsWith("<?xml")) {
-                    initXms(s);
+                    try {
+                        initXms(s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else if (s.startsWith("{")) {
                     initJson(s);
                 } else {
@@ -108,7 +121,11 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             public void onChanged(String s) {
 
                 if (s.startsWith("<?xml")) {
-                    initAllXmlType(s);
+                    try {
+                        initAllXmlType(s);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else if (s.startsWith("{")) {
                     initAllJsonType(s);
                 } else {
@@ -116,7 +133,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 }
                 map.clear();
                 map.put("ac", "detail");
-                viewModel.getData(url, map,false);
+                viewModel.getData(url, map, false);
             }
         });
 
@@ -153,8 +170,39 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
     }
 
-    private void initAllXmlType(String s) {
+    private void initAllXmlType(String s) throws Exception {
 
+        TypeBean videoBean = null;
+        InputStream inputStream = new ByteArrayInputStream(s.getBytes());
+        // 创建一个xml解析的工厂
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        // 获得xml解析类的引用
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(inputStream, "UTF-8");
+        // 获得事件的类型
+        int eventType = parser.getEventType();
+
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            switch (eventType) {
+                case XmlPullParser.START_DOCUMENT:
+                    break;
+                case XmlPullParser.START_TAG:
+                    if ("ty".equals(parser.getName())) {
+                        videoBean = new TypeBean();
+                        String id = String.valueOf(parser.getAttributeValue(0));
+                        videoBean.setTypeName(parser.nextText());
+                        videoBean.setTypeId(id);
+                        typeBeanList.add(videoBean);
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    if ("ty".equals(parser.getName())) {
+
+                    }
+                    break;
+            }
+            eventType = parser.next();
+        }
     }
 
     private void initAllJsonType(String s) {
@@ -165,20 +213,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     }
 
 
-    private void initJson(String s) {
-        ListMovieBean bean = JSON.parseObject(s, ListMovieBean.class);
-        if(UiUtil.listIsEmpty(bean.getMovieBeanList())){
-            UiUtil.showToastSafe("没有数据");
-        }
 
-        if (page == 1) {
-            initList(bean.getMovieBeanList());
-            dataBinding.recyclerView.setRefreshing(false);
-        } else {
-            recommendMovieAdapter.addData(bean.getMovieBeanList());
-            dataBinding.recyclerView.loadMoreComplete();
-        }
-    }
 
     private void initList(List<MovieBean> list) {
         dataBinding.recyclerView.setRefreshHeaderView(new NeteaseRefreshHeaderView(context));
@@ -191,6 +226,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             @Override
             public void onItemClick(MovieBean movieBean, int position) {
                 //initPlay(movieBean);
+                UiUtil.showToastSafe(movieBean.getVodName());
             }
 
             @Override
@@ -203,7 +239,119 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         dataBinding.recyclerView.setOnLoadMoreListener(this);
     }
 
-    private void initXms(String s) {
+    private void initXms(String s) throws Exception {
+
+        if (page == 1) {
+            moviesList.clear();
+        }
+
+        List<XmlMovieBean> movieList = new ArrayList<>();
+        List<MovieItemBean> movieItemBeans = null;
+        XmlMovieBean movieBean = null;
+        InputStream inputStream = new ByteArrayInputStream(s.getBytes());
+        // 创建一个xml解析的工厂
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        // 获得xml解析类的引用
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(inputStream, "UTF-8");
+        // 获得事件的类型
+        int eventType = parser.getEventType();
+
+
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+
+            switch (eventType) {
+                case XmlPullParser.START_DOCUMENT:
+                    break;
+                case XmlPullParser.START_TAG:
+                    if ("video".equals(parser.getName())) {
+                        movieBean = new XmlMovieBean();
+                    } else if ("name".equals(parser.getName())) {
+                        movieBean.setName(parser.nextText());
+                    } else if ("pic".equals(parser.getName())) {
+                        movieBean.setPic(parser.nextText());
+                    } else if ("type".equals(parser.getName())) {
+                        movieBean.setType(parser.nextText());
+                    } else if ("lang".equals(parser.getName())) {
+                        movieBean.setLang(parser.nextText());
+                    } else if ("area".equals(parser.getName())) {
+                        movieBean.setArea(parser.nextText());
+                    } else if ("year".equals(parser.getName())) {
+                        movieBean.setYear(parser.nextText());
+                    } else if ("note".equals(parser.getName())) {
+                        movieBean.setNote(parser.nextText());
+                    } else if ("actor".equals(parser.getName())) {
+                        movieBean.setActor(parser.nextText());
+                    } else if ("director".equals(parser.getName())) {
+                        movieBean.setDirector(parser.nextText());
+                    } else if ("dl".equals(parser.getName())) {
+                        movieItemBeans = new ArrayList<>();
+                    } else if ("dd".equals(parser.getName())) {
+                        MovieItemBean itemBean = new MovieItemBean();
+                        itemBean.setFrom(parser.getAttributeValue(0));
+                        itemBean.setPlayUrl(parser.nextText());
+                        movieItemBeans.add(itemBean);
+
+                    }
+
+                    break;
+                case XmlPullParser.END_TAG:
+                    if ("video".equals(parser.getName())) {
+                        movieBean.setMovieItemBeans(movieItemBeans);
+                        movieList.add(movieBean);
+                        movieBean = null;
+                    }
+                    break;
+            }
+            eventType = parser.next();
+        }
+
+
+        if (page == 1) {
+            dataBinding.recyclerView.setRefreshing(false);
+            moviesList.addAll(movieList);
+            initAdapter();
+        } else {
+            xmlAdapter.addData(movieList);
+            dataBinding.recyclerView.loadMoreComplete();
+        }
+    }
+
+    private void initAdapter() {
+        dataBinding.recyclerView.setRefreshHeaderView(new NeteaseRefreshHeaderView(context));
+        dataBinding.recyclerView.setLoadingMoreView(new NeteaseLoadMoreView(context));
+        dataBinding.recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        xmlAdapter = new XmlAdapter();
+        dataBinding.recyclerView.setAdapter(xmlAdapter);
+        xmlAdapter.setNewData(moviesList);
+        xmlAdapter.setOnItemListener(new OnItemClickListener<XmlMovieBean>() {
+            @Override
+            public void onItemClick(XmlMovieBean xmlMovieBean, int position) {
+                UiUtil.showToastSafe(xmlMovieBean.name);
+            }
+
+            @Override
+            public boolean onItemLongClick(XmlMovieBean xmlMovieBean, int position) {
+                return false;
+            }
+        });
+        dataBinding.recyclerView.setOnRefreshListener(this);
+        dataBinding.recyclerView.setOnLoadMoreListener(this);
+    }
+
+    private void initJson(String s) {
+        ListMovieBean bean = JSON.parseObject(s, ListMovieBean.class);
+        if (UiUtil.listIsEmpty(bean.getMovieBeanList())) {
+            UiUtil.showToastSafe("没有数据");
+        }
+
+        if (page == 1) {
+            initList(bean.getMovieBeanList());
+            dataBinding.recyclerView.setRefreshing(false);
+        } else {
+            recommendMovieAdapter.addData(bean.getMovieBeanList());
+            dataBinding.recyclerView.loadMoreComplete();
+        }
     }
 
     public void showType() {
@@ -250,7 +398,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         map.put("pg", page + "");
         map.put("wd", keyword);
         map.put("year", soYear);
-        viewModel.getData(url, map,true);
+        viewModel.getData(url, map, true);
     }
 
     @Override
@@ -259,14 +407,14 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         map.clear();
         dataBinding.so.setText("");
         map.put("ac", "detail");
-        viewModel.getData(url, map,true);
+        viewModel.getData(url, map, true);
     }
 
     @Override
     public void onLoadMore() {
         page++;
         map.put("pg", page + "");
-        viewModel.getData(url, map,true);
+        viewModel.getData(url, map, true);
 
     }
 }
