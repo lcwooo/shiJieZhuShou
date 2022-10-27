@@ -1,7 +1,6 @@
 package video.videoassistant.cloudPage;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,15 +14,12 @@ import android.widget.TextView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 
 import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.ByteArrayInputStream;
@@ -36,6 +32,7 @@ import java.util.Map;
 import me.jingbin.library.ByRecyclerView;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentCloudListBinding;
+import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.util.UiUtil;
 
 public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudListBinding> implements ByRecyclerView.OnRefreshListener, ByRecyclerView.OnLoadMoreListener {
@@ -227,6 +224,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             public void onItemClick(MovieBean movieBean, int position) {
                 //initPlay(movieBean);
                 UiUtil.showToastSafe(movieBean.getVodName());
+                toActivity(PlayActivity.class);
             }
 
             @Override
