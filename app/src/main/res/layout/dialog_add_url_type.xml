@@ -60,7 +60,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/remark"
             android:layout_marginTop="30dp"
-            android:onClick="@{()->view.commit()}"
             android:text="添加" />
 
     </LinearLayout>

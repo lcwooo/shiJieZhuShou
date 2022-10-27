@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
+
         <variable
             name="view"
             type="video.videoassistant.me.MeFragment" />
@@ -26,9 +27,9 @@
                 android:padding="10dp">
 
                 <RelativeLayout
-                    android:onClick="@{()->view.urlManage()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="@{()->view.urlManage()}"
                     android:padding="5dp">
 
                     <ImageView
@@ -57,10 +58,10 @@
 
 
                 <RelativeLayout
-                    android:onClick="@{()->view.jointManage()}"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:onClick="@{()->view.jointManage()}"
                     android:padding="5dp">
 
                     <ImageView
@@ -75,6 +76,69 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="30dp"
                         android:text="接口订阅管理"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/dp_13" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/me_more" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:onClick="@{()->view.jsonManage()}"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/me_json" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="30dp"
+                        android:text="JSON解析管理"
+                        android:textColor="@color/textColor"
+                        android:textSize="@dimen/dp_13" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/me_more" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:onClick="@{()->view.handleManage()}"
+                    android:padding="5dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_centerVertical="true"
+                        android:src="@mipmap/me_line" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="30dp"
+                        android:text="在线解析管理"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/dp_13" />
 

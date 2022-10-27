@@ -1,4 +1,4 @@
-package video.videoassistant.me.urlManage;
+package video.videoassistant.me.jsonManage;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -15,17 +15,17 @@ import video.videoassistant.databinding.DialogAddUrlTypeBinding;
 import video.videoassistant.util.UiUtil;
 
 
-public class DialogAddUrl {
+public class DialogJson {
 
     DialogAddUrlTypeBinding binding;
     public Context mContext;
     public AlertDialog dialog;
     public AddUrlListener listener;
-    CollectionUrlEntity urlEntity;
+    JsonEntity urlEntity;
 
     public interface AddUrlListener{
-        void  addUrl(CollectionUrlEntity entity);
-        void editUrl(CollectionUrlEntity entity);
+        void  addUrl(JsonEntity entity);
+        void editUrl(JsonEntity entity);
     }
 
     public void addUrl(AddUrlListener listener){
@@ -33,14 +33,14 @@ public class DialogAddUrl {
     }
 
 
-    public DialogAddUrl(Context mContext) {
+    public DialogJson(Context mContext) {
         this.mContext = mContext;
     }
 
     public void show() {
         binding = DataBindingUtil.inflate(LayoutInflater.from(mContext),
                 R.layout.dialog_add_url_type, null, false);
-        binding.setView(this);
+        binding.tt.setText("添加Json解析接口");
         dialog = new AlertDialog.Builder(mContext)
                 .setContentView(binding.getRoot())
                 .setWidthAndHeight(UiUtil.weight(mContext) * 5 / 6,
@@ -77,7 +77,7 @@ public class DialogAddUrl {
             UiUtil.showToastSafe("网址不规范");
             return;
         }
-        CollectionUrlEntity entity = new CollectionUrlEntity();
+        JsonEntity entity = new JsonEntity();
         entity.setUrl(UiUtil.getHttpUrl(binding.url.getText().toString()));
         entity.setName(binding.name.getText().toString());
         entity.setRemark(binding.remark.getText().toString());
@@ -99,7 +99,7 @@ public class DialogAddUrl {
         dialog.dismiss();
     }
 
-    public void editInit(CollectionUrlEntity entity){
+    public void editInit(JsonEntity entity){
         binding.add.setText("保存");
         urlEntity = entity;
         binding.name.setText(entity.name);

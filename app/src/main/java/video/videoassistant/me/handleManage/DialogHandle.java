@@ -1,4 +1,4 @@
-package video.videoassistant.me.urlManage;
+package video.videoassistant.me.handleManage;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -15,32 +15,33 @@ import video.videoassistant.databinding.DialogAddUrlTypeBinding;
 import video.videoassistant.util.UiUtil;
 
 
-public class DialogAddUrl {
+public class DialogHandle {
 
     DialogAddUrlTypeBinding binding;
     public Context mContext;
     public AlertDialog dialog;
     public AddUrlListener listener;
-    CollectionUrlEntity urlEntity;
+    HandleEntity urlEntity;
 
-    public interface AddUrlListener{
-        void  addUrl(CollectionUrlEntity entity);
-        void editUrl(CollectionUrlEntity entity);
+    public interface AddUrlListener {
+        void addUrl(HandleEntity entity);
+
+        void editUrl(HandleEntity entity);
     }
 
-    public void addUrl(AddUrlListener listener){
+    public void addUrl(AddUrlListener listener) {
         this.listener = listener;
     }
 
 
-    public DialogAddUrl(Context mContext) {
+    public DialogHandle(Context mContext) {
         this.mContext = mContext;
     }
 
     public void show() {
         binding = DataBindingUtil.inflate(LayoutInflater.from(mContext),
                 R.layout.dialog_add_url_type, null, false);
-        binding.setView(this);
+        binding.tt.setText("添加在线解析网址");
         dialog = new AlertDialog.Builder(mContext)
                 .setContentView(binding.getRoot())
                 .setWidthAndHeight(UiUtil.weight(mContext) * 5 / 6,
@@ -77,21 +78,21 @@ public class DialogAddUrl {
             UiUtil.showToastSafe("网址不规范");
             return;
         }
-        CollectionUrlEntity entity = new CollectionUrlEntity();
+        HandleEntity entity = new HandleEntity();
         entity.setUrl(UiUtil.getHttpUrl(binding.url.getText().toString()));
         entity.setName(binding.name.getText().toString());
         entity.setRemark(binding.remark.getText().toString());
         entity.setPosition(0);
 
-        if(urlEntity==null){
-            if(listener!=null){
+        if (urlEntity == null) {
+            if (listener != null) {
                 listener.addUrl(entity);
             }
-        }else {
+        } else {
             urlEntity.setName(binding.name.getText().toString());
             urlEntity.setUrl(binding.url.getText().toString());
             urlEntity.setRemark(binding.remark.getText().toString());
-            if(listener!=null){
+            if (listener != null) {
                 listener.editUrl(urlEntity);
             }
         }
@@ -99,7 +100,7 @@ public class DialogAddUrl {
         dialog.dismiss();
     }
 
-    public void editInit(CollectionUrlEntity entity){
+    public void editInit(HandleEntity entity) {
         binding.add.setText("保存");
         urlEntity = entity;
         binding.name.setText(entity.name);

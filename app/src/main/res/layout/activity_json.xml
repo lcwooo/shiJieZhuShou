@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="view"
+            type="video.videoassistant.me.jsonManage.JsonActivity" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/dl"
+        android:background="#EFEDED"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/tittle"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+            <ImageView
+                android:padding="8dp"
+                android:onClick="@{()->view.back()}"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:src="@drawable/back_b"/>
+
+            <TextView
+                android:textSize="@dimen/dp_15"
+                android:textColor="@color/textColor"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Json解析管理"/>
+
+            <TextView
+                android:padding="5dp"
+                android:onClick="@{()->view.addUrlTypeDialog()}"
+                android:textColor="@color/red"
+                android:textSize="@dimen/dp_13"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="添加解析"/>
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyc"
+            android:layout_below="@id/tittle"
+            android:layout_marginTop="5dp"
+            android:paddingBottom="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+</layout>

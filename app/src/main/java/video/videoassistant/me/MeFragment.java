@@ -6,7 +6,10 @@ import com.azhon.basic.base.BaseFragment;
 
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentMeBinding;
+import video.videoassistant.me.handleManage.HandleActivity;
+import video.videoassistant.me.handleManage.HandleAdapter;
 import video.videoassistant.me.jointManage.JointManageActivity;
+import video.videoassistant.me.jsonManage.JsonActivity;
 import video.videoassistant.me.urlManage.UrlManageActivity;
 
 
@@ -42,5 +45,13 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
 
     public void jointManage(){
         toActivity(JointManageActivity.class);
+    }
+
+    public void jsonManage(){
+        toActivity(JsonActivity.class);
+    }
+
+    public void handleManage(){
+        toActivity(HandleActivity.class);
     }
 }

@@ -22,6 +22,8 @@
         </activity>
         <activity android:name=".me.urlManage.UrlManageActivity" />
         <activity android:name=".me.jointManage.JointManageActivity" />
+        <activity android:name=".me.jsonManage.JsonActivity" />
+        <activity android:name=".me.handleManage.HandleActivity" />
     </application>
 
 </manifest>
