@@ -101,8 +101,9 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
             }
 
             @Override
-            public void dragRemove(CollectionUrlEntity entity,View view) {
-                openOptions(view,entity);
+            public void dragRemove(Object entity,View view) {
+                CollectionUrlEntity e = (CollectionUrlEntity) entity;
+                openOptions(view,e);
             }
         });
         dataBinding.recyc.setAdapter(adapter);

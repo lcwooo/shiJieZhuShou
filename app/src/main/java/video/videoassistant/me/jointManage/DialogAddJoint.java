@@ -99,5 +99,6 @@ public class DialogAddJoint {
         binding.name.setText(entity.name);
         binding.url.setText(entity.url);
         binding.remark.setText(entity.getRemark());
+        binding.add.setText("保存");
     }
 }
