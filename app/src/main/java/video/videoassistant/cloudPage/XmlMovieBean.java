@@ -13,6 +13,7 @@ public class XmlMovieBean {
     String actor;
     String director;
     String dl;
+    String info;
     List<MovieItemBean> movieItemBeans;
 
     public List<MovieItemBean> getMovieItemBeans() {
@@ -103,5 +104,11 @@ public class XmlMovieBean {
         this.dl = dl;
     }
 
+    public String getInfo() {
+        return info;
+    }
 
+    public void setInfo(String info) {
+        this.info = info;
+    }
 }

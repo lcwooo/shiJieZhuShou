@@ -41,6 +41,9 @@ public class RecommendMovieAdapter extends BaseDBRVAdapter<MovieBean, ItemRecomm
 
     @BindingAdapter({"imageUrl"})
     public static void loadImage(ImageView imageView, String url) {
+        if(TextUtils.isEmpty(url)){
+            return;
+        }
         if (url.contains("mac")) {
             Glide.with(imageView.getContext()).applyDefaultRequestOptions(getRequestOptions()).load(url.replace("mac", "http"))
                     .into(imageView);

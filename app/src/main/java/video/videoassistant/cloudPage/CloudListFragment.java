@@ -1,6 +1,7 @@
 package video.videoassistant.cloudPage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,9 +224,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         recommendMovieAdapter.setOnItemListener(new OnItemClickListener<MovieBean>() {
             @Override
             public void onItemClick(MovieBean movieBean, int position) {
-                //initPlay(movieBean);
-                UiUtil.showToastSafe(movieBean.getVodName());
-                toActivity(PlayActivity.class);
+                changeJson(movieBean);
             }
 
             @Override
@@ -235,6 +235,41 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
         dataBinding.recyclerView.setOnRefreshListener(this);
         dataBinding.recyclerView.setOnLoadMoreListener(this);
+    }
+
+    private void changeJson(MovieBean movieBean) {
+        XmlMovieBean bean = new XmlMovieBean();
+        bean.setActor(movieBean.getVodActor());
+        bean.setArea(movieBean.getVodArea());
+        bean.setActor(movieBean.getVodActor());
+        bean.setDirector(movieBean.getVodDirector());
+        bean.setPic(movieBean.getVodPic());
+        bean.setName(movieBean.getVodName());
+        bean.setYear(movieBean.getVodYear());
+        bean.setLang(movieBean.getVodLang());
+        bean.setNote(movieBean.getVodRemarks());
+        bean.setInfo(movieBean.getVodContent());
+        List<MovieItemBean> list = new ArrayList<>();
+        if(!movieBean.getVodPlayFrom().contains("$$$")){
+            MovieItemBean itemBean = new MovieItemBean();
+            itemBean.setFrom(movieBean.getVodPlayFrom());
+            itemBean.setPlayUrl(movieBean.getVodPlayUrl());
+            list.add(itemBean);
+        }else {
+            List<String> type = Arrays.asList(movieBean.getVodPlayFrom().split("\\$\\$\\$"));
+            List<String> address = Arrays.asList(movieBean.getVodPlayUrl().split("\\$\\$\\$"));
+            for (int i = 0; i < type.size(); i++) {
+                MovieItemBean be = new MovieItemBean();
+                be.setFrom(type.get(i));
+                be.setPlayUrl(address.get(i));
+                list.add(be);
+            }
+
+        }
+        bean.setMovieItemBeans(list);
+        Intent intent = new Intent(context,PlayActivity.class);
+        intent.putExtra("json",JSON.toJSONString(bean));
+        startActivity(intent);
     }
 
     private void initXms(String s) throws Exception {
@@ -290,8 +325,10 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                         itemBean.setPlayUrl(parser.nextText());
                         movieItemBeans.add(itemBean);
 
+                    }else if("des".equals(parser.getName())){
+                        movieBean.setInfo(parser.nextText());
                     }
-
+                    Log.i(TAG, "initXms: "+parser.getName());
                     break;
                 case XmlPullParser.END_TAG:
                     if ("video".equals(parser.getName())) {
@@ -325,7 +362,9 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         xmlAdapter.setOnItemListener(new OnItemClickListener<XmlMovieBean>() {
             @Override
             public void onItemClick(XmlMovieBean xmlMovieBean, int position) {
-                UiUtil.showToastSafe(xmlMovieBean.name);
+                Intent intent = new Intent(context,PlayActivity.class);
+                intent.putExtra("json",JSON.toJSONString(xmlMovieBean));
+                startActivity(intent);
             }
 
             @Override

@@ -8,6 +8,7 @@ import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 import video.videoassistant.cloudPage.ListMovieBean;
+import video.videoassistant.playPage.PlayBean;
 
 /**
  * 项目名:    TODO-MVVM
@@ -27,6 +28,9 @@ public interface ApiService {
 
     @GET()
     Flowable<String> checkUrl(@Url String url);
+
+    @GET()
+    Flowable<PlayBean> getPlayUrl(@Url String url);
 
     @GET("")
     Flowable<String> initListJson(@Url String url, @QueryMap Map<String, String> map);
