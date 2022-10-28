@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/s"
+        android:title="0.5" />
+
+    <item
+        android:id="@+id/x"
+        android:title="正常" />
+
+    <item
+        android:id="@+id/xss"
+        android:title="1.25" />
+
+    <item
+        android:id="@+id/xs"
+        android:title="1.5" />
+    <item
+        android:id="@+id/xsss"
+        android:title="1.75" />
+
+    <item
+        android:id="@+id/xx"
+        android:title="2.0" />
+
+</menu>

@@ -29,8 +29,18 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     private void initPlay() {
         dataBinding.player.setUrl("https://hnzy.bfvvs.com/play/penR36le/index.m3u8"); //设置视频地址
         StandardVideoController controller = new StandardVideoController(this);
-        controller.addControlComponent(new TitleView(context));
-        dataBinding.player.setPlayerFactory(ExoMediaPlayerFactory.create());
+        TitleView titleView = new TitleView(context);
+        controller.addControlComponent(titleView);
+        RightControlView rightControlView = new RightControlView(context);
+        controller.addControlComponent(rightControlView);
+        titleView.getMovieSet(new MovieSet() {
+            @Override
+            public void moreSet() {
+                rightControlView.setHide(false);
+            }
+        });
+        VodControlView vodControlView = new VodControlView(context);
+        controller.addControlComponent(vodControlView);
         controller.addDefaultControlComponent("", false);
         dataBinding.player.setVideoController(controller); //设置控制器
         dataBinding.player.start(); //开始播放，不调用则不自动播放

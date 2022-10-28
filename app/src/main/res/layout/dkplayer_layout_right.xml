@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toStartOf="@+id/scroll"
+            android:layout_toLeftOf="@+id/scroll" />
+
+        <ScrollView
+            android:id="@+id/scroll"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#83000000">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/add"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:id="@+id/panel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:text="播放速度"
+                        android:textColor="#E8DDDD"
+                        android:textSize="15sp" />
+
+                    <RadioGroup
+                        android:id="@+id/speed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:text="0.5"
+                            android:id="@+id/x"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:id="@+id/xx"
+                            android:text="1.0"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:id="@+id/xxs"
+                            android:text="1.25"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:id="@+id/xxx"
+                            android:padding="10dp"
+                            android:text="1.5"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/xxxx"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:text="2.0"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+                    </RadioGroup>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:text="画面尺寸"
+                        android:textColor="#E8DDDD"
+                        android:textSize="15sp" />
+
+                    <RadioGroup
+                        android:id="@+id/scale"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:id="@+id/scale_default"
+                            android:padding="10dp"
+                            android:text="自适应"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:id="@+id/scale_fill"
+                            android:text="填充"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:visibility="gone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:id="@+id/fill"
+                            android:text="全屏"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/scale_169"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:text="16:9"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                        <RadioButton
+                            android:id="@+id/scale_34"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:button="@null"
+                            android:padding="10dp"
+                            android:text="4:3"
+                            android:textColor="@drawable/color_radiobutton"
+                            android:textSize="13sp" />
+
+                    </RadioGroup>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="播放器内核"
+                    android:textColor="#E8DDDD"
+                    android:textSize="15sp" />
+                <TextView
+                    android:textColor="#E8DDDD"
+                    android:textSize="15sp"
+                    android:layout_marginLeft="10dp"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/play_type"/>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </RelativeLayout>
+
+
+</FrameLayout>

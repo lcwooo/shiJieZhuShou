@@ -5,6 +5,11 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import xyz.doikki.videoplayer.BuildConfig;
+import xyz.doikki.videoplayer.ijk.IjkPlayerFactory;
+import xyz.doikki.videoplayer.player.VideoViewConfig;
+import xyz.doikki.videoplayer.player.VideoViewManager;
+
 
 public class BaseApplication extends Application {
 
@@ -29,6 +34,17 @@ public class BaseApplication extends Application {
         mMainThreadHandler = new Handler();
         mMainThreadId = android.os.Process.myTid();
         Log.i("GroupingFragment", "onCreate: " + mMainThreadId);
+        initPlay(IjkPlayerFactory.create());
+    }
+
+    private void initPlay(IjkPlayerFactory ijkPlayerFactory) {
+        VideoViewManager.setConfig(VideoViewConfig.newBuilder()
+                //使用使用IjkPlayer解码
+                .setLogEnabled(BuildConfig.DEBUG)
+                //使用ExoPlayer解码
+                .setPlayerFactory(ijkPlayerFactory)
+                //使用MediaPlayer解码
+                .build());
     }
 
 
