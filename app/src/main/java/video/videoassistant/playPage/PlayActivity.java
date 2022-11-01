@@ -1,5 +1,6 @@
 package video.videoassistant.playPage;
 
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -129,7 +130,21 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             isX5 = false;
         }
 
-        handleAddress();
+        showDialog("", false);
+        new CountDownTimer(1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                dismissDialog();
+                handleAddress();
+            }
+        }.start();
+
+
     }
 
     private void handleAddress() {
@@ -199,6 +214,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                     return;
                 }
                 handleEntity = handleEntities.get(0);
+                dataBinding.tvLine.setText("在线网页解析(" + handleEntities.get(0).getName() + "):");
                 initWebList(handleEntities);
             }
         });
@@ -225,6 +241,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 handleEntity = entity;
                 jsonEntity = null;
                 initAddress();
+                dataBinding.tvLine.setText("在线网页解析(" + entity.getName() + "):");
             }
 
             @Override
