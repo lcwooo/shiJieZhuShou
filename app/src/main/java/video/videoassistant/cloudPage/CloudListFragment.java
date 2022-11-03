@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
+import com.azhon.basic.base.BaseLazyFragment;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -92,7 +93,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
         viewModel.getAllType(url, map);
 
-
     }
 
     @Override
@@ -131,7 +131,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                     UiUtil.showToastSafe("接口类型不正确,只支持苹果cms格式接口。");
                 }
                 map.clear();
-                map.put("ac", "detail");
+                map.put("ac", "videolist");
                 viewModel.getData(url, map, false);
             }
         });
@@ -218,6 +218,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         dataBinding.recyclerView.setRefreshHeaderView(new NeteaseRefreshHeaderView(context));
         dataBinding.recyclerView.setLoadingMoreView(new NeteaseLoadMoreView(context));
         dataBinding.recyclerView.setLayoutManager(new GridLayoutManager(context, 3));
+        dataBinding.recyclerView.setRefreshEnabled(true);
         recommendMovieAdapter = new RecommendMovieAdapter();
         dataBinding.recyclerView.setAdapter(recommendMovieAdapter);
         recommendMovieAdapter.setNewData(list);
@@ -430,7 +431,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
     public void toGo() {
         map.clear();
-        map.put("ac", "detail");
+        map.put("ac", "videolist");
         map.put("t", soType);
         map.put("pg", page + "");
         map.put("wd", keyword);
@@ -443,7 +444,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         page = 1;
         map.clear();
         dataBinding.so.setText("");
-        map.put("ac", "detail");
+        map.put("ac", "videolist");
         viewModel.getData(url, map, true);
     }
 
@@ -454,4 +455,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         viewModel.getData(url, map, true);
 
     }
+
+
 }

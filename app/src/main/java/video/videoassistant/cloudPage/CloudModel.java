@@ -83,7 +83,7 @@ public class CloudModel extends BaseViewModel {
 
             @Override
             public void onFail(String t) {
-
+                UiUtil.showToastSafe(t);
             }
         });
     }

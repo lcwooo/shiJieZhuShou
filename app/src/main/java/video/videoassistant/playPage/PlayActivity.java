@@ -51,6 +51,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
     @Override
     protected void initView() {
+        dataBinding.setView(this);
         movieBean = JSON.parseObject(getIntent().getStringExtra("json"), XmlMovieBean.class);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment, new PlayFragment())
@@ -72,11 +73,9 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     private void initGroup(MovieItemBean movieItemBean) {
         String from = movieItemBean.getPlayUrl();
         if (from.contains(".m3u8")) {
-            dataBinding.llWeb.setVisibility(View.GONE);
-            dataBinding.llJson.setVisibility(View.GONE);
+            dataBinding.jiexi.setVisibility(View.GONE);
         } else {
-            dataBinding.llJson.setVisibility(View.VISIBLE);
-            dataBinding.llWeb.setVisibility(View.VISIBLE);
+            dataBinding.jiexi.setVisibility(View.VISIBLE);
         }
         dataBinding.from.setText("播放来源(" + movieItemBean.getFrom() + "):");
         List<PlayBean> playBeans = new ArrayList<>();
@@ -192,17 +191,18 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     @Override
     protected void initData() {
         viewModel.getJsonList();
-        viewModel.getHandleList();
+
 
         viewModel.jsonList.observe(this, new Observer<List<JsonEntity>>() {
             @Override
             public void onChanged(List<JsonEntity> jsonEntities) {
                 if (UiUtil.listIsEmpty(jsonEntities)) {
-                    dataBinding.llJson.setVisibility(View.GONE);
-                    return;
+                    dataBinding.tvJson.setVisibility(View.GONE);
+                    jsonEntity = null;
+                } else {
+                    jsonEntity = jsonEntities.get(0);
                 }
-                jsonEntity = jsonEntities.get(0);
-                initJsonList(jsonEntities);
+                viewModel.getHandleList();
             }
         });
 
@@ -210,12 +210,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             @Override
             public void onChanged(List<HandleEntity> handleEntities) {
                 if (UiUtil.listIsEmpty(handleEntities)) {
-                    dataBinding.llWeb.setVisibility(View.GONE);
-                    return;
+                    dataBinding.tvWeb.setVisibility(View.GONE);
+                    handleEntity = null;
+                } else {
+                    handleEntity = handleEntities.get(0);
                 }
-                handleEntity = handleEntities.get(0);
-                dataBinding.tvLine.setText("在线网页解析(" + handleEntities.get(0).getName() + "):");
-                initWebList(handleEntities);
+                initTypeState();
             }
         });
 
@@ -227,12 +227,59 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         });
     }
 
+    private void initTypeState() {
+        if (UiUtil.listIsEmpty(viewModel.jsonList.getValue())
+                && UiUtil.listIsEmpty(viewModel.handleList.getValue())) {
+            dataBinding.tvJson.setVisibility(View.GONE);
+            dataBinding.tvWeb.setVisibility(View.GONE);
+            dataBinding.recycJson.setVisibility(View.GONE);
+
+        } else if (!UiUtil.listIsEmpty(viewModel.jsonList.getValue())
+                && UiUtil.listIsEmpty(viewModel.handleList.getValue())) {
+            dataBinding.tvJson.setVisibility(View.VISIBLE);
+            dataBinding.tvWeb.setVisibility(View.GONE);
+            dataBinding.recycJson.setVisibility(View.VISIBLE);
+            dataBinding.tvJson.setTextColor(getResources().getColor(R.color.red));
+            initJsonList(viewModel.jsonList.getValue());
+
+        } else if(UiUtil.listIsEmpty(viewModel.jsonList.getValue())
+                && !UiUtil.listIsEmpty(viewModel.handleList.getValue())){
+
+            dataBinding.tvJson.setVisibility(View.GONE);
+            dataBinding.tvWeb.setVisibility(View.VISIBLE);
+            dataBinding.recycJson.setVisibility(View.VISIBLE);
+            dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.red));
+            initWebList(viewModel.handleList.getValue());
+
+        }else {
+            dataBinding.tvJson.setVisibility(View.VISIBLE);
+            dataBinding.tvWeb.setVisibility(View.VISIBLE);
+            dataBinding.recycJson.setVisibility(View.VISIBLE);
+            dataBinding.tvJson.setTextColor(getResources().getColor(R.color.red));
+            dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.textColor));
+            initJsonList(viewModel.jsonList.getValue());
+        }
+
+    }
+
+    public void selectJson(){
+        dataBinding.tvJson.setTextColor(getResources().getColor(R.color.red));
+        dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.textColor));
+        initJsonList(viewModel.jsonList.getValue());
+    }
+
+    public void selectWeb(){
+        dataBinding.tvJson.setTextColor(getResources().getColor(R.color.textColor));
+        dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.red));
+        initWebList(viewModel.handleList.getValue());
+    }
+
     private void initWebList(List<HandleEntity> handleEntities) {
         CenterLayoutManager layoutManager = new CenterLayoutManager(context);
         layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        dataBinding.recycWeb.setLayoutManager(layoutManager);
+        dataBinding.recycJson.setLayoutManager(layoutManager);
         WebPlayAdapter urlAdapter = new WebPlayAdapter();
-        dataBinding.recycWeb.setAdapter(urlAdapter);
+        dataBinding.recycJson.setAdapter(urlAdapter);
         urlAdapter.setNewData(handleEntities);
         urlAdapter.getSortIndex(new SortIndex() {
             @Override
@@ -241,7 +288,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 handleEntity = entity;
                 jsonEntity = null;
                 initAddress();
-                dataBinding.tvLine.setText("在线网页解析(" + entity.getName() + "):");
+                dataBinding.tvWeb.setText("网页解析("+entity.getName()+")");
+                dataBinding.tvJson.setText("JSON解析");
             }
 
             @Override
@@ -265,6 +313,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 jsonEntity = entity;
                 handleEntity = null;
                 initAddress();
+                dataBinding.tvWeb.setText("网页解析");
+                dataBinding.tvJson.setText("JSON解析("+entity.getName()+")");
             }
 
             @Override
