@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <video.videoassistant.viewUtil.FlowViewGroup
+            android:layout_width="match_parent"
+            android:id="@+id/flow_view"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+</layout>

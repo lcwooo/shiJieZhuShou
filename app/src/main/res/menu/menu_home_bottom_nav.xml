@@ -14,7 +14,7 @@
     <item
         android:id="@+id/store"
         android:icon="@mipmap/optional"
-        android:title="收藏"/>
+        android:title="网址"/>
 
 
     <item

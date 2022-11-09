@@ -101,6 +101,9 @@ public abstract class BaseDBRVAdapter<Data, DB extends ViewDataBinding> extends 
      * @param data
      */
     public void setNewData(List<Data> data) {
+        if(data==null){
+            return;
+        }
         this.data.clear();
         this.data.addAll(data);
         notifyDataSetChanged();

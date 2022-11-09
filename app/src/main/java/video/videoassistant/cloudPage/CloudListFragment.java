@@ -101,6 +101,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         viewModel.jsonData.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
+
                 if (s.startsWith("<?xml")) {
                     try {
                         initXms(s);
@@ -128,10 +129,14 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 } else if (s.startsWith("{")) {
                     initAllJsonType(s);
                 } else {
-                    UiUtil.showToastSafe("接口类型不正确,只支持苹果cms格式接口。");
+                    UiUtil.showToastSafe("接口数据类型不正确,只支持苹果cms格式接口。");
                 }
                 map.clear();
-                map.put("ac", "videolist");
+                String url = getArguments().getString("url");
+                if (!url.contains("ac=")) {
+                    map.put("ac", "detail");
+                }
+
                 viewModel.getData(url, map, false);
             }
         });
@@ -212,8 +217,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     }
 
 
-
-
     private void initList(List<MovieBean> list) {
         dataBinding.recyclerView.setRefreshHeaderView(new NeteaseRefreshHeaderView(context));
         dataBinding.recyclerView.setLoadingMoreView(new NeteaseLoadMoreView(context));
@@ -251,12 +254,12 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         bean.setNote(movieBean.getVodRemarks());
         bean.setInfo(movieBean.getVodContent());
         List<MovieItemBean> list = new ArrayList<>();
-        if(!movieBean.getVodPlayFrom().contains("$$$")){
+        if (!movieBean.getVodPlayFrom().contains("$$$")) {
             MovieItemBean itemBean = new MovieItemBean();
             itemBean.setFrom(movieBean.getVodPlayFrom());
             itemBean.setPlayUrl(movieBean.getVodPlayUrl());
             list.add(itemBean);
-        }else {
+        } else {
             List<String> type = Arrays.asList(movieBean.getVodPlayFrom().split("\\$\\$\\$"));
             List<String> address = Arrays.asList(movieBean.getVodPlayUrl().split("\\$\\$\\$"));
             for (int i = 0; i < type.size(); i++) {
@@ -268,8 +271,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
         }
         bean.setMovieItemBeans(list);
-        Intent intent = new Intent(context,PlayActivity.class);
-        intent.putExtra("json",JSON.toJSONString(bean));
+        Intent intent = new Intent(context, PlayActivity.class);
+        intent.putExtra("json", JSON.toJSONString(bean));
         startActivity(intent);
     }
 
@@ -326,10 +329,10 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                         itemBean.setPlayUrl(parser.nextText());
                         movieItemBeans.add(itemBean);
 
-                    }else if("des".equals(parser.getName())){
+                    } else if ("des".equals(parser.getName())) {
                         movieBean.setInfo(parser.nextText());
                     }
-                    Log.i(TAG, "initXms: "+parser.getName());
+                    Log.i(TAG, "initXms: " + parser.getName());
                     break;
                 case XmlPullParser.END_TAG:
                     if ("video".equals(parser.getName())) {
@@ -363,8 +366,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         xmlAdapter.setOnItemListener(new OnItemClickListener<XmlMovieBean>() {
             @Override
             public void onItemClick(XmlMovieBean xmlMovieBean, int position) {
-                Intent intent = new Intent(context,PlayActivity.class);
-                intent.putExtra("json",JSON.toJSONString(xmlMovieBean));
+                Intent intent = new Intent(context, PlayActivity.class);
+                intent.putExtra("json", JSON.toJSONString(xmlMovieBean));
                 startActivity(intent);
             }
 
@@ -431,7 +434,10 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
     public void toGo() {
         map.clear();
-        map.put("ac", "videolist");
+        String url = getArguments().getString("url");
+        if (!url.contains("ac=")) {
+            map.put("ac", "detail");
+        }
         map.put("t", soType);
         map.put("pg", page + "");
         map.put("wd", keyword);
@@ -444,7 +450,10 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         page = 1;
         map.clear();
         dataBinding.so.setText("");
-        map.put("ac", "videolist");
+        String url = getArguments().getString("url");
+        if (!url.contains("ac=")) {
+            map.put("ac", "detail");
+        }
         viewModel.getData(url, map, true);
     }
 

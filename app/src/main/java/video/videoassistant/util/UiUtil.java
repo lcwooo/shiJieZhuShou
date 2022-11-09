@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.azhon.basic.utils.ActivityUtil;
@@ -119,6 +120,42 @@ public class UiUtil {
     }
 
 
+    public static String handleUrl(String url) {
+        if(url.contains("html?")){
+            url = url.substring(0,url.indexOf("?"));
+        }
+        Log.i("BrowserActivity", "handleUrl(尾巴处理): "+url);
+        try {
+            if (url.contains("m.mgtv.com")) {
+                return url.replace("m.mgtv.com", "www.mgtv.com");
+            }
+            if (url.contains("m.iqiyi.com")) {
+                return url.replace("m.iqiyi.com", "www.iqiyi.com");
+            }
+            if (url.contains("m.v.qq.com") && url.contains("cid=") && url.contains("vid=")) {
+                String[] arr = url.split("&");
+                String cid = "";
+                String vid = "";
+                for (String s : arr) {
+                    if (s.contains("cid=")) {
+                        cid = s.substring(s.indexOf("cid=") + 4);
+                    }
+                    if (s.contains("vid=")) {
+                        vid = s.substring(s.indexOf("vid=") + 4);
+                    }
+                }
+                if (!cid.isEmpty() && !vid.isEmpty()) {
+                    return "https://v.qq.com/x/cover/" + cid + "/" + vid + ".html";
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            UiUtil.showToastSafe(e.getMessage());
+            return url;
+        }
+        Log.i("BrowserActivity", "handleUrl(处理后): "+url);
+        return url;
+    }
 
 
 }

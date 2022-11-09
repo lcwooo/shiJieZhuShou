@@ -4,8 +4,11 @@ package video.videoassistant.net;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
+import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 import video.videoassistant.cloudPage.ListMovieBean;
 import video.videoassistant.playPage.PlayBean;
@@ -37,4 +40,6 @@ public interface ApiService {
 
     @GET("")
     Flowable<String> initListType(@Url String url,@QueryMap Map<String, String> map);
+
+
 }
