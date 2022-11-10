@@ -1,6 +1,7 @@
 package video.videoassistant.playPage;
 
 import android.content.pm.ActivityInfo;
+import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.Observer;
@@ -64,6 +65,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
+
                         play(s);
                     }
                 });

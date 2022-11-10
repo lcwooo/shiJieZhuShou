@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="view"
+            type="video.videoassistant.playPage.PlayerActivity" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/line">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/fragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/white" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/v1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/biao" />
+
+                <TextView
+                    android:id="@+id/tips"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/box"
+                    android:layout_toEndOf="@id/v1"
+                    android:maxLines="1"
+                    android:paddingRight="5dp"
+                    android:singleLine="true"
+                    android:text="正在播放:"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/dp_13" />
+
+
+                <CheckBox
+                    android:id="@+id/box"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dp"
+                    android:text="云端适配"
+                    android:textColor="@color/textColor"
+                    android:textSize="@dimen/dp_13" />
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="10dp"
+                android:visibility="gone" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/line"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/share_url"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:onClick="@{() -> view.sharePlay()}"
+                    android:padding="15dp"
+                    android:text="分享播放"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/copy_url"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    android:onClick="@{() -> view.copyPlayUrl()}"
+                    android:padding="15dp"
+                    android:text="复制播放地址"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/fill"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:onClick="@{() -> view.openFill()}"
+                    android:padding="15dp"
+                    android:text="全屏"
+                    android:textSize="@dimen/dp_13" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/line"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/chang_play"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/qie"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:onClick="@{() -> view.changePlay()}"
+                    android:padding="15dp"
+                    android:text="切换播放器"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/other_play"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:onClick="@{() -> view.otherPlay()}"
+                    android:padding="15dp"
+                    android:text="其他播放器打开"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:drawableTop="@drawable/cling"
+                    android:drawablePadding="10dp"
+                    android:gravity="center"
+                    android:onClick="@{() -> view.touPing()}"
+                    android:padding="15dp"
+                    android:text="投屏"
+                    android:textSize="@dimen/dp_13" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/line" />
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</layout>

@@ -20,9 +20,14 @@ public class BrowserModel extends BaseViewModel {
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
     //在线解析url
     public MutableLiveData<String> lineUrl = new MutableLiveData<>();
-    /**播放地址状态 1:刷新 2:清理*/
+    /**
+     * 播放地址状态 1:刷新 2:清理
+     */
     public MutableLiveData<Integer> urlListState = new MutableLiveData<>();
-    //单个播放地址处理1:系统播放器播放2:x5播放器播放
+    /**
+     * 单个播放地址处理1:系统播放器播放2:x5播放器播放3,复制地址
+     */
+    public MutableLiveData<String> xiuUrl = new MutableLiveData<>();
 
     public BrowserModel() {
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
@@ -37,10 +42,10 @@ public class BrowserModel extends BaseViewModel {
         });
     }
 
-    public String getLoadUrl(){
-        if(loadUrl==null){
+    public String getLoadUrl() {
+        if (loadUrl == null) {
             return "";
-        }else {
+        } else {
             return loadUrl.getValue();
         }
     }

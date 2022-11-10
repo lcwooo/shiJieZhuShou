@@ -1,6 +1,7 @@
 package video.videoassistant.browserPage;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -21,10 +22,12 @@ public class SnifferDialog {
     public Context mContext;
     public AlertDialog dialog;
     public List<String> list;
+    private BrowserModel model;
 
-    public SnifferDialog(Context mContext, List<String> list) {
+    public SnifferDialog(Context mContext, List<String> list,BrowserModel model) {
         this.mContext = mContext;
         this.list = list;
+        this.model = model;
     }
 
     public void show() {
@@ -47,25 +50,27 @@ public class SnifferDialog {
             TextView url = view.findViewById(R.id.url);
             TextView x5 = view.findViewById(R.id.x5);
             TextView play = view.findViewById(R.id.play);
+            url.setText(s);
             x5.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    model.xiuUrl.postValue("2-"+s);
                 }
             });
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    model.xiuUrl.postValue("1-"+s);
                 }
             });
             url.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    Log.i("BrowserActivity", "onClick: "+s);
+                    model.xiuUrl.postValue("3-"+s);
                 }
             });
-            url.setText(s);
+
             binding.add.addView(view);
         }
     }

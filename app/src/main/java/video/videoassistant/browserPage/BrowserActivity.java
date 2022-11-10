@@ -1,10 +1,14 @@
 package video.videoassistant.browserPage;
 
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.hardware.lights.LightState;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
+import com.tencent.smtt.sdk.TbsVideo;
 import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
@@ -26,6 +31,7 @@ import java.util.List;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
 import video.videoassistant.databinding.ActivityBrowserBinding;
+import video.videoassistant.playPage.PlayerActivity;
 import video.videoassistant.util.UiUtil;
 
 import static com.tencent.smtt.sdk.WebView.setWebContentsDebuggingEnabled;
@@ -190,6 +196,52 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 }
             }
         });
+
+        viewModel.xiuUrl.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                initXiuUrl(s);
+            }
+        });
+    }
+
+    private void initXiuUrl(String s) {
+        String[] arr = s.split("-");
+        Log.i(TAG, "initXiuUrl: "+arr[0]+"\n"+arr[1]);
+        if(arr[0].equals("1")){
+            Intent intent = new Intent(this, PlayerActivity.class);
+            intent.putExtra("url",arr[1]);
+            startActivity(intent);
+        }else if(arr[0].equals("2")){
+            x5Play(arr[1]);
+        }else {
+            copyUrl(arr[1]);
+        }
+    }
+
+
+    public void x5Play(String url) {
+
+        if (TbsVideo.canUseTbsPlayer(this)) {
+            Bundle data = new Bundle();
+            //true表示标准全屏，false表示X5全屏；不设置默认false，
+            data.putBoolean("standardFullScreen", false);
+            //false：关闭小窗；true：开启小窗；不设置默认true，
+            data.putBoolean("supportLiteWnd", false);
+            //1：以页面内开始播放，2：以全屏开始播放；不设置默认：1
+            data.putInt("DefaultVideoScreen", 2);
+            data.putInt("screenMode", 102);
+            //直接调用播放接口，传入视频流的url
+            TbsVideo.openVideo(this, url, data);
+        } else {
+            UiUtil.showToastSafe("x5播放器调用失败");
+        }
+    }
+
+    public void copyUrl(String url) {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setText(url);
+        UiUtil.showToastSafe("已复制");
     }
 
     private void refreshPlayList() {
@@ -223,7 +275,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             return;
         }
         if (snifferDialog == null) {
-            snifferDialog = new SnifferDialog(this, playList);
+            snifferDialog = new SnifferDialog(this, playList,viewModel);
         }
         snifferDialog.show();
     }
