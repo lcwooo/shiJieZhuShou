@@ -61,5 +61,6 @@ dependencies {
     implementation 'xyz.doikki.android.dkplayer:dkplayer-ui:3.3.7'
     implementation 'xyz.doikki.android.dkplayer:player-exo:3.3.7'
     api 'com.tencent.tbs:tbssdk:44226'
+    implementation "com.github.simplepeng.SpiderMan:spiderman:v1.1.9"
     
 }

@@ -17,6 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.azhon.basic.base.BaseFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentCloudBinding;
 import video.videoassistant.me.jointManage.JointEntity;
+import video.videoassistant.util.Constant;
 
 public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding> {
 
@@ -66,6 +68,13 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
                 titles.clear();
                 pages.clear();
                 initPage(jointEntities);
+            }
+        });
+
+        LiveEventBus.get(Constant.jointChange,String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                viewModel.getAll();
             }
         });
     }

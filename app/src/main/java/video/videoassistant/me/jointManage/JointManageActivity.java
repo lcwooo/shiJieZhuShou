@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
 import java.util.List;
 
 import video.videoassistant.R;
@@ -21,6 +23,7 @@ import video.videoassistant.me.urlManage.DialogAddUrl;
 import video.videoassistant.me.urlManage.MyItemTouchHelperCallback;
 import video.videoassistant.me.urlManage.OnStartDragListener;
 import video.videoassistant.me.urlManage.RecyclerViewAdapter;
+import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 public class JointManageActivity extends BaseActivity<JointModel, ActivityJointBinding> {
@@ -178,5 +181,11 @@ public class JointManageActivity extends BaseActivity<JointModel, ActivityJointB
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onDestroy() {
+        LiveEventBus.get(Constant.jointChange,String.class).post("");
+        super.onDestroy();
     }
 }

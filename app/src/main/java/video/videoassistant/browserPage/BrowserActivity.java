@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -74,7 +75,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         WebSettings mWebSettings = dataBinding.x5.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
-        mWebSettings.setMediaPlaybackRequiresUserGesture(false);
+        mWebSettings.setMediaPlaybackRequiresUserGesture(true);
         // 支持屏幕缩放
         mWebSettings.setSupportZoom(true);
         // 设置内置的缩放控件。若为false，则该WebView不可缩放
@@ -206,15 +207,15 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     }
 
     private void initXiuUrl(String s) {
-        String[] arr = s.split("-");
-        Log.i(TAG, "initXiuUrl: "+arr[0]+"\n"+arr[1]);
-        if(arr[0].equals("1")){
+        String[] arr = s.split("===");
+        Log.i(TAG, "initXiuUrl: " + arr[0] + "\n" + arr[1]);
+        if (arr[0].equals("1")) {
             Intent intent = new Intent(this, PlayerActivity.class);
-            intent.putExtra("url",arr[1]);
+            intent.putExtra("url", arr[1]);
             startActivity(intent);
-        }else if(arr[0].equals("2")){
+        } else if (arr[0].equals("2")) {
             x5Play(arr[1]);
-        }else {
+        } else {
             copyUrl(arr[1]);
         }
     }
@@ -275,7 +276,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             return;
         }
         if (snifferDialog == null) {
-            snifferDialog = new SnifferDialog(this, playList,viewModel);
+            snifferDialog = new SnifferDialog(this, playList, viewModel);
         }
         snifferDialog.show();
     }
@@ -294,6 +295,19 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        WebView x5WebView = dataBinding.x5;
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (x5WebView.canGoBack()) {
+                x5WebView.goBack();
+                return true;
+            } else {
+                finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 

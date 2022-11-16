@@ -54,20 +54,20 @@ public class SnifferDialog {
             x5.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    model.xiuUrl.postValue("2-"+s);
+                    model.xiuUrl.postValue("2==="+s);
                 }
             });
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    model.xiuUrl.postValue("1-"+s);
+                    model.xiuUrl.postValue("1==="+s);
                 }
             });
             url.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.i("BrowserActivity", "onClick: "+s);
-                    model.xiuUrl.postValue("3-"+s);
+                    model.xiuUrl.postValue("3==="+s);
                 }
             });
 

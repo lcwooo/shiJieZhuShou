@@ -14,11 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.jeremyliao.liveeventbus.LiveEventBus;
+
 import java.util.List;
 
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
 import video.videoassistant.databinding.ActivityUrlManageBinding;
+import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlManageBinding> {
@@ -180,6 +183,7 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
 
     @Override
     protected void onDestroy() {
+        LiveEventBus.get(Constant.urlChange,String.class).post("");
         super.onDestroy();
     }
 

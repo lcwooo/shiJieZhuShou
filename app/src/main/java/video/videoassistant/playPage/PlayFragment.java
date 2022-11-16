@@ -1,6 +1,8 @@
 package video.videoassistant.playPage;
 
 import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
@@ -16,9 +18,25 @@ import video.videoassistant.util.Constant;
 import xyz.doikki.videocontroller.StandardVideoController;
 
 public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
+
+    public static PlayFragment playFragment;
+
     @Override
     protected PlayModel initViewModel() {
         return new ViewModelProvider(this).get(PlayModel.class);
+    }
+
+
+    public static PlayFragment getInstance(String url) {
+        Bundle args = new Bundle();
+        args.putString("url", url);
+        if (playFragment == null) {
+            playFragment = new PlayFragment();
+        } else {
+            LiveEventBus.get(Constant.playAddress, String.class).post(url);
+        }
+        playFragment.setArguments(args);
+        return playFragment;
     }
 
     @Override
@@ -36,6 +54,12 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         requireActivity().getOnBackPressedDispatcher()
                 .addCallback(getViewLifecycleOwner(), backPressed);
         initPlay();
+        if (getArguments() != null) {
+            String url = getArguments().getString("url");
+            if (!TextUtils.isEmpty(url)) {
+                play(url);
+            }
+        }
     }
 
     private void initPlay() {

@@ -51,7 +51,7 @@ public class BaseApplication extends Application {
             return;
         }
         QbSdk.setDownloadWithoutWifi(true);
-        QbSdk.setCoreMinVersion(QbSdk.CORE_VER_ENABLE_202112);
+        //QbSdk.setCoreMinVersion(QbSdk.CORE_VER_ENABLE_202112);
 
         // 在调用TBS初始化、创建WebView之前进行如下配置
         HashMap map = new HashMap();
@@ -92,6 +92,7 @@ public class BaseApplication extends Application {
             @Override
             public void onCoreInitFinished() {
                 // 内核初始化完成，可能为系统内核，也可能为系统内核
+                Log.i(TAG, "onCoreInitFinished: 内核初始化完成");
             }
 
             /**
@@ -103,7 +104,7 @@ public class BaseApplication extends Application {
              */
             @Override
             public void onViewInitFinished(boolean isX5) {
-                Log.i(TAG, "onViewInitFinished: " + isX5);
+                Log.i(TAG, "onViewInitFinished(是否x5): " + isX5);
                 // hint: you can use QbSdk.getX5CoreLoadHelp(context) anytime to get help.
             }
         });

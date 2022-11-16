@@ -54,7 +54,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         dataBinding.setView(this);
         movieBean = JSON.parseObject(getIntent().getStringExtra("json"), XmlMovieBean.class);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, new PlayFragment())
+                .replace(R.id.fragment, PlayFragment.getInstance(""))
                 .commit();
         isX5 = false;
         if (movieBean != null) {
@@ -107,6 +107,15 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     }
 
     private void initAddress() {
+
+        if (playUrl.contains(".m3u8")) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment, PlayFragment.getInstance(playUrl))
+                    .commit();
+            isX5 = false;
+            return;
+        }
+
         if (handleEntity == null && jsonEntity == null) {
             UiUtil.showToastSafe("请先添加解析");
             return;
@@ -124,10 +133,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         if (jsonEntity != null && isX5) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, new PlayFragment())
+                    .replace(R.id.fragment, PlayFragment.getInstance(""))
                     .commit();
             isX5 = false;
         }
+
+
 
         showDialog("", false);
         new CountDownTimer(1000, 1000) {
@@ -242,8 +253,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             dataBinding.tvJson.setTextColor(getResources().getColor(R.color.red));
             initJsonList(viewModel.jsonList.getValue());
 
-        } else if(UiUtil.listIsEmpty(viewModel.jsonList.getValue())
-                && !UiUtil.listIsEmpty(viewModel.handleList.getValue())){
+        } else if (UiUtil.listIsEmpty(viewModel.jsonList.getValue())
+                && !UiUtil.listIsEmpty(viewModel.handleList.getValue())) {
 
             dataBinding.tvJson.setVisibility(View.GONE);
             dataBinding.tvWeb.setVisibility(View.VISIBLE);
@@ -251,7 +262,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.red));
             initWebList(viewModel.handleList.getValue());
 
-        }else {
+        } else {
             dataBinding.tvJson.setVisibility(View.VISIBLE);
             dataBinding.tvWeb.setVisibility(View.VISIBLE);
             dataBinding.recycJson.setVisibility(View.VISIBLE);
@@ -262,13 +273,13 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
     }
 
-    public void selectJson(){
+    public void selectJson() {
         dataBinding.tvJson.setTextColor(getResources().getColor(R.color.red));
         dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.textColor));
         initJsonList(viewModel.jsonList.getValue());
     }
 
-    public void selectWeb(){
+    public void selectWeb() {
         dataBinding.tvJson.setTextColor(getResources().getColor(R.color.textColor));
         dataBinding.tvWeb.setTextColor(getResources().getColor(R.color.red));
         initWebList(viewModel.handleList.getValue());
@@ -288,7 +299,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 handleEntity = entity;
                 jsonEntity = null;
                 initAddress();
-                dataBinding.tvWeb.setText("网页解析("+entity.getName()+")");
+                dataBinding.tvWeb.setText("网页解析(" + entity.getName() + ")");
                 dataBinding.tvJson.setText("JSON解析");
             }
 
@@ -314,7 +325,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 handleEntity = null;
                 initAddress();
                 dataBinding.tvWeb.setText("网页解析");
-                dataBinding.tvJson.setText("JSON解析("+entity.getName()+")");
+                dataBinding.tvJson.setText("JSON解析(" + entity.getName() + ")");
             }
 
             @Override

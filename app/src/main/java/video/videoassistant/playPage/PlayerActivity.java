@@ -57,19 +57,8 @@ public class PlayerActivity extends BaseActivity<PlayModel, AcitivityPlayerBindi
         String url = getIntent().getStringExtra("url");
         Log.i(TAG, "onChanged: "+url);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, new PlayFragment())
+                .replace(R.id.fragment, PlayFragment.getInstance(url))
                 .commit();
-        new CountDownTimer(500, 500) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                LiveEventBus.get(Constant.playAddress,String.class).post(url);
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
     }
 
     @Override
