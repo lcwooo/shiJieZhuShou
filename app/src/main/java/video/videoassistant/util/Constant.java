@@ -9,4 +9,5 @@ public class Constant {
 
     public static final String urlChange = "urlChange";
     public static final String jointChange = "jointChange";
+    public static final String adRuleVersion = "adRuleVersion";
 }

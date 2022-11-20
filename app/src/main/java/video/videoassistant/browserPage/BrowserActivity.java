@@ -18,6 +18,8 @@ import android.view.WindowManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
 import com.tencent.smtt.sdk.TbsVideo;
@@ -26,8 +28,15 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
@@ -46,6 +55,8 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     private static final String TAG = "BrowserActivity";
     public List<String> playList = new ArrayList<>();
     private SnifferDialog snifferDialog;
+    //private List<String> adList = new ArrayList<>();
+    private String adString = "";
 
 
     @Override
@@ -68,7 +79,39 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         dataBinding.name.setText(loadUrl);
         windowManager = getWindowManager();
         initWeb();
+        initAdList();
         dataBinding.x5.loadUrl(loadUrl);
+    }
+
+    private void initAdList() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String path = getExternalFilesDir("app").getAbsolutePath();
+                    File futureStudioIconFile = new File(path, "adRule.txt");
+                    if (futureStudioIconFile.exists()) {
+                        adString = Files.toString(futureStudioIconFile, Charsets.UTF_8);
+                        /*InputStream inputStream = new FileInputStream(futureStudioIconFile);
+                        InputStreamReader reader = new InputStreamReader(inputStream, "utf-8");
+                        BufferedReader bufferedReader = new BufferedReader(reader);
+                        while ((s = bufferedReader.readLine()) != null) {
+                            if (s != null && s.length() > 0) {
+                                if (s.startsWith("||") && s.contains("^")) {
+                                    s = s.replace("||", "");
+                                    s = s.replace("^", "");
+                                    adList.add(s);
+                                    adString = adString + s + "\n";
+                                }
+                            }
+                        }*/
+                    }
+                } catch (Exception e) {
+                    UiUtil.showToastSafe(e.getMessage());
+                }
+            }
+        }).start();
+
     }
 
     private void initWeb() {
@@ -131,13 +174,21 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
+                //Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains(".m3u8") || s.contains(".mp4"))
                         && !s.contains("url=") && !s.contains(".ts")) {
                     if (!playList.contains(s)) {
-                        Log.i(TAG, "shouldInterceptRequest: " + s);
+                        //Log.i(TAG, "shouldInterceptRequest: " + s);
                         playList.add(s);
                     }
                     viewModel.urlListState.postValue(1);
+                }
+
+                if (isIntercept(s)) {
+
+                    Log.i(TAG, "shouldInterceptRequest(拦截): " + s);
+                    return new WebResourceResponse("image/png", "", null);
+
                 }
                 return super.shouldInterceptRequest(webView, s);
             }
@@ -308,6 +359,42 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+
+    public boolean isIntercept(String url) {
+
+        String chu = "";
+
+        if (url.contains("http://")) {
+            chu = url.replace("http://", "");
+        }
+        if (url.contains("https://")) {
+            chu = url.replace("https://", "");
+        }
+        if (chu.contains("/")) {
+            chu = chu.substring(0, chu.indexOf("/"));
+        }
+        if (chu.indexOf(".") != chu.lastIndexOf(".")) {
+            chu = chu.substring(chu.indexOf(".") + 1);
+        }
+
+
+        if (adString.contains(chu)) {
+            Log.i("haha", "isIntercept: " + url + "\n" + chu);
+            String regex = "(?<=[\\|\\|]).*(" + chu + ").*?(?=\\^)";
+            Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
+            Matcher matcher = pattern.matcher(adString);
+            while (matcher.find()) {
+                String group = matcher.group();
+                if (url.contains(group.substring(1))) {
+                    Log.i("haha", "isIntercept(拦截): "+url);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
 

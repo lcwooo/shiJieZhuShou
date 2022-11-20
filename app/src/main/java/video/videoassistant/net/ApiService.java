@@ -11,6 +11,7 @@ import retrofit2.http.QueryMap;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 import video.videoassistant.cloudPage.ListMovieBean;
+import video.videoassistant.mainPage.RuleVersionBean;
 import video.videoassistant.playPage.PlayBean;
 
 /**
@@ -26,7 +27,7 @@ import video.videoassistant.playPage.PlayBean;
 public interface ApiService {
 
 
-    String URL = "https://www.233dy.top";
+    String URL = "https://www.233dy.top/";
 
 
     @GET()
@@ -41,5 +42,6 @@ public interface ApiService {
     @GET("")
     Flowable<String> initListType(@Url String url,@QueryMap Map<String, String> map);
 
-
+    @GET()
+    Flowable<RuleVersionBean> getVersionBean(@Url String url);
 }

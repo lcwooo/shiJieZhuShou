@@ -137,6 +137,8 @@ public class Api extends BaseApi implements RequestHandler {
         try {
             sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[]{xtm}, new SecureRandom());
+            //sslContext = SSLContext.getInstance("TLSv1.2");
+            //sslContext.init(null, null, null);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (KeyManagementException e) {
@@ -148,10 +150,6 @@ public class Api extends BaseApi implements RequestHandler {
     @Override
     public Request onBeforeRequest(Request request, Interceptor.Chain chain) {
         Request.Builder builder = chain.request().newBuilder();
-        if (request.url().url().toString().contains("ac=")) {
-            builder.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36");
-        }
         return builder.build();
     }
 
