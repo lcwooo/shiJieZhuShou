@@ -86,13 +86,17 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         dataBinding.setView(this);
         url = getArguments().getString("url");
         type = getArguments().getString("type");
+        getAllType();;
+
+    }
+
+    public void getAllType(){
         if (url.contains("?")) {
             url = url.substring(0, url.indexOf("?"));
         }
+        map.clear();
         map.put("ac", "list");
-
         viewModel.getAllType(url, map);
-
     }
 
     @Override
@@ -332,7 +336,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                     } else if ("des".equals(parser.getName())) {
                         movieBean.setInfo(parser.nextText());
                     }
-                    Log.i(TAG, "initXms: " + parser.getName());
+                    //Log.i(TAG, "initXms: " + parser.getName());
                     break;
                 case XmlPullParser.END_TAG:
                     if ("video".equals(parser.getName())) {
@@ -397,7 +401,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
     public void showType() {
         if (UiUtil.listIsEmpty(typeBeanList)) {
-            UiUtil.showToastSafe("没有获取到分类");
+            UiUtil.showToastSafe("没有获取到分类,将为您重新获取");
+            getAllType();
             return;
         }
         CloudDialog cloudDialog = new CloudDialog(context, typeBeanList);

@@ -1,5 +1,6 @@
 package video.videoassistant.mainPage;
 
+import android.Manifest;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -9,12 +10,21 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.arialyy.annotations.Download;
+import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.task.DownloadTask;
 import com.azhon.basic.base.BaseFragment;
+import com.azhon.basic.utils.TimeUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.XXPermissions;
+import com.yanzhenjie.andserver.AndServer;
+import com.yanzhenjie.andserver.Server;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,7 +61,43 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
     @Override
     protected void initView() {
+        startWeb();
         initPage();
+    }
+
+    private void startWeb() {
+        Server server = AndServer.webServer(this)
+                .port(8080)
+                .timeout(10, TimeUnit.SECONDS)
+                .build();
+
+        server.startup();
+    }
+
+    private void checkPermissions() {
+        XXPermissions.with(this)
+                // 申请单个权限
+                .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .request(new OnPermissionCallback() {
+
+                    @Override
+                    public void onGranted(List<String> permissions, boolean all) {
+
+                    }
+
+                    @Override
+                    public void onDenied(List<String> permissions, boolean never) {
+                        if (never) {
+                            UiUtil.showToastSafe("被永久拒绝存储授权,APP将无法使用,请给与权限");
+                            // 如果是被永久拒绝就跳转到应用权限系统设置页面
+                            XXPermissions.startPermissionActivity(context, permissions);
+                            return;
+                        }
+                        if (permissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            UiUtil.showToastSafe("获取权限成功");
+                        }
+                    }
+                });
     }
 
     private void initPage() {
@@ -73,7 +119,6 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     protected void initData() {
         viewModel.getAdRule();
 
-        test();
 
         viewModel.versionBeanData.observe(this, new Observer<RuleVersionBean>() {
             @Override
@@ -83,53 +128,29 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         });
     }
 
-    public void test() {
-        String data = "||tamaraboccatelli.com.br^\n" +
-                "||tamarispolska.pl.com^\n" +
-                "||cc.tamarixeledone.com^\n" +
-                "||tamayaservicios.cn^";
-        String regx = "(?<=[\\$|\\#]\\{)[\\s\\S]*?(?=\\})";
-        String a = "pl.com";
-        String regex = "(?<=[\\|\\|]).*(" + a +
-                ").*?(?=\\^)";
-        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(data);
-        while (matcher.find()) {
-            String group = matcher.group();
-            Log.i(TAG, "test: " + group);
-        }
-
-
-/*        String str = "sfsfkkvvnn${a1}f尼斯hi放松放松#{a2}fsfsf快速反击${a3} sfsfsfsdfjs士大夫十分 #{a4}ffafsjj sfsf";
-        List<String> list = getParmNames(str);
-        for (String s : list) {
-            Log.i(TAG, "test: " + s);
-        }*/
-    }
-
-    public static List<String> getParmNames(String sentence) {
-        List<String> list = new ArrayList<>();
-        //String regx = "(?<=[\\$|\\#]\\{)[\\s\\S]*?(?=\\})";
-        String regx = "(?<=[\\$|\\#]\\{)[\\s\\S]*?(?=\\})";
-        Pattern pattern = Pattern.compile(regx, Pattern.CASE_INSENSITIVE);
-        Matcher m = pattern.matcher(sentence);
-        while (m.find()) {
-            String searchStr = m.group(0);
-            list.add(searchStr);
-        }
-        return list;
-
-    }
-
 
     private void initAdGuard(RuleVersionBean ruleVersionBean) {
+        String fs = getExternalFilesDir("app").getAbsolutePath() + "/" + "adRule.txt";
+        File file = new File(fs);
+        if (!file.exists()) {
+            downRule(ruleVersionBean, fs);
+            return;
+        }
         int version = PreferencesUtils.getInt(context, Constant.adRuleVersion, 0);
         if (ruleVersionBean.getVersion() <= version) {
             return;
         }
 
+        downRule(ruleVersionBean, fs);
+    }
+
+    public void downRule(RuleVersionBean ruleVersionBean, String file) {
+/*        UiUtil.showToastSafe("开始下载");
+        Aria.download(this)
+                .load(ruleVersionBean.getUrl())
+                .setFilePath(fs)
+                .create();*/
         String fs = getExternalFilesDir("app").getAbsolutePath();
-        Log.i(TAG, "initAdGuard: " + fs);
         String downName = "adRule.txt";
         new Retrofit.Builder()
                 .baseUrl(ApiService.URL)
@@ -142,7 +163,6 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
                         if (progress.status == 5) {
                             UiUtil.showToastSafe("广告拦截库同步完成版本：" + ruleVersionBean.getVersion());
                             PreferencesUtils.putInt(context, Constant.adRuleVersion, ruleVersionBean.getVersion());
-                            initAdList();
                         }
                     }
 
@@ -206,7 +226,23 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
     }
 
-    public void initAdList() {
 
+    //在这里处理任务完成的状态
+    @Download.onTaskComplete
+    void taskComplete(DownloadTask task) {
+        if (task.getKey().equals(viewModel.versionBeanData.getValue().getUrl())) {
+            UiUtil.showToastSafe("广告拦截库初始化完成");
+        }
+    }
+
+    @Download.onTaskFail
+    void taskFail(DownloadTask task) {
+        UiUtil.showToastSafe("下载出错：" + task.getKey());
+    }
+
+    //在这里处理任务执行中的状态，如进度进度条的刷新
+    @Download.onTaskRunning
+    protected void running(DownloadTask task) {
+        Log.i(TAG, "running: " + task.getPercent());
     }
 }

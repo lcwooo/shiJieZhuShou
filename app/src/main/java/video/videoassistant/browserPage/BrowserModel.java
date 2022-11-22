@@ -29,6 +29,9 @@ public class BrowserModel extends BaseViewModel {
      */
     public MutableLiveData<String> xiuUrl = new MutableLiveData<>();
 
+    //输新
+    public MutableLiveData<Integer> menuState = new MutableLiveData<>();
+
     public BrowserModel() {
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
     }
@@ -41,6 +44,11 @@ public class BrowserModel extends BaseViewModel {
             }
         });
     }
+
+    public void setMenuState(int a){
+        menuState.postValue(a);
+    }
+
 
     public String getLoadUrl() {
         if (loadUrl == null) {

@@ -64,7 +64,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                     + "/导演:" + movieBean.getDirector() + "(" + movieBean.getYear() + ")");
             dataBinding.info.setText("主演:" + movieBean.getActor() + "     " + movieBean.getInfo());
             initType();
-            initGroup(movieBean.getMovieItemBeans().get(0));
+            try {
+                initGroup(movieBean.getMovieItemBeans().get(0));
+            } catch (Exception e) {
+                e.printStackTrace();
+                UiUtil.showToastSafe("数据异常");
+            }
         }
 
 
@@ -82,16 +87,20 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         if (from.contains("#")) {
             String[] arr = from.split("#");
             for (String a : arr) {
-                PlayBean bean = new PlayBean();
-                bean.setName(a.split("\\$")[0]);
-                bean.setUrl(a.split("\\$")[1]);
-                playBeans.add(bean);
+                if (a.contains("$")) {
+                    PlayBean bean = new PlayBean();
+                    bean.setName(a.split("\\$")[0]);
+                    bean.setUrl(a.split("\\$")[1]);
+                    playBeans.add(bean);
+                }
             }
         } else {
-            PlayBean bean = new PlayBean();
-            bean.setName(from.split("\\$")[0]);
-            bean.setUrl(from.split("\\$")[1]);
-            playBeans.add(bean);
+            if (from.contains("$")) {
+                PlayBean bean = new PlayBean();
+                bean.setName(from.split("\\$")[0]);
+                bean.setUrl(from.split("\\$")[1]);
+                playBeans.add(bean);
+            }
         }
         dataBinding.group.removeAllViews();
         PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
@@ -137,7 +146,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                     .commit();
             isX5 = false;
         }
-
 
 
         showDialog("", false);
@@ -193,7 +201,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    initGroup(bean);
+                    try {
+                        initGroup(bean);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        UiUtil.showToastSafe("数据异常");
+                    }
                 }
             });
         }

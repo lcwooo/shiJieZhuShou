@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="X5"
+            android:text="下载"
             android:textColor="#FFC107" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="play"
+            android:text="播放"
             android:textColor="#FFC107" />
     </LinearLayout>
 

@@ -24,7 +24,7 @@ public class SnifferDialog {
     public List<String> list;
     private BrowserModel model;
 
-    public SnifferDialog(Context mContext, List<String> list,BrowserModel model) {
+    public SnifferDialog(Context mContext, List<String> list, BrowserModel model) {
         this.mContext = mContext;
         this.list = list;
         this.model = model;
@@ -51,23 +51,28 @@ public class SnifferDialog {
             TextView x5 = view.findViewById(R.id.x5);
             TextView play = view.findViewById(R.id.play);
             url.setText(s);
+            if (s.contains(".m3u8")) {
+                x5.setVisibility(View.VISIBLE);
+            } else {
+                x5.setVisibility(View.GONE);
+            }
             x5.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    model.xiuUrl.postValue("2==="+s);
+                    model.xiuUrl.postValue("2===" + s);
                 }
             });
             play.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    model.xiuUrl.postValue("1==="+s);
+                    model.xiuUrl.postValue("1===" + s);
                 }
             });
             url.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.i("BrowserActivity", "onClick: "+s);
-                    model.xiuUrl.postValue("3==="+s);
+                    Log.i("BrowserActivity", "onClick: " + s);
+                    model.xiuUrl.postValue("3===" + s);
                 }
             });
 

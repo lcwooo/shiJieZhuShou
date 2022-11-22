@@ -38,10 +38,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
 import video.videoassistant.databinding.ActivityBrowserBinding;
+import video.videoassistant.mainPage.DownService;
+import video.videoassistant.mainPage.FileCallBack;
+import video.videoassistant.net.ApiService;
 import video.videoassistant.playPage.PlayerActivity;
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 import static com.tencent.smtt.sdk.WebView.setWebContentsDebuggingEnabled;
@@ -57,6 +64,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     private SnifferDialog snifferDialog;
     //private List<String> adList = new ArrayList<>();
     private String adString = "";
+    private WebMenuDialog menuDialog;
 
 
     @Override
@@ -77,10 +85,20 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             return;
         }
         dataBinding.name.setText(loadUrl);
+        dataBinding.name.setSelection(loadUrl.length());
         windowManager = getWindowManager();
         initWeb();
         initAdList();
+        initProgressBar();
         dataBinding.x5.loadUrl(loadUrl);
+
+
+    }
+
+    private void initProgressBar() {
+        dataBinding.progressBar.setMax(100);
+        dataBinding.progressBar.setProgressDrawable(this.getResources()
+                .getDrawable(R.drawable.color_progressbar));
     }
 
     private void initAdList() {
@@ -92,19 +110,6 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                     File futureStudioIconFile = new File(path, "adRule.txt");
                     if (futureStudioIconFile.exists()) {
                         adString = Files.toString(futureStudioIconFile, Charsets.UTF_8);
-                        /*InputStream inputStream = new FileInputStream(futureStudioIconFile);
-                        InputStreamReader reader = new InputStreamReader(inputStream, "utf-8");
-                        BufferedReader bufferedReader = new BufferedReader(reader);
-                        while ((s = bufferedReader.readLine()) != null) {
-                            if (s != null && s.length() > 0) {
-                                if (s.startsWith("||") && s.contains("^")) {
-                                    s = s.replace("||", "");
-                                    s = s.replace("^", "");
-                                    adList.add(s);
-                                    adString = adString + s + "\n";
-                                }
-                            }
-                        }*/
                     }
                 } catch (Exception e) {
                     UiUtil.showToastSafe(e.getMessage());
@@ -186,7 +191,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
                 if (isIntercept(s)) {
 
-                    Log.i(TAG, "shouldInterceptRequest(拦截): " + s);
+                    //Log.i(TAG, "shouldInterceptRequest(拦截): " + s);
                     return new WebResourceResponse("image/png", "", null);
 
                 }
@@ -214,6 +219,17 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 windowManager.removeViewImmediate(fullScreenLayer);
                 fullScreenLayer = null;
             }
+
+            @Override
+            public void onProgressChanged(WebView webView, int i) {
+                super.onProgressChanged(webView, i);
+                if (i == 100) {
+                    dataBinding.progressBar.setVisibility(View.GONE);//加载完网页进度条消失
+                } else {
+                    dataBinding.progressBar.setVisibility(View.VISIBLE);//开始加载网页时显示进度条
+                    dataBinding.progressBar.setProgress(i);//设置进度值
+                }
+            }
         });
     }
 
@@ -226,6 +242,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onChanged(String s) {
                 dataBinding.name.setText(s);
+                dataBinding.name.setSelection(s.length());
             }
         });
 
@@ -253,8 +270,36 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onChanged(String s) {
                 initXiuUrl(s);
+                if(snifferDialog!=null){
+                    snifferDialog.dialog.dismiss();
+                }
             }
         });
+
+
+        viewModel.menuState.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                initMenu(integer);
+                if (menuDialog != null) {
+                    menuDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    private void initMenu(Integer integer) {
+        switch (integer) {
+            case 0:
+                dataBinding.x5.reload();
+                break;
+            case 1:
+                copyUrl(dataBinding.x5.getUrl());
+                break;
+            case 3:
+                finish();
+                break;
+        }
     }
 
     private void initXiuUrl(String s) {
@@ -265,7 +310,8 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             intent.putExtra("url", arr[1]);
             startActivity(intent);
         } else if (arr[0].equals("2")) {
-            x5Play(arr[1]);
+            //x5Play(arr[1]);
+            m3u8Down(arr[1]);
         } else {
             copyUrl(arr[1]);
         }
@@ -288,6 +334,35 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         } else {
             UiUtil.showToastSafe("x5播放器调用失败");
         }
+    }
+
+    public void m3u8Down(String url) {
+        String fs = getExternalFilesDir("playList").getAbsolutePath();
+        Log.i(TAG, "m3u8Down: "+fs);
+        String downName = "play.m3u8";
+        new Retrofit.Builder()
+                .baseUrl(ApiService.URL)
+                .build()
+                .create(DownService.class)
+                .downloadFile(url)//可以是完整的地址，也可以是baseurl后面的动态地址
+                .enqueue(new FileCallBack(fs.toString(), downName) {
+                    @Override
+                    public void onSuccess(File file, Progress progress) {
+                        if (progress.status == 5) {
+                            UiUtil.showToastSafe("下载完成");
+                        }
+                    }
+
+                    @Override
+                    public void onProgress(Progress progress) {
+
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
+                        UiUtil.showToastSafe("下载异常:" + t.getMessage());
+                    }
+                });
     }
 
     public void copyUrl(String url) {
@@ -338,6 +413,11 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
     public void moreSet() {
 
+        if (menuDialog == null) {
+            menuDialog = new WebMenuDialog(this, viewModel);
+        }
+        menuDialog.show();
+
     }
 
     private void fullScreen(View view) {
@@ -381,14 +461,14 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
 
         if (adString.contains(chu)) {
-            Log.i("haha", "isIntercept: " + url + "\n" + chu);
+            //Log.i("haha", "isIntercept: " + url + "\n" + chu);
             String regex = "(?<=[\\|\\|]).*(" + chu + ").*?(?=\\^)";
             Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(adString);
             while (matcher.find()) {
                 String group = matcher.group();
                 if (url.contains(group.substring(1))) {
-                    Log.i("haha", "isIntercept(拦截): "+url);
+                    //Log.i("haha", "isIntercept(拦截): "+url);
                     return true;
                 }
             }

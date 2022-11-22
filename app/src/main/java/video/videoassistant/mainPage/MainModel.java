@@ -15,7 +15,7 @@ public class MainModel extends BaseViewModel {
 
 
     public void getAdRule() {
-        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("http://192.168.10.107:7001/adRule");
+        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("https://www.233dy.top/adRule");
 
         request(api, new ResultListener<RuleVersionBean>() {
             @Override

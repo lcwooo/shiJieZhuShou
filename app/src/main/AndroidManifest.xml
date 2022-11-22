@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="video.videoassistant">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
 
     <application
         android:name=".base.BaseApplication"
@@ -43,19 +49,23 @@
             android:name=".browserPage.BrowserActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
-        <activity android:name=".playPage.PlayerActivity"
+        <activity
+            android:name=".playPage.PlayerActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
-        <service android:name=".base.X5ProcessInitService"
-            android:process=":web"
-            android:exported="false"/>
+        <service
+            android:name=".base.X5ProcessInitService"
+            android:exported="false"
+            android:process=":web" />
 
         <service
             android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
             android:label="dexopt"
-            android:process=":dexopt" >
-        </service>
+            android:process=":dexopt"/>
+
+        <service android:name="com.android.cast.dlna.dmc.DLNACastService"
+            tools:ignore="Instantiatable" />
 
         <uses-library
             android:name="org.apache.http.legacy"
