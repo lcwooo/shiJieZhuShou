@@ -270,7 +270,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onChanged(String s) {
                 initXiuUrl(s);
-                if(snifferDialog!=null){
+                if (snifferDialog != null) {
                     snifferDialog.dialog.dismiss();
                 }
             }
@@ -338,7 +338,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
     public void m3u8Down(String url) {
         String fs = getExternalFilesDir("playList").getAbsolutePath();
-        Log.i(TAG, "m3u8Down: "+fs);
+        Log.i(TAG, "m3u8Down: " + fs);
         String downName = "play.m3u8";
         new Retrofit.Builder()
                 .baseUrl(ApiService.URL)
@@ -475,6 +475,13 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         }
 
         return false;
+    }
+
+    public void go() {
+        if (dataBinding.name.getText().toString().trim().isEmpty()) {
+            return;
+        }
+        dataBinding.x5.loadUrl(dataBinding.name.getText().toString());
     }
 
 
