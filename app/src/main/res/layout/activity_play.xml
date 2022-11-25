@@ -14,7 +14,7 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="250dp" />
 
         <ScrollView
             android:layout_width="match_parent"

@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -45,6 +46,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
     protected ControlWrapper mControlWrapper;
     private boolean mIsDragging;
     private static final String TAG = "PlayBottomView";
+    private LinearLayout set;
 
     public PlayBottomView(@NonNull Context context) {
         super(context);
@@ -74,10 +76,17 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         mCurrTime = findViewById(R.id.curr_time);
         mPlayButton = findViewById(R.id.iv_play);
         mPlayButton.setOnClickListener(this);
+        set = findViewById(R.id.set);
         //5.1以下系统SeekBar高度需要设置成WRAP_CONTENT
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             mVideoProgress.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+        set.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                return true;
+            }
+        });
 
     }
 
