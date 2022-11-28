@@ -2,16 +2,16 @@ package video.videoassistant.playPage;
 
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 
-import androidx.databinding.adapters.SeekBarBindingAdapter;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.azhon.basic.base.BaseFragment;
-import com.azhon.basic.lifecycle.ResultListener;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
@@ -22,13 +22,8 @@ import com.tencent.smtt.sdk.WebViewClient;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import video.videoassistant.R;
@@ -38,14 +33,29 @@ import video.videoassistant.mainPage.FileCallBack;
 import video.videoassistant.net.Api;
 import video.videoassistant.net.ApiService;
 import video.videoassistant.util.Constant;
-import video.videoassistant.util.UiUtil;
 
 public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
+    private static X5PlayFragment playFragment;
     private WindowManager windowManager;
     private View fullScreenLayer;
     private static final String TAG = "X5PlayFragment";
     private List<String> playArr = new ArrayList<>();
+    private static final String mHomeUrl = "file:///android_asset/homePage.html";
+
+
+    public static X5PlayFragment getInstance(String url) {
+        Bundle args = new Bundle();
+        args.putString("url", url);
+        if (playFragment == null) {
+            playFragment = new X5PlayFragment();
+        } else {
+            LiveEventBus.get(Constant.playAddress, String.class).post(url);
+        }
+        playFragment.setArguments(args);
+        return playFragment;
+    }
+
 
     @Override
     protected PlayModel initViewModel() {
@@ -66,6 +76,24 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
     protected void initView() {
         windowManager = getActivity().getWindowManager();
         initWeb();
+        dataBinding.web.loadUrl(mHomeUrl);
+        if (getArguments() != null) {
+            String url = getArguments().getString("url");
+            if (!TextUtils.isEmpty(url)) {
+                dataBinding.web.loadUrl(url);
+            }
+        }
+        
+        dataBinding.web.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Log.i(TAG, "onLongClick: =====================");
+                return true;
+            }
+        });
+
+
+
     }
 
     private void initWeb() {
@@ -88,7 +116,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-                //Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))
                         && !s.contains("url=") && !s.contains(".ts")) {
                     Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
@@ -107,8 +134,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             }
         });
         dataBinding.web.setWebChromeClient(new WebChromeClient() {
-
-
             @Override
             public void onShowCustomView(View view, IX5WebChromeClient.CustomViewCallback customViewCallback) {
                 windowManager.addView(view, new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION));
@@ -141,35 +166,14 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
     private void checkM3u8() {
         String url = playArr.get(0);
-        if(url.contains(".mp4")){
+        if (url.contains(".mp4")) {
             return;
         }
         Log.i(TAG, "checkM3u8: " + url);
         String fs = getActivity().getExternalFilesDir("playList").getAbsolutePath();
         Log.i(TAG, "m3u8Down: " + fs);
         String downName = "x5Play.m3u8";
-
-        Flowable<String> api = Api.getApi().checkUrl(url);
-        viewModel.request(api, new ResultListener<String>() {
-            @Override
-            public void onSucceed(String data) {
-              UiUtil.showToastSafe(data);
-            }
-
-            @Override
-            public void onFail(String t) {
-                UiUtil.showToastSafe(t);
-                Log.i(TAG, "onFail: "+t);
-            }
-        });
-
-
-
-        /*OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.readTimeout(5000, TimeUnit.MILLISECONDS);
-        builder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
-        builder.followRedirects(true);
-        new Retrofit.Builder().client(builder.build())
+        new Retrofit.Builder().client(new Api().setClient())
                 .baseUrl(ApiService.URL)
                 .build()
                 .create(DownService.class)
@@ -178,7 +182,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                     @Override
                     public void onSuccess(File file, Progress progress) {
                         if (progress.status == 5) {
-                            UiUtil.showToastSafe("下载完成");
+                            Log.i(TAG, "onSuccess: 下载完成");
                         }
                     }
 
@@ -189,10 +193,9 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
                     @Override
                     public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
-                        UiUtil.showToastSafe("下载异常:" + t.getMessage());
                         Log.i(TAG, "onFailure: " + t.getMessage());
                     }
-                });*/
+                });
     }
 
     private void fullScreen(View view) {
@@ -206,7 +209,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
     @Override
     protected void initData() {
 
-        LiveEventBus.get(Constant.webUrlGo, String.class)
+        LiveEventBus.get(Constant.playAddress, String.class)
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {

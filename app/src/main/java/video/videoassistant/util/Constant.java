@@ -13,5 +13,5 @@ public class Constant {
     public static final String adRuleVersion = "adRuleVersion";
 
     public static final String defaultCloud = "defaultCloud";
-    public static final String webUrlGo = "webUrlGo";
+
 }

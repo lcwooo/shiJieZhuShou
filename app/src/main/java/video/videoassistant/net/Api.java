@@ -65,7 +65,7 @@ public class Api extends BaseApi implements RequestHandler {
      * 做自己需要的操作
      */
     @Override
-    protected OkHttpClient setClient() {
+    public OkHttpClient setClient() {
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(READ_TIME_OUT, TimeUnit.MILLISECONDS);

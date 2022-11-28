@@ -2,6 +2,7 @@ package video.videoassistant.mainPage;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +32,7 @@ public abstract class FileCallBack implements Callback<ResponseBody> {
 
     @Override
     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+        Log.i("X5PlayFragment", "onResponse: "+response.code());
         new DownloadAsync(destFileDir,destFileName).execute(response.body());
     }
 

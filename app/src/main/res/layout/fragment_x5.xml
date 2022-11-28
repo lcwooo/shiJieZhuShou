@@ -6,13 +6,29 @@
     </data>
 
     <RelativeLayout
-        android:background="#595959"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#595959">
 
         <com.tencent.smtt.sdk.WebView
+            android:id="@+id/web"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/web" />
+            android:background="#595959" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="下一集"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
     </RelativeLayout>
 </layout>

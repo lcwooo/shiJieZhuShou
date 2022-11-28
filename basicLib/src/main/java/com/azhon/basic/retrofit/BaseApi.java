@@ -31,6 +31,7 @@ public abstract class BaseApi {
         builder.addCallAdapterFactory(RxJava2CallAdapterFactory.create());
         builder.baseUrl(baseUrl);
         OkHttpClient client = setClient();
+        client.writeTimeoutMillis();
         if (client != null) {
             builder.client(client);
         }

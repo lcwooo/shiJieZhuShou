@@ -123,7 +123,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         WebSettings mWebSettings = dataBinding.x5.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
-        mWebSettings.setMediaPlaybackRequiresUserGesture(true);
+        mWebSettings.setMediaPlaybackRequiresUserGesture(false);
         // 支持屏幕缩放
         mWebSettings.setSupportZoom(true);
         // 设置内置的缩放控件。若为false，则该WebView不可缩放
@@ -183,16 +183,14 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onPageFinished(WebView webView, String s) {
                 super.onPageFinished(webView, s);
-                webView.loadUrl("javascript:window.java_obj.showErrorInfo('<head>'+" +
-                        "document.documentElement.innerHTML+'</head>');");
             }
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
                 //Log.i(TAG, "shouldInterceptRequest: " + s);
-                if ((s.contains(".m3u8") || s.contains(".mp4"))
+                if ((s.contains("m3u8") || s.contains(".mp4"))
                         && !s.contains("url=") && !s.contains(".ts")) {
-                    if (!playList.contains(s)) {
+                    if (!playList.contains(s) && playList.size()<2) {
                         //Log.i(TAG, "shouldInterceptRequest: " + s);
                         playList.add(s);
                     }
