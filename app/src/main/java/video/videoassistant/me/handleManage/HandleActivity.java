@@ -19,6 +19,8 @@ import video.videoassistant.base.BaseActivity;
 import video.videoassistant.databinding.ActivityHandleBinding;
 import video.videoassistant.me.urlManage.MyItemTouchHelperCallback;
 import video.videoassistant.me.urlManage.OnStartDragListener;
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBinding> {
@@ -114,7 +116,7 @@ public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBind
 
     private void openOptions(View view, HandleEntity entity) {
         PopupMenu popupMenu = new PopupMenu(context, view);
-        popupMenu.getMenuInflater().inflate(R.menu.url_more, popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.url_more_set, popupMenu.getMenu());
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -126,12 +128,19 @@ public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBind
                     case R.id.edit:
                         editUrl(entity);
                         break;
-                    default:
+                    case R.id.index:
+                        indexJiexi(entity);
+                        break;
 
                 }
                 return true;
             }
         });
+    }
+
+    private void indexJiexi(HandleEntity entity) {
+        PreferencesUtils.putString(this, Constant.defaultCloud, "2||" + entity.getName() + "||" + entity.getUrl());
+        UiUtil.showToastSafe("设置成功");
     }
 
     private void editUrl(HandleEntity entity) {

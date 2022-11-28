@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
@@ -20,6 +21,7 @@ import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -38,9 +40,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 public class Api extends BaseApi implements RequestHandler {
 
     //读超时长，单位：毫秒
-    public static final int READ_TIME_OUT = 15000;
+    public static final int READ_TIME_OUT = 10000;
     //连接时长，单位：毫秒
-    public static final int CONNECT_TIME_OUT = 15000;
+    public static final int CONNECT_TIME_OUT = 10000;
     private static final String TAG = "Api";
 
 
@@ -67,8 +69,8 @@ public class Api extends BaseApi implements RequestHandler {
 
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         builder.readTimeout(READ_TIME_OUT, TimeUnit.MILLISECONDS);
-
-
+        builder.followRedirects(true);
+        builder.protocols(Collections.singletonList(Protocol.HTTP_1_1));
         builder.sslSocketFactory(SSLSocketClient.getSSLSocketFactory(), new X509TrustManager() {
             @Override
             public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
@@ -158,6 +160,9 @@ public class Api extends BaseApi implements RequestHandler {
     public Response onAfterRequest(@NonNull Response response, Interceptor.Chain chain) throws IOException {
         ApiException e = null;
 
+        if(302 == response.code()){
+            throw new ApiException("302");
+        }
 
         if (401 == response.code()) {
             throw new ApiException("登录已过期,请重新登录!");

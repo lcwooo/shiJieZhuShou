@@ -146,6 +146,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         mWebSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         mWebSettings.setDatabaseEnabled(true);
         mWebSettings.setGeolocationEnabled(true);
+        dataBinding.x5.addJavascriptInterface(new InJavaScriptLocalObj(), "java_obj");// js 注入回调
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             // 解决跨域问题
             mWebSettings.setAllowUniversalAccessFromFileURLs(true);
@@ -164,7 +165,9 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 if (!s.equals(viewModel.getLoadUrl())) {
                     viewModel.urlListState.setValue(2);
                     viewModel.loadUrl.setValue(s);
+
                 }
+
                 //Log.i(TAG, "onPageStarted: " + s);
             }
 
@@ -175,6 +178,13 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                     return true;
                 }
                 return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView webView, String s) {
+                super.onPageFinished(webView, s);
+                webView.loadUrl("javascript:window.java_obj.showErrorInfo('<head>'+" +
+                        "document.documentElement.innerHTML+'</head>');");
             }
 
             @Override
@@ -232,6 +242,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             }
         });
     }
+
 
     @Override
     protected void initData() {
@@ -310,7 +321,6 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             intent.putExtra("url", arr[1]);
             startActivity(intent);
         } else if (arr[0].equals("2")) {
-            //x5Play(arr[1]);
             m3u8Down(arr[1]);
         } else {
             copyUrl(arr[1]);
@@ -482,6 +492,12 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             return;
         }
         dataBinding.x5.loadUrl(dataBinding.name.getText().toString());
+    }
+
+    private class LocalAndroidObj {
+        public void showSource(String msg) {
+            Log.i(TAG, "showSource(获取资源): " + msg);
+        }
     }
 
 

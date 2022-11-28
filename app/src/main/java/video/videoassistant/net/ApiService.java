@@ -44,4 +44,9 @@ public interface ApiService {
 
     @GET()
     Flowable<RuleVersionBean> getVersionBean(@Url String url);
+
+    //通用下载
+    @Streaming //添加这个注解用来下载大文件
+    @GET()
+    Flowable<ResponseBody> downloadFile(@Url String fileUrl);
 }

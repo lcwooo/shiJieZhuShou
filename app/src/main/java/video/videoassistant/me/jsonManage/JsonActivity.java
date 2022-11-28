@@ -21,6 +21,8 @@ import video.videoassistant.databinding.ActivityJsonBinding;
 import video.videoassistant.me.urlManage.MyItemTouchHelperCallback;
 import video.videoassistant.me.urlManage.OnStartDragListener;
 
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 public class JsonActivity extends BaseActivity<JsonModel, ActivityJsonBinding> {
@@ -116,7 +118,7 @@ public class JsonActivity extends BaseActivity<JsonModel, ActivityJsonBinding> {
 
     private void openOptions(View view, JsonEntity entity) {
         PopupMenu popupMenu = new PopupMenu(context, view);
-        popupMenu.getMenuInflater().inflate(R.menu.url_more, popupMenu.getMenu());
+        popupMenu.getMenuInflater().inflate(R.menu.url_more_set, popupMenu.getMenu());
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
@@ -128,10 +130,18 @@ public class JsonActivity extends BaseActivity<JsonModel, ActivityJsonBinding> {
                     case R.id.edit:
                         editUrl(entity);
                         break;
+                    case R.id.index:
+                        indexJiexi(entity);
+                        break;
                 }
                 return true;
             }
         });
+    }
+
+    private void indexJiexi(JsonEntity entity) {
+        PreferencesUtils.putString(this, Constant.defaultCloud, "2||" + entity.getName() + "||" + entity.getUrl());
+        UiUtil.showToastSafe("设置成功");
     }
 
     private void editUrl(JsonEntity entity) {

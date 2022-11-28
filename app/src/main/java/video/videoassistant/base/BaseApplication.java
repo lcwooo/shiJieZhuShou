@@ -13,6 +13,7 @@ import com.tencent.smtt.sdk.WebView;
 
 import java.util.HashMap;
 
+import video.videoassistant.util.UiUtil;
 import xyz.doikki.videoplayer.BuildConfig;
 import xyz.doikki.videoplayer.ijk.IjkPlayerFactory;
 import xyz.doikki.videoplayer.player.VideoViewConfig;
@@ -104,7 +105,7 @@ public class BaseApplication extends Application {
              */
             @Override
             public void onViewInitFinished(boolean isX5) {
-                Log.i(TAG, "onViewInitFinished(是否x5): " + isX5);
+                UiUtil.showToastSafe("是否x5："+isX5);
                 // hint: you can use QbSdk.getX5CoreLoadHelp(context) anytime to get help.
             }
         });

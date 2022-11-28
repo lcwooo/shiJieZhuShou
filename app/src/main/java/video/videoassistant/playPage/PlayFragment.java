@@ -15,6 +15,7 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.UiUtil;
 import xyz.doikki.videocontroller.StandardVideoController;
 
 public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
