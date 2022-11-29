@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.azhon.basic.base.BaseFragment;
+import com.azhon.basic.utils.ActivityUtil;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
 import com.tencent.smtt.export.external.interfaces.WebResourceResponse;
@@ -33,15 +37,16 @@ import video.videoassistant.mainPage.FileCallBack;
 import video.videoassistant.net.Api;
 import video.videoassistant.net.ApiService;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.UiUtil;
 
 public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
     private static X5PlayFragment playFragment;
-    private WindowManager windowManager;
-    private View fullScreenLayer;
     private static final String TAG = "X5PlayFragment";
     private List<String> playArr = new ArrayList<>();
     private static final String mHomeUrl = "file:///android_asset/homePage.html";
+    private ViewGroup contentParentView;
+    View fullScreenView;
 
 
     public static X5PlayFragment getInstance(String url) {
@@ -74,7 +79,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
     @Override
     protected void initView() {
-        windowManager = getActivity().getWindowManager();
+
         initWeb();
         dataBinding.web.loadUrl(mHomeUrl);
         if (getArguments() != null) {
@@ -83,14 +88,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 dataBinding.web.loadUrl(url);
             }
         }
-        
-        dataBinding.web.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Log.i(TAG, "onLongClick: =====================");
-                return true;
-            }
-        });
 
 
 
@@ -136,25 +133,24 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
         dataBinding.web.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onShowCustomView(View view, IX5WebChromeClient.CustomViewCallback customViewCallback) {
-                windowManager.addView(view, new WindowManager.LayoutParams(WindowManager.LayoutParams.TYPE_APPLICATION));
-                fullScreen(view);
-                fullScreenLayer = view;
-                getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                UiUtil.showToastSafe("全屏");
+                contentParentView.addView(view);
+                fullScreenView = view;
                 if (getActivity().getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                     getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 }
+
             }
 
             @Override
             public void onHideCustomView() {
-                getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                UiUtil.showToastSafe("退出全屏");
+                contentParentView.removeView(fullScreenView);
                 if (getActivity().getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                     getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
-                windowManager.removeViewImmediate(fullScreenLayer);
-                fullScreenLayer = null;
             }
-            //onProgressChanged
+
 
 
             @Override
@@ -208,6 +204,9 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
     @Override
     protected void initData() {
+        contentParentView = getActivity().findViewById(android.R.id.content);
+
+
 
         LiveEventBus.get(Constant.playAddress, String.class)
                 .observe(this, new Observer<String>() {
