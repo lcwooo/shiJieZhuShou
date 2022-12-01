@@ -43,8 +43,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     //网页解析
     private HandleEntity handleEntity;
 
-    private boolean isX5;
-
 
     @Override
     protected PlayModel initViewModel() {
@@ -60,28 +58,11 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     protected void initView() {
         dataBinding.setView(this);
         movieBean = JSON.parseObject(getIntent().getStringExtra("json"), XmlMovieBean.class);
-        String json = PreferencesUtils.getString(this, Constant.defaultCloud, "");
-        if (!TextUtils.isEmpty(json)) {
-            String[] arr = json.split("\\|\\|");
-            int type = Integer.parseInt(arr[0]);
-            if (type == 1) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, PlayFragment.getInstance(""))
-                        .commit();
-                isX5 = false;
-            } else {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, X5PlayFragment.getInstance(""))
-                        .commit();
-                isX5 = true;
-            }
-        } else {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment, PlayFragment.getInstance(""))
-                    .commit();
-            isX5 = false;
-        }
-
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment, PlayFragment.getInstance(""))
+                .commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
+                .commit();
         if (movieBean != null) {
             dataBinding.name.setText(movieBean.getName());
             dataBinding.remark.setText(movieBean.getName().length() > 15 ?
@@ -137,18 +118,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
     private void initAddress() {
 
-        LiveEventBus.get(Constant.playAddress, String.class).post("https://jx.aidouer.net/?url=https://www.iqiyi.com/v_1qzx9b00hs4.html");
-
-
-        /*if (playUrl.contains(".m3u8")) {
-            if (isX5) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment, PlayFragment.getInstance(playUrl))
-                        .commit();
-                isX5 = false;
-            } else {
-                PlayFragment.getInstance(playUrl);
-            }
+        if (playUrl.contains(".m3u8")) {
+            PlayFragment.getInstance(playUrl);
             return;
         }
 
@@ -181,7 +152,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         }
 
 
-        handleAddress();*/
+        handleAddress();
 
     }
 
@@ -196,7 +167,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 LiveEventBus.get(Constant.playAddress, String.class).post(playUrl);
             } else {
                 UiUtil.showToastSafe("web");
-                LiveEventBus.get(Constant.playAddress, String.class).post(handleEntity.getUrl() + playUrl);
+                LiveEventBus.get(Constant.webUrlGo, String.class).post(handleEntity.getUrl() + playUrl);
             }
 
         } else {

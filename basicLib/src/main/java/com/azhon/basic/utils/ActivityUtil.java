@@ -34,7 +34,12 @@ public class ActivityUtil {
      * 得到前台Activity
      */
     public synchronized Activity getActivity() {
-        return stack.get(stack.size() - 1);
+        try {
+            return stack.get(stack.size() - 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

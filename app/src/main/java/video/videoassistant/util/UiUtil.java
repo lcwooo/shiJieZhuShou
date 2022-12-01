@@ -62,7 +62,7 @@ public class UiUtil {
                 Toast.makeText(a, str, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-
+            Log.i("haha", "showToast: is null");
         }
 
     }
