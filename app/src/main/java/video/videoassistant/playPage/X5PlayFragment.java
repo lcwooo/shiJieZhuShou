@@ -90,7 +90,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
         });
 
 
-
     }
 
     private void initWeb() {
@@ -113,13 +112,14 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-                Log.i(TAG, "shouldInterceptRequest: "+s);
+                Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))
                         && !s.contains("url=") && !s.contains(".ts")) {
-                    Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
                     if (!playArr.contains(s) && playArr.size() < 1) {
+                        Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
                         playArr.add(s);
-                        checkM3u8();
+                        //checkM3u8();
+                        stopLoad(s);
                     }
 
                 }
@@ -129,6 +129,9 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             @Override
             public void onPageFinished(WebView webView, String s) {
                 super.onPageFinished(webView, s);
+                if (dataBinding.web.getProgress() == 100) {
+                    Log.i(TAG, "onPageFinished: 加载完成");
+                }
             }
         });
         dataBinding.web.setWebChromeClient(new WebChromeClient() {
@@ -143,13 +146,27 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             }
 
 
-
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
+                if(i==100 && dataBinding.web.getProgress()==100){
+                    Log.i(TAG, "onProgressChanged: 加载完成");
+                }
             }
         });
     }
+
+    private void stopLoad(String s) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                dataBinding.web.loadUrl(mHomeUrl);
+                LiveEventBus.get(Constant.playAddress, String.class).post(s);
+                dismissDialog();
+            }
+        });
+    }
+
 
     private void checkM3u8() {
         String url = playArr.get(0);
@@ -200,6 +217,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
+                        showDialog("正在解析,如果长时间解析不出来,请更换解析...",true);
                         dataBinding.web.loadUrl(s);
                     }
                 });

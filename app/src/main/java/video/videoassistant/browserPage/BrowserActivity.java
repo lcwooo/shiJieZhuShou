@@ -231,6 +231,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
+                Log.i(TAG, "onProgressChanged: "+i);
                 if (i == 100) {
                     dataBinding.progressBar.setVisibility(View.GONE);//加载完网页进度条消失
                 } else {

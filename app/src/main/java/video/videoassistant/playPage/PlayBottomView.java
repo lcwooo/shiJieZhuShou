@@ -199,7 +199,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         }
 
 
-        Log.i(TAG, "setProgress: " + duration);
+
         if (mTotalTime != null)
             mTotalTime.setText(stringForTime(duration));
         if (mCurrTime != null)
