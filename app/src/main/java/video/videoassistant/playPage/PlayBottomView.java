@@ -24,10 +24,19 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import video.videoassistant.R;
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.UiUtil;
 import xyz.doikki.videoplayer.controller.ControlWrapper;
 import xyz.doikki.videoplayer.controller.IControlComponent;
 import xyz.doikki.videoplayer.player.VideoView;
@@ -38,7 +47,7 @@ import static xyz.doikki.videoplayer.util.PlayerUtils.stringForTime;
 public class PlayBottomView extends FrameLayout implements IControlComponent, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
 
-    private TextView mTotalTime, mCurrTime;
+    private TextView mTotalTime, mCurrTime, next, up, json, website, rate, push;
     private ImageView mFullScreen;
     private LinearLayout mBottomContainer;
     private SeekBar mVideoProgress;
@@ -47,6 +56,8 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
     private boolean mIsDragging;
     private static final String TAG = "PlayBottomView";
     private LinearLayout set;
+    public PlayModel model;
+
 
     public PlayBottomView(@NonNull Context context) {
         super(context);
@@ -65,6 +76,8 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
 
     public void initView() {
 
+        initData();
+
         setVisibility(GONE);
         LayoutInflater.from(getContext()).inflate(R.layout.view_play_bottom, this, true);
         mFullScreen = findViewById(R.id.fullscreen);
@@ -81,13 +94,30 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             mVideoProgress.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
-        set.setOnTouchListener(new OnTouchListener() {
+        next = findViewById(R.id.next);
+        up = findViewById(R.id.up);
+        json = findViewById(R.id.json);
+        website = findViewById(R.id.website);
+        rate = findViewById(R.id.rate);
+        push = findViewById(R.id.push);
+
+        next.setOnClickListener(this);
+        up.setOnClickListener(this::onClick);
+        json.setOnClickListener(this::onClick);
+        website.setOnClickListener(this::onClick);
+        rate.setOnClickListener(this::onClick);
+        push.setOnClickListener(this::onClick);
+
+    }
+
+    private void initData() {
+        LiveEventBus.get(Constant.playList, List.class).observe((LifecycleOwner) getContext(), new Observer<List>() {
             @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return true;
+            public void onChanged(List list) {
+                List<PlayBean> playBeans = list;
+                UiUtil.showToastSafe(playBeans.size() + "");
             }
         });
-
     }
 
     @Override
@@ -199,7 +229,6 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         }
 
 
-
         if (mTotalTime != null)
             mTotalTime.setText(stringForTime(duration));
         if (mCurrTime != null)
@@ -218,9 +247,24 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             toggleFullScreen();
         } else if (id == R.id.iv_play) {
             mControlWrapper.togglePlay();
+        } else if (id == R.id.next) {
+            setState(1);
+        } else if (id == R.id.up) {
+            setState(2);
+        } else if (id == R.id.json) {
+            setState(3);
+        } else if (id == R.id.website) {
+            setState(4);
+        } else if (id == R.id.rate) {
+            setState(5);
+        } else if (id == R.id.push) {
+            setState(6);
         }
     }
 
+    private void setState(int state) {
+        LiveEventBus.get(Constant.playState, Integer.class).post(state);
+    }
 
 
     @Override
@@ -266,5 +310,9 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             }
         }
 
+    }
+
+    public void setModel(PlayModel model) {
+        this.model = model;
     }
 }

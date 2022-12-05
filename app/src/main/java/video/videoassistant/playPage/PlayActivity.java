@@ -63,6 +63,25 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 .commit();
         getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
                 .commit();
+
+        showDialog("", false);
+        new CountDownTimer(1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                dismissDialog();
+                loadView();
+            }
+        }.start();
+
+
+    }
+
+    public void loadView() {
         if (movieBean != null) {
             dataBinding.name.setText(movieBean.getName());
             dataBinding.remark.setText(movieBean.getName().length() > 15 ?
@@ -77,8 +96,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 UiUtil.showToastSafe("数据异常");
             }
         }
-
-
     }
 
     private void initGroup(MovieItemBean movieItemBean) {
@@ -103,6 +120,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 playBeans.add(bean);
             }
         }
+
+        LiveEventBus.get(Constant.playList, List.class).post(playBeans);
         dataBinding.group.removeAllViews();
         PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
         dataBinding.group.setAdapter(adapter);
@@ -136,7 +155,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         if (!TextUtils.isEmpty(json)) {
             String[] arr = json.split("\\|\\|");
             int type = Integer.parseInt(arr[0]);
-            if (type == 1) {
+            if (type == 2) {
                 handleEntity = null;
                 JsonEntity entity = new JsonEntity();
                 entity.setName(arr[1]);
@@ -264,6 +283,21 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 LiveEventBus.get(Constant.playAddress, String.class).post(s);
             }
         });
+
+        viewModel.playState.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(Integer integer) {
+                UiUtil.showToastSafe(integer + "");
+            }
+        });
+
+        LiveEventBus.get(Constant.playState, Integer.class)
+                .observe(this, new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        UiUtil.showToastSafe(integer + "");
+                    }
+                });
     }
 
 

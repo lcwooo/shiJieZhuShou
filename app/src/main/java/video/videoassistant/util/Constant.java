@@ -15,4 +15,8 @@ public class Constant {
     public static final String defaultCloud = "defaultCloud";
 
     public static String webUrlGo = "webUrlGo";
+
+    public static String playState = "playState";
+    public static String playUrl = "playUrl";
+    public static String playList = "playList";
 }

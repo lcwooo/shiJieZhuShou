@@ -16,58 +16,95 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#4D000000"
-            android:orientation="horizontal"
-            android:paddingLeft="5dp"
-            android:paddingTop="5dp"
-            android:paddingRight="5dp">
+            android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/next"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/play_buttom"
                 android:gravity="center"
+                android:maxLines="1"
                 android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="下一集"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_12" />
 
             <TextView
+                android:id="@+id/up"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/play_buttom"
                 android:gravity="center"
+                android:maxLines="1"
                 android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="上一集"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_12" />
 
             <TextView
+                android:id="@+id/json"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/play_buttom"
                 android:gravity="center"
+                android:maxLines="1"
                 android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="Json解析"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dp_12" />
+
+            <TextView
+                android:id="@+id/website"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/play_buttom"
+                android:gravity="center"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:text="网页解析"
+                android:textColor="@color/white"
+                android:textSize="@dimen/dp_12" />
+
+            <TextView
+                android:id="@+id/rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/play_buttom"
+                android:gravity="center"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="x1.0"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_12" />
 
+
             <TextView
+                android:id="@+id/push"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/play_buttom"
                 android:gravity="center"
+                android:maxLines="1"
                 android:padding="5dp"
-                android:text="自适应"
-                android:textColor="@color/white"
-                android:textSize="@dimen/dp_12" />
-
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:text="投屏"
                 android:textColor="@color/white"
                 android:textSize="@dimen/dp_12" />

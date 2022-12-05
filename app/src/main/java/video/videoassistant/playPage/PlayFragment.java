@@ -77,6 +77,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             }
         });
         PlayBottomView vodControlView = new PlayBottomView(context);
+        vodControlView.setModel(viewModel);
         controller.addControlComponent(vodControlView);
         controller.addDefaultControlComponent("", false);
         dataBinding.player.setVideoController(controller); //设置控制器

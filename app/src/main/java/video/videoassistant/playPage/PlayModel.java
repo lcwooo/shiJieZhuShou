@@ -31,6 +31,7 @@ public class PlayModel extends BaseViewModel{
     public MutableLiveData<List<JsonEntity>> jsonList = new MutableLiveData<>();
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
     public MutableLiveData<String> playAddress = new MutableLiveData<>();
+    public MutableLiveData<Integer> playState = new MutableLiveData<>();
 
     public PlayModel() {
         jsonDao = BaseRoom.getInstance(BaseApplication.getContext()).getJsonDao();

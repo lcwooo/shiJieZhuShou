@@ -139,7 +139,7 @@ public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBind
     }
 
     private void indexJiexi(HandleEntity entity) {
-        PreferencesUtils.putString(this, Constant.defaultCloud, "2||" + entity.getName() + "||" + entity.getUrl());
+        PreferencesUtils.putString(this, Constant.defaultCloud, "1||" + entity.getName() + "||" + entity.getUrl());
         UiUtil.showToastSafe("设置成功");
     }
 

@@ -81,15 +81,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             }
         }
 
-        dataBinding.web.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Log.i(TAG, "onLongClick: =====================");
-                return true;
-            }
-        });
-
-
     }
 
     private void initWeb() {
@@ -114,7 +105,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
                 Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))
-                        && !s.contains("url=") && !s.contains(".ts")) {
+                        ) {
                     if (!playArr.contains(s) && playArr.size() < 1) {
                         Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
                         playArr.add(s);
@@ -217,7 +208,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        showDialog("正在解析,如果长时间解析不出来,请更换解析...",true);
+                        showDialog("正在解析...",true);
                         dataBinding.web.loadUrl(s);
                     }
                 });
