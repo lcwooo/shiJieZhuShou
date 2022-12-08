@@ -72,6 +72,8 @@
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
+
+        <service android:name="com.android.cast.dlna.dmc.DLNACastService"/>
     </application>
 
 </manifest>

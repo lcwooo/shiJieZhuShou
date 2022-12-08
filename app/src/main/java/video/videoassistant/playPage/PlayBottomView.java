@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import video.videoassistant.R;
+import video.videoassistant.base.BaseApplication;
+import video.videoassistant.me.handleManage.HandleEntity;
+import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 import xyz.doikki.videoplayer.controller.ControlWrapper;
@@ -75,7 +78,6 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
 
     {
         initData();
-
         setVisibility(GONE);
         LayoutInflater.from(getContext()).inflate(getLayoutId(), this, true);
         mFullScreen = findViewById(R.id.fullscreen);
@@ -109,7 +111,6 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         rate.setOnClickListener(this::onClick);
         push.setOnClickListener(this::onClick);
     }
-
 
 
     private void initData() {
@@ -313,20 +314,75 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             mControlWrapper.togglePlay();
         } else if (id == R.id.speed) {
             initSpeedView();
-        }else if (id == R.id.next) {
+        } else if (id == R.id.next) {
             setState(1);
         } else if (id == R.id.up) {
             setState(2);
         } else if (id == R.id.json) {
-            setState(3);
+            initJsonView(json);
         } else if (id == R.id.website) {
-            setState(4);
+            initWebView(website);
         } else if (id == R.id.rate) {
-            //setState(5);
             initSpeedView();
         } else if (id == R.id.push) {
             setState(6);
         }
+    }
+
+    private void initWebView(TextView website) {
+        if (UiUtil.listIsEmpty(BaseApplication.getInstance().getHandleEntities())) {
+            UiUtil.showToastSafe("您没有添加任何json解析接口");
+            return;
+        }
+        List<HandleEntity> list = BaseApplication.getInstance().getHandleEntities();
+        PopupMenu popupMenu = new PopupMenu(getContext(), website);
+        android.view.Menu menu_more = popupMenu.getMenu();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            menu_more.add(android.view.Menu.NONE, android.view.Menu.FIRST + i, i,
+                    UiUtil.getMaxLength(list.get(i).getName(), 4));
+
+        }
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int i = item.getItemId();
+                LiveEventBus.get(Constant.selectJiexi, Object.class)
+                        .post(list.get(i - 1));
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    private void initJsonView(View view) {
+        if (UiUtil.listIsEmpty(BaseApplication.getInstance().getJsonEntities())) {
+            UiUtil.showToastSafe("您没有添加任何json解析接口");
+            return;
+        }
+        List<JsonEntity> list = BaseApplication.getInstance().getJsonEntities();
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        android.view.Menu menu_more = popupMenu.getMenu();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            menu_more.add(android.view.Menu.NONE, android.view.Menu.FIRST + i, i,
+                    UiUtil.getMaxLength(list.get(i).getName(), 4));
+
+        }
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int i = item.getItemId();
+                LiveEventBus.get(Constant.selectJiexi, Object.class)
+                        .post(list.get(i - 1));
+                return true;
+            }
+        });
+
+        popupMenu.show();
     }
 
     private void setState(int state) {

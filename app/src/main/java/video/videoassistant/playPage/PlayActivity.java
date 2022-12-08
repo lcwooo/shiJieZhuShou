@@ -1,26 +1,38 @@
 package video.videoassistant.playPage;
 
-import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.alibaba.fastjson.JSON;
+import com.android.cast.dlna.dmc.DLNACastManager;
+import com.android.cast.dlna.dmc.OnDeviceRegistryListener;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import org.fourthline.cling.model.meta.Device;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.schedulers.Schedulers;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
-import video.videoassistant.cloudPage.CenterLayoutManager;
+import video.videoassistant.base.BaseApplication;
 import video.videoassistant.cloudPage.MovieItemBean;
 import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.databinding.ActivityPlayBinding;
@@ -45,6 +57,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     private HandleEntity handleEntity;
 
     List<PlayBean> playBeans;
+    private boolean isCanDlna = false;
 
 
     @Override
@@ -67,7 +80,27 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
                 .commit();
         loadView();
+        loadDlna();
+    }
 
+    private void loadDlna() {
+        DLNACastManager.getInstance().registerDeviceListener(new OnDeviceRegistryListener() {
+            @Override
+            public void onDeviceAdded(Device<?, ?, ?> device) {
+                String name = device.getDetails().getFriendlyName();
+                Log.i(TAG, "onDeviceAdded: " + name);
+            }
+
+            @Override
+            public void onDeviceUpdated(Device<?, ?, ?> device) {
+
+            }
+
+            @Override
+            public void onDeviceRemoved(Device<?, ?, ?> device) {
+
+            }
+        });
     }
 
     public void loadView() {
@@ -250,6 +283,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 if (UiUtil.listIsEmpty(jsonEntities)) {
                     jsonEntity = null;
                 } else {
+                    BaseApplication.getInstance().setJsonEntities(jsonEntities);
                     jsonEntity = jsonEntities.get(0);
                 }
                 viewModel.getHandleList();
@@ -262,6 +296,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 if (UiUtil.listIsEmpty(handleEntities)) {
                     handleEntity = null;
                 } else {
+                    BaseApplication.getInstance().setHandleEntities(handleEntities);
                     handleEntity = handleEntities.get(0);
                 }
             }
@@ -271,6 +306,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             @Override
             public void onChanged(String s) {
                 LiveEventBus.get(Constant.playAddress, String.class).post(s);
+                downM3u8(s);
             }
         });
 
@@ -289,9 +325,113 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                             nextPlay();
                         } else if (integer == 2) {
                             upPlay();
+                        } else if (integer == 6) {
+                            if (TextUtils.isEmpty(UiUtil.getWifiIP(context))) {
+                                UiUtil.showToastSafe("请先打开wifi");
+                                return;
+                            }
+                            dlna();
                         }
                     }
                 });
+
+
+        LiveEventBus.get(Constant.selectJiexi, Object.class)
+                .observe(this, new Observer<Object>() {
+
+                    public void onChanged(Object o) {
+                        if (o instanceof JsonEntity) {
+                            handleEntity = null;
+                            jsonEntity = (JsonEntity) o;
+                            handleAddress();
+                        }
+
+                        if (o instanceof HandleEntity) {
+                            jsonEntity = null;
+                            handleEntity = (HandleEntity) o;
+                            handleAddress();
+                        }
+                    }
+                });
+
+        LiveEventBus.get(Constant.dlnaUrl, String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (s.equals("ok")) {
+                    isCanDlna = true;
+                } else {
+                    isCanDlna = false;
+                }
+            }
+        });
+
+        LiveEventBus.get(Constant.dlnaPlay, Device.class)
+                .observe(this, new Observer<Device>() {
+                    @Override
+                    public void onChanged(Device device) {
+                        UiUtil.showToastSafe(device.getDetails().getFriendlyName());
+                        //http://192.168.0.28:8080/webPlay.m3u8
+                        if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
+                            DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+                        } else {
+                            String playUrl = "";
+                            if (isCanDlna) {
+                                playUrl = UiUtil.getWifiIP(context) + ":8080/webPlay.m3u8";
+                            } else {
+                                playUrl = PlayFragment.getInstance("").getPlayUrl();
+                            }
+                            UiUtil.showToastSafe(playUrl);
+                            //DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+                        }
+                    }
+                });
+    }
+
+    private void downM3u8(String s) {
+        String url = s;
+        if (url.contains(".mp4") || url.contains("233dy")) {
+            return;
+        }
+
+        Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(@NonNull ObservableEmitter<String> emitter) {
+                try {
+                    HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+                    String fs = getExternalFilesDir("playList").getAbsolutePath() + "/webPlay.m3u8";
+                    InputStream input = conn.getInputStream();
+                    String str = "";
+                    if (conn.getResponseCode() == 200) {
+                        int index;
+                        byte[] bytes = new byte[1024];
+                        FileOutputStream downloadFile = new FileOutputStream(fs);
+                        while ((index = input.read(bytes)) != -1) {
+                            str += new String(bytes, 0, index);
+                            downloadFile.write(bytes, 0, index);
+                            downloadFile.flush();
+                        }
+                        input.close();
+                        downloadFile.close();
+                        if (str.contains("https://") || str.contains("http://")) {
+                            LiveEventBus.get(Constant.dlnaUrl, String.class).post("ok");
+                        } else {
+                            LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
+                        }
+                        Log.i(TAG, "dowmM3U8a: 下载完成" + fs);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
+                }
+            }
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+
+    }
+
+    private void dlna() {
+        DlnaDialog dlnaDialog = new DlnaDialog(context);
+        dlnaDialog.show();
     }
 
     private void upPlay() {
@@ -344,5 +484,16 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         return 0;
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        DLNACastManager.getInstance().bindCastService(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        DLNACastManager.getInstance().unbindCastService(this);
+    }
 
 }

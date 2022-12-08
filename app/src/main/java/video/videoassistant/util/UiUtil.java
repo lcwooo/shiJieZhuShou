@@ -2,6 +2,8 @@ package video.videoassistant.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -121,10 +123,10 @@ public class UiUtil {
 
 
     public static String handleUrl(String url) {
-        if(url.contains("html?")){
-            url = url.substring(0,url.indexOf("?"));
+        if (url.contains("html?")) {
+            url = url.substring(0, url.indexOf("?"));
         }
-        Log.i("BrowserActivity", "handleUrl(尾巴处理): "+url);
+        Log.i("BrowserActivity", "handleUrl(尾巴处理): " + url);
         try {
             if (url.contains("m.mgtv.com")) {
                 return url.replace("m.mgtv.com", "www.mgtv.com");
@@ -153,8 +155,29 @@ public class UiUtil {
             UiUtil.showToastSafe(e.getMessage());
             return url;
         }
-        Log.i("BrowserActivity", "handleUrl(处理后): "+url);
+        Log.i("BrowserActivity", "handleUrl(处理后): " + url);
         return url;
+    }
+
+    public static String getMaxLength(String s, int max) {
+        if (s.length() < max) {
+            return s;
+        } else {
+            return s.substring(0, max);
+        }
+    }
+
+    public static String getWifiIP(Context context) {
+        String ip = null;
+        WifiManager wifiManager = (WifiManager) context
+                .getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager.isWifiEnabled()) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int i = wifiInfo.getIpAddress();
+            ip = (i & 0xFF) + "." + ((i >> 8) & 0xFF) + "." + ((i >> 16) & 0xFF)
+                    + "." + (i >> 24 & 0xFF);
+        }
+        return ip;
     }
 
 

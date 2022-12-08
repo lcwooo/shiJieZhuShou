@@ -3,7 +3,6 @@ package video.videoassistant.playPage;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.Observer;
@@ -15,12 +14,14 @@ import com.jeremyliao.liveeventbus.LiveEventBus;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
-import video.videoassistant.util.UiUtil;
-import xyz.doikki.videocontroller.StandardVideoController;
+
+import xyz.doikki.videoplayer.player.BaseVideoView;
+import xyz.doikki.videoplayer.player.VideoView;
 
 public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
 
     public static PlayFragment playFragment;
+    public String playUrl;
 
     @Override
     protected PlayModel initViewModel() {
@@ -64,10 +65,10 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     private void initPlay() {
-        //dataBinding.player.setUrl("https://hnzy.bfvvs.com/play/penR36le/index.m3u8"); //设置视频地址
         StandardVideoController controller = new StandardVideoController(context);
         TitleView titleView = new TitleView(context);
         controller.addControlComponent(titleView);
+        controller.addControlComponent(new ErrorPlayView(context));//错误界面
         RightControlView rightControlView = new RightControlView(context);
         controller.addControlComponent(rightControlView);
         titleView.getMovieSet(new MovieSet() {
@@ -78,9 +79,27 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         });
         PlayBottomView vodControlView = new PlayBottomView(context);
         controller.addControlComponent(vodControlView);
-        controller.addDefaultControlComponent("", false);
+        controller.addDefaultControlComponent(false);
         dataBinding.player.setVideoController(controller); //设置控制器
         //dataBinding.player.start(); //开始播放，不调用则不自动播放
+        dataBinding.player.addOnStateChangeListener(new BaseVideoView.OnStateChangeListener() {
+            @Override
+            public void onPlayerStateChanged(int playerState) {
+
+            }
+
+            @Override
+            public void onPlayStateChanged(int playState) {
+                switch (playState) {
+                    case VideoView.STATE_ERROR:
+
+                        break;
+                    case VideoView.STATE_PLAYING:
+
+                        break;
+                }
+            }
+        });
     }
 
     @Override
@@ -98,6 +117,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     public void play(String url) {
+        playUrl = url;
         if (dataBinding.player != null) {
             dataBinding.player.release();
             dataBinding.player.setUrl(url);
@@ -137,4 +157,8 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             }
         }
     };
+
+    public String getPlayUrl() {
+        return playUrl;
+    }
 }

@@ -1,12 +1,9 @@
 package video.videoassistant.playPage;
 
-import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,18 +17,16 @@ import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
-import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.ResponseBody;
-import retrofit2.Retrofit;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentX5Binding;
-import video.videoassistant.mainPage.DownService;
-import video.videoassistant.mainPage.FileCallBack;
-import video.videoassistant.net.Api;
-import video.videoassistant.net.ApiService;
 import video.videoassistant.util.Constant;
 
 public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
@@ -42,17 +37,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
     private static final String mHomeUrl = "file:///android_asset/homePage.html";
 
 
-    public static X5PlayFragment getInstance(String url) {
-        Bundle args = new Bundle();
-        args.putString("url", url);
-        if (playFragment == null) {
-            playFragment = new X5PlayFragment();
-        } else {
-            LiveEventBus.get(Constant.playAddress, String.class).post(url);
-        }
-        playFragment.setArguments(args);
-        return playFragment;
-    }
 
 
     @Override
@@ -103,13 +87,11 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-                Log.i(TAG, "shouldInterceptRequest: " + s);
-                if ((s.contains("m3u8") || s.contains(".mp4"))
-                        ) {
+                if ((s.contains("m3u8") || s.contains(".mp4"))) {
                     if (!playArr.contains(s) && playArr.size() < 1) {
                         Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
                         playArr.add(s);
-                        //checkM3u8();
+                        checkM3u8();
                         stopLoad(s);
                     }
 
@@ -140,7 +122,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
-                if(i==100 && dataBinding.web.getProgress()==100){
+                if (i == 100 && dataBinding.web.getProgress() == 100) {
                     Log.i(TAG, "onProgressChanged: 加载完成");
                 }
             }
@@ -161,45 +143,41 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
     private void checkM3u8() {
         String url = playArr.get(0);
-        if (url.contains(".mp4")) {
+        if (url.contains(".mp4") || url.contains("233dy")) {
             return;
         }
-        Log.i(TAG, "checkM3u8: " + url);
-        String fs = getActivity().getExternalFilesDir("playList").getAbsolutePath();
-        Log.i(TAG, "m3u8Down: " + fs);
-        String downName = "x5Play.m3u8";
-        new Retrofit.Builder().client(new Api().setClient())
-                .baseUrl(ApiService.URL)
-                .build()
-                .create(DownService.class)
-                .downloadFile(url)//可以是完整的地址，也可以是baseurl后面的动态地址
-                .enqueue(new FileCallBack(fs.toString(), downName) {
-                    @Override
-                    public void onSuccess(File file, Progress progress) {
-                        if (progress.status == 5) {
-                            Log.i(TAG, "onSuccess: 下载完成");
-                        }
-                    }
 
-                    @Override
-                    public void onProgress(Progress progress) {
 
-                    }
+        try {
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            String fs = getActivity().getExternalFilesDir("playList").getAbsolutePath() + "/webPlay.m3u8";
+            InputStream input = conn.getInputStream();
+            String str = "";
+            if (conn.getResponseCode() == 200) {
+                int index;
+                byte[] bytes = new byte[1024];
+                FileOutputStream downloadFile = new FileOutputStream(fs);
+                while ((index = input.read(bytes)) != -1) {
+                    str += new String(bytes, 0, index);
+                    downloadFile.write(bytes, 0, index);
+                    downloadFile.flush();
+                }
+                input.close();
+                downloadFile.close();
+                if (str.contains("https://") || str.contains("http://")) {
+                    LiveEventBus.get(Constant.dlnaUrl, String.class).post("ok");
+                }else {
+                    LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
+                }
+                Log.i(TAG, "dowmM3U8a: 下载完成" + fs);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
+        }
 
-                    @Override
-                    public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
-                        Log.i(TAG, "onFailure: " + t.getMessage());
-                    }
-                });
     }
 
-    private void fullScreen(View view) {
-        view.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
 
     @Override
     protected void initData() {
@@ -208,7 +186,8 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        showDialog("正在解析...",true);
+                        showDialog("正在解析...", true);
+                        LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
                         dataBinding.web.loadUrl(s);
                     }
                 });

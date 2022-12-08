@@ -11,8 +11,12 @@ import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.TbsListener;
 import com.tencent.smtt.sdk.WebView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
+import video.videoassistant.me.handleManage.HandleEntity;
+import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.util.UiUtil;
 import xyz.doikki.videoplayer.BuildConfig;
 import xyz.doikki.videoplayer.ijk.IjkPlayerFactory;
@@ -34,6 +38,10 @@ public class BaseApplication extends Application {
     private static int mMainThreadId = -1;
 
     private static BaseApplication application;
+
+    //解析
+    List<JsonEntity> jsonEntities;
+    List<HandleEntity> handleEntities;
 
 
     @Override
@@ -160,5 +168,19 @@ public class BaseApplication extends Application {
         return false;
     }
 
+    public List<JsonEntity> getJsonEntities() {
+        return jsonEntities;
+    }
 
+    public void setJsonEntities(List<JsonEntity> jsonEntities) {
+        this.jsonEntities = jsonEntities;
+    }
+
+    public List<HandleEntity> getHandleEntities() {
+        return handleEntities;
+    }
+
+    public void setHandleEntities(List<HandleEntity> handleEntities) {
+        this.handleEntities = handleEntities;
+    }
 }

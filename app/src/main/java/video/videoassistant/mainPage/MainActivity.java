@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.cast.dlna.dmc.DLNACastManager;
 import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.task.DownloadTask;
@@ -66,12 +67,16 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     }
 
     private void startWeb() {
-        Server server = AndServer.webServer(this)
-                .port(8080)
-                .timeout(10, TimeUnit.SECONDS)
-                .build();
-
-        server.startup();
+        try {
+            Server server = AndServer.webServer(this)
+                    .port(8080)
+                    .timeout(10, TimeUnit.SECONDS)
+                    .build();
+            server.startup();
+        } catch (Exception e) {
+            e.printStackTrace();
+            UiUtil.showToastSafe("本地服务端口启动异常");
+        }
     }
 
     private void checkPermissions() {
@@ -245,4 +250,6 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     protected void running(DownloadTask task) {
         Log.i(TAG, "running: " + task.getPercent());
     }
+
+
 }
