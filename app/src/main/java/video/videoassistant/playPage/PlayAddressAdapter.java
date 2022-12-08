@@ -1,19 +1,22 @@
 package video.videoassistant.playPage;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import video.videoassistant.R;
+import video.videoassistant.util.UiUtil;
 import video.videoassistant.viewUtil.TagFlowAdapter;
 
 
 public class PlayAddressAdapter extends TagFlowAdapter {
 
 
-
+    private static final String TAG = "PlayAddressAdapter";
     List<PlayBean> types;
     private Context mContext;
 
@@ -38,11 +41,13 @@ public class PlayAddressAdapter extends TagFlowAdapter {
     }
 
     private OnItemClickListener mListener;
-    public void setOnItemClickListener(OnItemClickListener li){
+
+    public void setOnItemClickListener(OnItemClickListener li) {
         mListener = li;
     }
-    public interface OnItemClickListener{
-        void onItemClick(String typeId,String typeName);
+
+    public interface OnItemClickListener {
+        void onItemClick(String typeId, String typeName);
     }
 
 
@@ -54,12 +59,14 @@ public class PlayAddressAdapter extends TagFlowAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mListener!=null){
-                    mListener.onItemClick("",
+                if (mListener != null) {
+                    mListener.onItemClick(position + "",
                             types.get(position).getUrl());
                 }
             }
         });
         return view;
     }
+
+
 }

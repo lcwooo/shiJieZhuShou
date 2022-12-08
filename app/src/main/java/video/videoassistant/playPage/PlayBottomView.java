@@ -47,41 +47,40 @@ import static xyz.doikki.videoplayer.util.PlayerUtils.stringForTime;
 public class PlayBottomView extends FrameLayout implements IControlComponent, View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
 
+    protected ControlWrapper mControlWrapper;
     private TextView mTotalTime, mCurrTime, next, up, json, website, rate, push;
     private ImageView mFullScreen;
     private LinearLayout mBottomContainer;
     private SeekBar mVideoProgress;
+    private ProgressBar mBottomProgress;
     private ImageView mPlayButton;
-    protected ControlWrapper mControlWrapper;
+    private TextView speed;
+    private static final String TAG = "VodControlView";
     private boolean mIsDragging;
-    private static final String TAG = "PlayBottomView";
-    private LinearLayout set;
-    public PlayModel model;
+    private boolean mIsShowBottomProgress = true;
 
 
     public PlayBottomView(@NonNull Context context) {
         super(context);
-        initView();
     }
 
     public PlayBottomView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initView();
     }
 
     public PlayBottomView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView();
     }
 
-    public void initView() {
 
+    {
         initData();
 
         setVisibility(GONE);
-        LayoutInflater.from(getContext()).inflate(R.layout.view_play_bottom, this, true);
+        LayoutInflater.from(getContext()).inflate(getLayoutId(), this, true);
         mFullScreen = findViewById(R.id.fullscreen);
         mFullScreen.setOnClickListener(this);
+        speed = findViewById(R.id.speed);
         mBottomContainer = findViewById(R.id.bottom_container);
         mVideoProgress = findViewById(R.id.seekBar);
         mVideoProgress.setOnSeekBarChangeListener(this);
@@ -89,11 +88,13 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         mCurrTime = findViewById(R.id.curr_time);
         mPlayButton = findViewById(R.id.iv_play);
         mPlayButton.setOnClickListener(this);
-        set = findViewById(R.id.set);
+        mBottomProgress = findViewById(R.id.bottom_progress);
+        speed.setOnClickListener(this);
         //5.1以下系统SeekBar高度需要设置成WRAP_CONTENT
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
             mVideoProgress.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         }
+
         next = findViewById(R.id.next);
         up = findViewById(R.id.up);
         json = findViewById(R.id.json);
@@ -107,26 +108,59 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         website.setOnClickListener(this::onClick);
         rate.setOnClickListener(this::onClick);
         push.setOnClickListener(this::onClick);
-
     }
 
+
+
     private void initData() {
-        LiveEventBus.get(Constant.playList, List.class).observe((LifecycleOwner) getContext(), new Observer<List>() {
+
+        LiveEventBus.get(Constant.playUrl, String.class).observe((LifecycleOwner) getContext(), new Observer<String>() {
             @Override
-            public void onChanged(List list) {
-                List<PlayBean> playBeans = list;
-                UiUtil.showToastSafe(playBeans.size() + "");
+            public void onChanged(String s) {
+                if (s.contains(".m3u8")) {
+                    isM3u8(true);
+                } else {
+                    isM3u8(false);
+                }
             }
         });
     }
 
+
+    public void isM3u8(boolean is) {
+        if (is) {
+            next.setVisibility(VISIBLE);
+            up.setVisibility(VISIBLE);
+            json.setVisibility(GONE);
+            website.setVisibility(GONE);
+            rate.setVisibility(VISIBLE);
+            push.setVisibility(VISIBLE);
+        } else {
+            next.setVisibility(VISIBLE);
+            up.setVisibility(VISIBLE);
+            json.setVisibility(VISIBLE);
+            website.setVisibility(VISIBLE);
+            rate.setVisibility(VISIBLE);
+            push.setVisibility(VISIBLE);
+        }
+    }
+
+    protected int getLayoutId() {
+        return R.layout.view_play_bottom;
+    }
+
+    /**
+     * 是否显示底部进度条，默认显示
+     */
+    public void showBottomProgress(boolean isShow) {
+        mIsShowBottomProgress = isShow;
+    }
+
     @Override
-    public void attach(@NonNull @NotNull ControlWrapper controlWrapper) {
+    public void attach(@NonNull ControlWrapper controlWrapper) {
         mControlWrapper = controlWrapper;
     }
 
-    @Nullable
-    @org.jetbrains.annotations.Nullable
     @Override
     public View getView() {
         return this;
@@ -134,20 +168,28 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
 
     @Override
     public void onVisibilityChanged(boolean isVisible, Animation anim) {
-
-
         if (isVisible) {
+            Log.i(TAG, "onVisibilityChanged: " + isVisible);
             mBottomContainer.setVisibility(VISIBLE);
             if (anim != null) {
                 mBottomContainer.startAnimation(anim);
             }
+            if (mIsShowBottomProgress) {
+                mBottomProgress.setVisibility(GONE);
+            }
         } else {
+            Log.i(TAG, "onVisibilityChanged: " + isVisible);
             mBottomContainer.setVisibility(GONE);
             if (anim != null) {
                 mBottomContainer.startAnimation(anim);
             }
+            if (mIsShowBottomProgress) {
+                mBottomProgress.setVisibility(VISIBLE);
+                AlphaAnimation animation = new AlphaAnimation(0f, 1f);
+                animation.setDuration(300);
+                mBottomProgress.startAnimation(animation);
+            }
         }
-
     }
 
     @Override
@@ -156,6 +198,8 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             case VideoView.STATE_IDLE:
             case VideoView.STATE_PLAYBACK_COMPLETED:
                 setVisibility(GONE);
+                mBottomProgress.setProgress(0);
+                mBottomProgress.setSecondaryProgress(0);
                 mVideoProgress.setProgress(0);
                 mVideoProgress.setSecondaryProgress(0);
                 break;
@@ -167,6 +211,17 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
                 break;
             case VideoView.STATE_PLAYING:
                 mPlayButton.setSelected(true);
+                if (mIsShowBottomProgress) {
+                    if (mControlWrapper.isShowing()) {
+                        mBottomProgress.setVisibility(GONE);
+                        mBottomContainer.setVisibility(VISIBLE);
+                    } else {
+                        mBottomContainer.setVisibility(GONE);
+                        mBottomProgress.setVisibility(VISIBLE);
+                    }
+                } else {
+                    mBottomContainer.setVisibility(GONE);
+                }
                 setVisibility(VISIBLE);
                 //开始刷新进度
                 mControlWrapper.startProgress();
@@ -198,10 +253,13 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             int cutoutHeight = mControlWrapper.getCutoutHeight();
             if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
                 mBottomContainer.setPadding(0, 0, 0, 0);
+                mBottomProgress.setPadding(0, 0, 0, 0);
             } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                 mBottomContainer.setPadding(cutoutHeight, 0, 0, 0);
+                mBottomProgress.setPadding(cutoutHeight, 0, 0, 0);
             } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
                 mBottomContainer.setPadding(0, 0, cutoutHeight, 0);
+                mBottomProgress.setPadding(0, 0, cutoutHeight, 0);
             }
         }
     }
@@ -217,22 +275,28 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
                 mVideoProgress.setEnabled(true);
                 int pos = (int) (position * 1.0 / duration * mVideoProgress.getMax());
                 mVideoProgress.setProgress(pos);
+                mBottomProgress.setProgress(pos);
             } else {
                 mVideoProgress.setEnabled(false);
             }
             int percent = mControlWrapper.getBufferedPercentage();
             if (percent >= 95) { //解决缓冲进度不能100%问题
                 mVideoProgress.setSecondaryProgress(mVideoProgress.getMax());
+                mBottomProgress.setSecondaryProgress(mBottomProgress.getMax());
             } else {
                 mVideoProgress.setSecondaryProgress(percent * 10);
+                mBottomProgress.setSecondaryProgress(percent * 10);
             }
         }
-
 
         if (mTotalTime != null)
             mTotalTime.setText(stringForTime(duration));
         if (mCurrTime != null)
             mCurrTime.setText(stringForTime(position));
+    }
+
+    public String getTime() {
+        return mCurrTime.getText().toString();
     }
 
     @Override
@@ -247,7 +311,9 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             toggleFullScreen();
         } else if (id == R.id.iv_play) {
             mControlWrapper.togglePlay();
-        } else if (id == R.id.next) {
+        } else if (id == R.id.speed) {
+            initSpeedView();
+        }else if (id == R.id.next) {
             setState(1);
         } else if (id == R.id.up) {
             setState(2);
@@ -256,27 +322,67 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         } else if (id == R.id.website) {
             setState(4);
         } else if (id == R.id.rate) {
-            setState(5);
+            //setState(5);
+            initSpeedView();
         } else if (id == R.id.push) {
             setState(6);
         }
     }
 
     private void setState(int state) {
+        mControlWrapper.stopFadeOut();
         LiveEventBus.get(Constant.playState, Integer.class).post(state);
+        mControlWrapper.startFadeOut();
     }
 
+    private void initSpeedView() {
+        PopupMenu popupMenu = new PopupMenu(getContext(), rate);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_sign_a, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.s) {
+                    mControlWrapper.setSpeed((float) 0.5);
+                } else if (item.getItemId() == R.id.x) {
+                    mControlWrapper.setSpeed((float) 1);
+                } else if (item.getItemId() == R.id.xs) {
+                    mControlWrapper.setSpeed((float) 1.5);
+                } else if (item.getItemId() == R.id.xx) {
+                    mControlWrapper.setSpeed((float) 2);
+                } else if (item.getItemId() == R.id.xss) {
+                    mControlWrapper.setSpeed((float) 1.25);
+                } else if (item.getItemId() == R.id.xsss) {
+                    mControlWrapper.setSpeed((float) 1.75);
+                }
 
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (!fromUser) {
-            return;
+                if (rate != null) {
+                    if (mControlWrapper.getSpeed() == 1.0) {
+                        rate.setText("正常");
+                    } else {
+                        rate.setText("x" + String.valueOf(mControlWrapper.getSpeed()));
+                    }
+                }
+
+                return true;
+            }
+        });
+    }
+
+    /**
+     * 横竖屏切换
+     */
+    private void toggleFullScreen() {
+        Activity activity = PlayerUtils.scanForActivity(getContext());
+        if (mControlWrapper.isPlaying()) {
+            int[] arr = mControlWrapper.getVideoSize();
+            if (arr[1] > arr[0]) {
+                mControlWrapper.toggleFullScreen();
+            } else {
+                mControlWrapper.toggleFullScreen(activity);
+            }
         }
 
-        long duration = mControlWrapper.getDuration();
-        long newPosition = (duration * progress) / mVideoProgress.getMax();
-        if (mCurrTime != null)
-            mCurrTime.setText(stringForTime((int) newPosition));
     }
 
     @Override
@@ -296,23 +402,15 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         mControlWrapper.startFadeOut();
     }
 
-    /**
-     * 横竖屏切换
-     */
-    private void toggleFullScreen() {
-        Activity activity = PlayerUtils.scanForActivity(getContext());
-        if (mControlWrapper.isPlaying()) {
-            int[] arr = mControlWrapper.getVideoSize();
-            if (arr[1] > arr[0]) {
-                mControlWrapper.toggleFullScreen();
-            } else {
-                mControlWrapper.toggleFullScreen(activity);
-            }
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (!fromUser) {
+            return;
         }
 
-    }
-
-    public void setModel(PlayModel model) {
-        this.model = model;
+        long duration = mControlWrapper.getDuration();
+        long newPosition = (duration * progress) / mVideoProgress.getMax();
+        if (mCurrTime != null)
+            mCurrTime.setText(stringForTime((int) newPosition));
     }
 }

@@ -176,6 +176,17 @@
                 android:src="@drawable/dkplayer_selector_full_screen_button" />
         </LinearLayout>
 
+
+        <ProgressBar
+            android:id="@+id/bottom_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom"
+            android:max="1000"
+            android:progressDrawable="@drawable/dkplayer_layer_progress_bar"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 

@@ -2,6 +2,7 @@ package video.videoassistant.playPage;
 
 import android.os.CountDownTimer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -43,6 +44,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     //网页解析
     private HandleEntity handleEntity;
 
+    List<PlayBean> playBeans;
+
 
     @Override
     protected PlayModel initViewModel() {
@@ -63,21 +66,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 .commit();
         getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
                 .commit();
-
-        showDialog("", false);
-        new CountDownTimer(1000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            @Override
-            public void onFinish() {
-                dismissDialog();
-                loadView();
-            }
-        }.start();
-
+        loadView();
 
     }
 
@@ -101,7 +90,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     private void initGroup(MovieItemBean movieItemBean) {
         String from = movieItemBean.getPlayUrl();
 
-        List<PlayBean> playBeans = new ArrayList<>();
+        playBeans = new ArrayList<>();
         if (from.contains("#")) {
             String[] arr = from.split("#");
             for (String a : arr) {
@@ -120,8 +109,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 playBeans.add(bean);
             }
         }
-
-        LiveEventBus.get(Constant.playList, List.class).post(playBeans);
         dataBinding.group.removeAllViews();
         PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
         dataBinding.group.setAdapter(adapter);
@@ -129,13 +116,17 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         adapter.setOnItemClickListener(new PlayAddressAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(String typeId, String typeName) {
+
                 playUrl = typeName;
                 initAddress();
+                dataBinding.group.selectLocation(Integer.parseInt(typeId));
             }
         });
     }
 
     private void initAddress() {
+
+        LiveEventBus.get(Constant.playUrl, String.class).post(playUrl);
 
         if (playUrl.contains(".m3u8")) {
             PlayFragment.getInstance(playUrl);
@@ -185,7 +176,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             if (playUrl.contains(".m3u8")) {
                 LiveEventBus.get(Constant.playAddress, String.class).post(playUrl);
             } else {
-                UiUtil.showToastSafe("web");
                 LiveEventBus.get(Constant.webUrlGo, String.class).post(handleEntity.getUrl() + playUrl);
             }
 
@@ -295,9 +285,63 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 .observe(this, new Observer<Integer>() {
                     @Override
                     public void onChanged(Integer integer) {
-                        UiUtil.showToastSafe(integer + "");
+                        if (integer == 1) {
+                            nextPlay();
+                        } else if (integer == 2) {
+                            upPlay();
+                        }
                     }
                 });
+    }
+
+    private void upPlay() {
+
+        if (UiUtil.listIsEmpty(playBeans)) {
+            return;
+        }
+        if (playBeans.size() == 0) {
+            UiUtil.showToastSafe("没有上一集了");
+            return;
+        }
+        if (getLocation() <= 0) {
+            UiUtil.showToastSafe("没有上一集了");
+            return;
+        }
+
+
+        dataBinding.group.selectLocation(getLocation() - 1);
+        playUrl = playBeans.get(getLocation() - 1).getUrl();
+
+        initAddress();
+    }
+
+    private void nextPlay() {
+        if (UiUtil.listIsEmpty(playBeans)) {
+            return;
+        }
+        if (playBeans.size() == 0) {
+            UiUtil.showToastSafe("没有下一集了");
+            return;
+        }
+
+
+        if (getLocation() >= playBeans.size() - 1) {
+            UiUtil.showToastSafe("没有下一集了");
+            return;
+        }
+
+        dataBinding.group.selectLocation(getLocation() + 1);
+        playUrl = playBeans.get(getLocation() + 1).getUrl();
+        initAddress();
+    }
+
+    public int getLocation() {
+        for (int i = 0; i < playBeans.size(); i++) {
+            if (playBeans.get(i).getUrl().equals(playUrl)) {
+                return i;
+            }
+        }
+        return 0;
     }
 
 

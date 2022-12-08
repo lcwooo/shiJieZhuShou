@@ -18,5 +18,4 @@ public class Constant {
 
     public static String playState = "playState";
     public static String playUrl = "playUrl";
-    public static String playList = "playList";
 }

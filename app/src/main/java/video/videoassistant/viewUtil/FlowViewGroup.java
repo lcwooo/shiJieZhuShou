@@ -2,17 +2,20 @@ package video.videoassistant.viewUtil;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import video.videoassistant.R;
 
 public class FlowViewGroup extends ViewGroup {
     private int mPaddingTop;
     private int mPaddingLeft;
     private int mPaddingRight;
     private int mPaddingBottom;
-    private ArrayList<String> mList = new ArrayList<>();
     private Context mContext;
 
     public FlowViewGroup(Context context) {
@@ -162,7 +165,7 @@ public class FlowViewGroup extends ViewGroup {
         adapter.notifyDataSetChanged();
     }
 
-    private void notifyDataSetChanged() {
+    public void notifyDataSetChanged() {
         removeAllViews();
         if (mAdapter == null || mAdapter.getCount() == 0) {
             return;
@@ -174,6 +177,21 @@ public class FlowViewGroup extends ViewGroup {
                 throw new NullPointerException("item layout is null, please check getView()...");
             }
             addView(view, i, layoutParams);
+        }
+    }
+
+    public void selectLocation(int location){
+        Log.i("PlayActivity", "selectLocation: "+location);
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            TextView name = view.findViewById(R.id.name);
+            if(i==location){
+                name.setTextColor(mContext.getResources().getColor(R.color.white));
+                name.setBackground(mContext.getResources().getDrawable(R.drawable.shap_select_movies));
+            }else {
+                name.setTextColor(mContext.getResources().getColor(R.color.textColor));
+                name.setBackground(mContext.getResources().getDrawable(R.drawable.shap_all_movies));
+            }
         }
     }
 }
