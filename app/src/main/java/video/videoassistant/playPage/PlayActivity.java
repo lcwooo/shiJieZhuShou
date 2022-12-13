@@ -310,12 +310,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             }
         });
 
-        viewModel.playState.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(Integer integer) {
-                UiUtil.showToastSafe(integer + "");
-            }
-        });
 
         LiveEventBus.get(Constant.playState, Integer.class)
                 .observe(this, new Observer<Integer>() {
@@ -380,8 +374,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                             } else {
                                 playUrl = PlayFragment.getInstance("").getPlayUrl();
                             }
-                            UiUtil.showToastSafe(playUrl);
-                            //DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+
+                            DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
                         }
                     }
                 });

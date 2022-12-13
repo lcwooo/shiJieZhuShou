@@ -57,7 +57,7 @@ public class PlayerActivity extends BaseActivity<PlayModel, AcitivityPlayerBindi
         String url = getIntent().getStringExtra("url");
         Log.i(TAG, "onChanged: "+url);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment, PlayFragment.getInstance(url))
+                .replace(R.id.fragment, PlayFragment.getInstance(url,1))
                 .commit();
     }
 

@@ -57,6 +57,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
     private SeekBar mVideoProgress;
     private ProgressBar mBottomProgress;
     private ImageView mPlayButton;
+    private LinearLayout mSet;
     private TextView speed;
     private static final String TAG = "VodControlView";
     private boolean mIsDragging;
@@ -83,6 +84,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         mFullScreen = findViewById(R.id.fullscreen);
         mFullScreen.setOnClickListener(this);
         speed = findViewById(R.id.speed);
+        mSet = findViewById(R.id.set);
         mBottomContainer = findViewById(R.id.bottom_container);
         mVideoProgress = findViewById(R.id.seekBar);
         mVideoProgress.setOnSeekBarChangeListener(this);
@@ -125,6 +127,14 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
                 }
             }
         });
+    }
+
+    public void setHideBottom(int state){
+        if(state==1){
+            mSet.setVisibility(GONE);
+        }else {
+            mSet.setVisibility(VISIBLE);
+        }
     }
 
 

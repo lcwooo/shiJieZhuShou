@@ -62,7 +62,6 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     private static final String TAG = "BrowserActivity";
     public List<String> playList = new ArrayList<>();
     private SnifferDialog snifferDialog;
-    //private List<String> adList = new ArrayList<>();
     private String adString = "";
     private WebMenuDialog menuDialog;
 
@@ -123,7 +122,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         WebSettings mWebSettings = dataBinding.x5.getSettings();
         mWebSettings.setJavaScriptEnabled(true);
-        mWebSettings.setMediaPlaybackRequiresUserGesture(false);
+        mWebSettings.setMediaPlaybackRequiresUserGesture(true);
         // 支持屏幕缩放
         mWebSettings.setSupportZoom(true);
         // 设置内置的缩放控件。若为false，则该WebView不可缩放
@@ -190,9 +189,12 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 //Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))
                         && !s.contains("url=") && !s.contains(".ts")) {
-                    if (!playList.contains(s) && playList.size()<2) {
+                    if (!playList.contains(s) && playList.size() < 2) {
                         //Log.i(TAG, "shouldInterceptRequest: " + s);
-                        playList.add(s);
+                        playList.add(0, s);
+                    } else {
+                        playList.remove(playList.size() - 1);
+                        playList.add(0, s);
                     }
                     viewModel.urlListState.postValue(1);
                 }
@@ -231,7 +233,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
-                Log.i(TAG, "onProgressChanged: "+i);
+                Log.i(TAG, "onProgressChanged: " + i);
                 if (i == 100) {
                     dataBinding.progressBar.setVisibility(View.GONE);//加载完网页进度条消失
                 } else {
@@ -318,6 +320,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         if (arr[0].equals("1")) {
             Intent intent = new Intent(this, PlayerActivity.class);
             intent.putExtra("url", arr[1]);
+            intent.putExtra("state",1);
             startActivity(intent);
         } else if (arr[0].equals("2")) {
             m3u8Down(arr[1]);

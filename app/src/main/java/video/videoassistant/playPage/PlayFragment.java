@@ -41,6 +41,20 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         return playFragment;
     }
 
+
+    public static PlayFragment getInstance(String url, int state) {
+        Bundle args = new Bundle();
+        args.putString("url", url);
+        args.putInt("state", state);
+        if (playFragment == null) {
+            playFragment = new PlayFragment();
+        } else {
+            LiveEventBus.get(Constant.playAddress, String.class).post(url);
+        }
+        playFragment.setArguments(args);
+        return playFragment;
+    }
+
     @Override
     protected void showError(Object obj) {
 
@@ -77,11 +91,12 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                 rightControlView.setHide(false);
             }
         });
+        int state = getArguments().getInt("state",0);
         PlayBottomView vodControlView = new PlayBottomView(context);
+        vodControlView.setHideBottom(state);
         controller.addControlComponent(vodControlView);
         controller.addDefaultControlComponent(false);
         dataBinding.player.setVideoController(controller); //设置控制器
-        //dataBinding.player.start(); //开始播放，不调用则不自动播放
         dataBinding.player.addOnStateChangeListener(new BaseVideoView.OnStateChangeListener() {
             @Override
             public void onPlayerStateChanged(int playerState) {
