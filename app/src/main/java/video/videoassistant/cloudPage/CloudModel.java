@@ -75,15 +75,18 @@ public class CloudModel extends BaseViewModel {
 
     public void getAllType(String url, Map<String, String> map) {
         Flowable<String> api = Api.getApi().initListType(url, map);
+        showDialog.setValue(true);
         request(api, new ResultListener<String>() {
             @Override
             public void onSucceed(String data) {
                 typeData.postValue(data);
+                showDialog.setValue(false);
             }
 
             @Override
             public void onFail(String t) {
                 UiUtil.showToastSafe(t);
+                showDialog.setValue(false);
             }
         });
     }

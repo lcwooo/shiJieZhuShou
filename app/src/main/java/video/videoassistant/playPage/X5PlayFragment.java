@@ -87,6 +87,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
+                Log.i(TAG, "shouldInterceptRequest: "+s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))) {
                     if (!playArr.contains(s) && playArr.size() < 1) {
                         Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);

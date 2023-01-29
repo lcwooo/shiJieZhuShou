@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 import com.azhon.basic.base.BaseLazyFragment;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -36,6 +37,7 @@ import me.jingbin.library.ByRecyclerView;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentCloudListBinding;
 import video.videoassistant.playPage.PlayActivity;
+import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudListBinding> implements ByRecyclerView.OnRefreshListener, ByRecyclerView.OnLoadMoreListener {
@@ -57,10 +59,11 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     private String soYear = "";
     private XmlAdapter xmlAdapter;
 
-    public static CloudListFragment newInstance(String url, String type) {
+    public static CloudListFragment newInstance(String url, String type, String keyword) {
         Bundle args = new Bundle();
         args.putString("url", url);
         args.putString("type", type);
+        args.putString("keyword", keyword);
         CloudListFragment fragment = new CloudListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -86,11 +89,18 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         dataBinding.setView(this);
         url = getArguments().getString("url");
         type = getArguments().getString("type");
-        getAllType();;
-
+        keyword = getArguments().getString("keyword");
+        getAllType();
     }
 
-    public void getAllType(){
+    public void initAllType(String u, String t) {
+        url = u;
+        type = t;
+        page = 1;
+        getAllType();
+    }
+
+    public void getAllType() {
         if (url.contains("?")) {
             url = url.substring(0, url.indexOf("?"));
         }
@@ -140,43 +150,26 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 if (!url.contains("ac=")) {
                     map.put("ac", "detail");
                 }
-
-                viewModel.getData(url, map, false);
+                map.put("wd", keyword);
+                viewModel.getData(url, map, true);
             }
         });
 
-        dataBinding.so.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        LiveEventBus.get(Constant.soWord, String.class).observe(this, new Observer<String>() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    closeKeybord(dataBinding.so);
-                    page = 1;
-                    keyword = dataBinding.so.getText().toString();
-                    toGo();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        dataBinding.ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                closeKeybord(dataBinding.so);
+            public void onChanged(String s) {
                 page = 1;
-                keyword = dataBinding.so.getText().toString();
+                if (!TextUtils.isEmpty(s)) {
+                    keyword = s;
+                } else {
+                    keyword = "";
+                }
                 toGo();
             }
         });
+
     }
 
-    /**
-     * 关闭软键盘
-     */
-    public void closeKeybord(EditText mEditText) {
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
-    }
 
     private void initAllXmlType(String s) throws Exception {
 
@@ -410,7 +403,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         cloudDialog.getTypeListener(new TypeListener() {
             @Override
             public void type(String typeId, String typeName) {
-                dataBinding.type.setText("分类(" + typeName + ")");
                 if (TextUtils.isEmpty(typeId)) {
                     soType = "";
                 } else {
@@ -418,7 +410,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 }
                 page = 1;
                 keyword = "";
-                dataBinding.so.setText("");
                 toGo();
             }
 
@@ -431,7 +422,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 }
                 page = 1;
                 keyword = "";
-                dataBinding.so.setText("");
                 toGo();
             }
         });
@@ -454,7 +444,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     public void onRefresh() {
         page = 1;
         map.clear();
-        dataBinding.so.setText("");
         String url = getArguments().getString("url");
         if (!url.contains("ac=")) {
             map.put("ac", "detail");
