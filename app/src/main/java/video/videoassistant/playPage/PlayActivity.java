@@ -1,5 +1,6 @@
 package video.videoassistant.playPage;
 
+import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -122,7 +123,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
     private void initGroup(MovieItemBean movieItemBean) {
         String from = movieItemBean.getPlayUrl();
-
         playBeans = new ArrayList<>();
         if (from.contains("#")) {
             String[] arr = from.split("#");
@@ -142,6 +142,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 playBeans.add(bean);
             }
         }
+        postAddress(playBeans.get(0).getUrl());
+        playUrl = playBeans.get(0).getUrl();
         dataBinding.group.removeAllViews();
         PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
         dataBinding.group.setAdapter(adapter);
@@ -155,6 +157,21 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 dataBinding.group.selectLocation(Integer.parseInt(typeId));
             }
         });
+    }
+
+    private void postAddress(String playUrl) {
+        new CountDownTimer(1000, 1000) {
+
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                LiveEventBus.get(Constant.playUrl, String.class).post(playUrl);
+            }
+        }.start();
     }
 
     private void initAddress() {
@@ -334,6 +351,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 .observe(this, new Observer<Object>() {
 
                     public void onChanged(Object o) {
+
                         if (o instanceof JsonEntity) {
                             handleEntity = null;
                             jsonEntity = (JsonEntity) o;

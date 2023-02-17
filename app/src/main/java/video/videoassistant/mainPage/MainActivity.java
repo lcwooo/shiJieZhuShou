@@ -135,6 +135,11 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
 
     private void initAdGuard(RuleVersionBean ruleVersionBean) {
+        File fi = getExternalFilesDir("app");
+        if(fi==null){
+            UiUtil.showToastSafe("文件系统出错");
+            return;
+        }
         String fs = getExternalFilesDir("app").getAbsolutePath() + "/" + "adRule.txt";
         File file = new File(fs);
         if (!file.exists()) {

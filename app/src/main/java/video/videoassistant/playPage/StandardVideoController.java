@@ -72,7 +72,7 @@ public class StandardVideoController extends GestureVideoController implements V
      */
     public void addDefaultControlComponent(boolean isLive) {
         CompleteView completeView = new CompleteView(getContext());
-        ErrorPlayView errorView = new ErrorPlayView(getContext());
+        ErrorView errorView = new ErrorView(getContext());
         PrepareView prepareView = new PrepareView(getContext());
         prepareView.setClickStart();
         addControlComponent(completeView, errorView, prepareView);

@@ -15,6 +15,7 @@ import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
 
+import xyz.doikki.videocontroller.component.GestureView;
 import xyz.doikki.videoplayer.player.BaseVideoView;
 import xyz.doikki.videoplayer.player.VideoView;
 
@@ -82,7 +83,6 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         StandardVideoController controller = new StandardVideoController(context);
         TitleView titleView = new TitleView(context);
         controller.addControlComponent(titleView);
-        controller.addControlComponent(new ErrorPlayView(context));//错误界面
         RightControlView rightControlView = new RightControlView(context);
         controller.addControlComponent(rightControlView);
         titleView.getMovieSet(new MovieSet() {
@@ -134,7 +134,11 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     public void play(String url) {
         playUrl = url;
         if (dataBinding.player != null) {
-            dataBinding.player.release();
+            try {
+                dataBinding.player.release();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             dataBinding.player.setUrl(url);
             dataBinding.player.start();
         }

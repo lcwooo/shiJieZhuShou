@@ -188,8 +188,8 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
                 //Log.i(TAG, "shouldInterceptRequest: " + s);
                 if ((s.contains("m3u8") || s.contains(".mp4"))
-                        && !s.contains("url=") && !s.contains(".ts")) {
-                    if (!playList.contains(s) && playList.size() < 2) {
+                        && !s.contains("url=") && !s.contains(".ts") && !s.contains(".js")) {
+                    if (!playList.contains(s) && playList.size() < 3) {
                         //Log.i(TAG, "shouldInterceptRequest: " + s);
                         playList.add(0, s);
                     } else {
