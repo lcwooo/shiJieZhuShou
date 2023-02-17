@@ -135,6 +135,9 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
     }
 
     private void initType(List<JointEntity> jointEntities) {
+        if(UiUtil.listIsEmpty(jointEntities)){
+            return;
+        }
         dataBinding.type.setLayoutManager(new LinearLayoutManager(context));
         TypeNameAdapter nameAdapter = new TypeNameAdapter();
         dataBinding.type.setAdapter(nameAdapter);

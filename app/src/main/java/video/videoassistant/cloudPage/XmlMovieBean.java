@@ -3,6 +3,7 @@ package video.videoassistant.cloudPage;
 import java.util.List;
 
 public class XmlMovieBean {
+    String id;
     String name;
     String type;
     String pic;
@@ -34,6 +35,14 @@ public class XmlMovieBean {
 
     public String getType() {
         return type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setType(String type) {

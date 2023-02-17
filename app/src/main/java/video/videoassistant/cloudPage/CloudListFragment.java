@@ -248,6 +248,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         bean.setName(movieBean.getVodName());
         bean.setYear(movieBean.getVodYear());
         bean.setLang(movieBean.getVodLang());
+        bean.setId(movieBean.getVodId()+"");
         bean.setNote(movieBean.getVodRemarks());
         bean.setInfo(movieBean.getVodContent());
         List<MovieItemBean> list = new ArrayList<>();
@@ -269,6 +270,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         }
         bean.setMovieItemBeans(list);
         Intent intent = new Intent(context, PlayActivity.class);
+        String jsonUrl = url+"?ac=detail&ids="+bean.getId();
+        intent.putExtra("url", jsonUrl);
         intent.putExtra("json", JSON.toJSONString(bean));
         startActivity(intent);
     }
@@ -298,6 +301,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 case XmlPullParser.START_DOCUMENT:
                     break;
                 case XmlPullParser.START_TAG:
+
                     if ("video".equals(parser.getName())) {
                         movieBean = new XmlMovieBean();
                     } else if ("name".equals(parser.getName())) {
@@ -314,6 +318,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                         movieBean.setYear(parser.nextText());
                     } else if ("note".equals(parser.getName())) {
                         movieBean.setNote(parser.nextText());
+                    }else if ("id".equals(parser.getName())) {
+                        movieBean.setId(parser.nextText());
                     } else if ("actor".equals(parser.getName())) {
                         movieBean.setActor(parser.nextText());
                     } else if ("director".equals(parser.getName())) {
@@ -329,7 +335,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                     } else if ("des".equals(parser.getName())) {
                         movieBean.setInfo(parser.nextText());
                     }
-                    //Log.i(TAG, "initXms: " + parser.getName());
                     break;
                 case XmlPullParser.END_TAG:
                     if ("video".equals(parser.getName())) {
@@ -364,6 +369,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             @Override
             public void onItemClick(XmlMovieBean xmlMovieBean, int position) {
                 Intent intent = new Intent(context, PlayActivity.class);
+                String jsonUrl = url+"?ac=detail&ids="+xmlMovieBean.getId();
+                intent.putExtra("url",jsonUrl);
                 intent.putExtra("json", JSON.toJSONString(xmlMovieBean));
                 startActivity(intent);
             }

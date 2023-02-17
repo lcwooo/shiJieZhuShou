@@ -22,12 +22,16 @@ import video.videoassistant.me.handleManage.HandleEntity;
 import video.videoassistant.me.jsonManage.JsonDao;
 import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.net.Api;
+import video.videoassistant.playPage.roomCollect.CollectDao;
+import video.videoassistant.playPage.roomCollect.CollectEntity;
 import video.videoassistant.util.UiUtil;
 
-public class PlayModel extends BaseViewModel{
+public class PlayModel extends BaseViewModel {
 
     private JsonDao jsonDao;
     HandleDao handleDao;
+
+    CollectDao collectDao;
     public MutableLiveData<List<JsonEntity>> jsonList = new MutableLiveData<>();
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
     public MutableLiveData<String> playAddress = new MutableLiveData<>();
@@ -36,6 +40,7 @@ public class PlayModel extends BaseViewModel{
     public PlayModel() {
         jsonDao = BaseRoom.getInstance(BaseApplication.getContext()).getJsonDao();
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
+        collectDao = BaseRoom.getInstance(BaseApplication.getContext()).getCollectDao();
     }
 
     public void getJsonList() {
@@ -64,9 +69,9 @@ public class PlayModel extends BaseViewModel{
             @Override
             public void onSucceed(PlayBean data) {
                 showDialog.setValue(false);
-                if(TextUtils.isEmpty(data.getUrl())){
+                if (TextUtils.isEmpty(data.getUrl())) {
                     UiUtil.showToastSafe("解析失败,请更换解析试试");
-                }else {
+                } else {
                     playAddress.setValue(data.getUrl());
                 }
             }
@@ -75,6 +80,24 @@ public class PlayModel extends BaseViewModel{
             public void onFail(String t) {
                 showDialog.setValue(false);
                 UiUtil.showToastSafe(t);
+            }
+        });
+    }
+
+    public void addCollect(String url, String json) {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                List<CollectEntity> list = collectDao.getUrlList(url);
+                if (!UiUtil.listIsEmpty(list)) {
+                    UiUtil.showToastSafe("已经收藏该视频");
+                    return;
+                }
+                CollectEntity collectEntity = new CollectEntity();
+                collectEntity.setUrl(url);
+                collectEntity.setJson(json);
+                collectDao.insert(collectEntity);
+                UiUtil.showToastSafe("收藏成功");
             }
         });
     }

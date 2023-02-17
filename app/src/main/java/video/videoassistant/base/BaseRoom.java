@@ -14,10 +14,12 @@ import video.videoassistant.me.jsonManage.JsonDao;
 import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.me.urlManage.CollectionUrlDao;
 import video.videoassistant.me.urlManage.CollectionUrlEntity;
+import video.videoassistant.playPage.roomCollect.CollectDao;
+import video.videoassistant.playPage.roomCollect.CollectEntity;
 
 
 @Database(entities = {CollectionUrlEntity.class, JointEntity.class,
-        JsonEntity.class, HandleEntity.class}, version = 1)
+        JsonEntity.class, HandleEntity.class, CollectEntity.class}, version = 1)
 public abstract class BaseRoom extends RoomDatabase {
 
     public abstract CollectionUrlDao urlTypeDao();
@@ -27,6 +29,8 @@ public abstract class BaseRoom extends RoomDatabase {
     public abstract JsonDao getJsonDao();
 
     public abstract HandleDao getHandleDao();
+
+    public abstract CollectDao getCollectDao();
 
     // 单例
     private static BaseRoom database;

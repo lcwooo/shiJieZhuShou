@@ -3,7 +3,9 @@ package video.videoassistant.playPage;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.lifecycle.Observer;
@@ -39,6 +41,7 @@ import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.databinding.ActivityPlayBinding;
 import video.videoassistant.me.handleManage.HandleEntity;
 import video.videoassistant.me.jsonManage.JsonEntity;
+import video.videoassistant.playPage.roomCollect.CollectDao;
 import video.videoassistant.util.Constant;
 import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
@@ -88,6 +91,9 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         DLNACastManager.getInstance().registerDeviceListener(new OnDeviceRegistryListener() {
             @Override
             public void onDeviceAdded(Device<?, ?, ?> device) {
+                if (device == null) {
+                    return;
+                }
                 String name = device.getDetails().getFriendlyName();
                 Log.i(TAG, "onDeviceAdded: " + name);
             }
@@ -506,6 +512,87 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     protected void onStop() {
         super.onStop();
         DLNACastManager.getInstance().unbindCastService(this);
+    }
+
+    public void json() {
+        if (UiUtil.listIsEmpty(BaseApplication.getInstance().getJsonEntities())) {
+            UiUtil.showToastSafe("您没有添加任何json解析接口");
+            return;
+        }
+
+        if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
+            UiUtil.showToastSafe("直链播放状态，无需解析");
+            return;
+        }
+
+        List<JsonEntity> list = BaseApplication.getInstance().getJsonEntities();
+        PopupMenu popupMenu = new PopupMenu(context, dataBinding.json);
+        android.view.Menu menu_more = popupMenu.getMenu();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            menu_more.add(android.view.Menu.NONE, android.view.Menu.FIRST + i, i,
+                    UiUtil.getMaxLength(list.get(i).getName(), 4));
+        }
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int i = item.getItemId();
+                LiveEventBus.get(Constant.selectJiexi, Object.class)
+                        .post(list.get(i - 1));
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    public void web() {
+        if (UiUtil.listIsEmpty(BaseApplication.getInstance().getHandleEntities())) {
+            UiUtil.showToastSafe("您没有添加任何json解析接口");
+            return;
+        }
+
+        if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
+            UiUtil.showToastSafe("直链播放状态，无需解析");
+            return;
+        }
+
+        List<HandleEntity> list = BaseApplication.getInstance().getHandleEntities();
+        PopupMenu popupMenu = new PopupMenu(context, dataBinding.webJie);
+        android.view.Menu menu_more = popupMenu.getMenu();
+        int size = list.size();
+        for (int i = 0; i < size; i++) {
+            menu_more.add(android.view.Menu.NONE, android.view.Menu.FIRST + i, i,
+                    UiUtil.getMaxLength(list.get(i).getName(), 4));
+
+        }
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                int i = item.getItemId();
+                LiveEventBus.get(Constant.selectJiexi, Object.class)
+                        .post(list.get(i - 1));
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+    public void moreSet() {
+
+    }
+
+    public void collectMovie() {
+        String url = getIntent().getStringExtra("url");
+        String json = getIntent().getStringExtra("json");
+        if (TextUtils.isEmpty(url) || TextUtils.isEmpty(json)) {
+            UiUtil.showToastSafe("数据出错");
+            return;
+        }
+        viewModel.addCollect(url, json);
     }
 
 }

@@ -3,6 +3,7 @@ package video.videoassistant.playPage;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.Observer;
@@ -23,6 +24,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
 
     public static PlayFragment playFragment;
     public String playUrl;
+    private static final String TAG = "PlayFragment";
 
     @Override
     protected PlayModel initViewModel() {
@@ -91,7 +93,11 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                 rightControlView.setHide(false);
             }
         });
-        int state = getArguments().getInt("state",0);
+
+        int state = 0;
+        if(getArguments()!=null){
+            state = getArguments().getInt("state",0);
+        }
         PlayBottomView vodControlView = new PlayBottomView(context);
         vodControlView.setHideBottom(state);
         controller.addControlComponent(vodControlView);

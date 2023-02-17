@@ -9,24 +9,91 @@
     </data>
 
     <RelativeLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragment"
+            android:name="video.videoassistant.playPage.PlayFragment"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/web"
+            android:name="video.videoassistant.playPage.X5PlayFragment"
             android:layout_width="match_parent"
             android:layout_height="1dp" />
+
+        <RelativeLayout
+            android:id="@+id/panel"
+            android:background="@color/line"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment">
+
+            <LinearLayout
+                android:padding="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <TextView
+                    android:onClick="@{() -> view.collectMovie()}"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/shoucang"
+                    android:gravity="center"
+                    android:text="收藏"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/json"
+                    android:gravity="center"
+                    android:id="@+id/json"
+                    android:onClick="@{() -> view.json()}"
+                    android:text="json解析"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:onClick="@{() -> view.web()}"
+                    android:layout_width="0dp"
+                    android:id="@+id/web_jie"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/webm"
+                    android:gravity="center"
+                    android:text="网页解析"
+                    android:textSize="@dimen/dp_13" />
+
+                <TextView
+                    android:onClick="@{() -> view.moreSet()}"
+                    android:layout_width="0dp"
+                    android:id="@+id/more"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:drawableTop="@drawable/more_set"
+                    android:gravity="center"
+                    android:text="更多操作"
+                    android:textSize="@dimen/dp_13" />
+            </LinearLayout>
+
+        </RelativeLayout>
 
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/fragment">
+            android:layout_below="@id/panel">
 
             <LinearLayout
 
