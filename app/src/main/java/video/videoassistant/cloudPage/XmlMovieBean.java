@@ -17,6 +17,10 @@ public class XmlMovieBean {
     String info;
     List<MovieItemBean> movieItemBeans;
 
+    String biao;
+
+
+
     public List<MovieItemBean> getMovieItemBeans() {
         return movieItemBeans;
     }
@@ -119,5 +123,13 @@ public class XmlMovieBean {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    public String getBiao() {
+        return biao;
+    }
+
+    public void setBiao(String biao) {
+        this.biao = biao;
     }
 }

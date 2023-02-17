@@ -53,9 +53,12 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".playPage.PlayerActivity"
-
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
+
+        <activity android:name=".collectPage.CollectActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"/>
 
         <service
             android:name=".base.X5ProcessInitService"

@@ -14,6 +14,7 @@ public class MainModel extends BaseViewModel {
     public MutableLiveData<RuleVersionBean> versionBeanData = new MutableLiveData<>();
 
 
+
     public void getAdRule() {
         Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("https://www.233dy.top/adRule");
 

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:binding="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="view"
+            type="video.videoassistant.collectPage.MovieCollectFragment" />
+
+        <variable
+            name="model"
+            type="video.videoassistant.collectPage.CollectModel" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="40dp">
+           <LinearLayout
+               android:id="@+id/back"
+               android:onClick="@{()->model.closePage()}"
+               android:layout_marginLeft="10dp"
+               android:layout_centerVertical="true"
+               android:orientation="horizontal"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content">
+               <ImageView
+                   android:layout_gravity="center"
+                   android:layout_width="20dp"
+                   android:layout_height="15dp"
+                   android:src="@drawable/back_b"/>
+               <TextView
+                   android:gravity="center"
+                   android:textColor="#ffffff"
+                   android:textSize="13sp"
+                   android:layout_width="wrap_content"
+                   android:layout_height="30dp"
+                   android:text=""/>
+           </LinearLayout>
+
+           <TextView
+               android:textStyle="bold"
+               android:id="@+id/title"
+               android:text="视频收藏列表"
+               android:textSize="@dimen/dp_13"
+               style="@style/title_text_style"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_centerInParent="true"
+               android:layout_marginLeft="75.0dip"
+               android:layout_marginRight="75.0dip"
+               android:ellipsize="end"
+               android:singleLine="true" />
+
+           <TextView
+               android:id="@+id/right_text"
+               android:text="清空收藏"
+               android:onClick="@{()->view.tips()}"
+               android:textColor="@color/red"
+               android:textSize="@dimen/dp_13"
+               style="@style/title_bar_button"
+               android:layout_alignParentRight="true" />
+
+       </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</layout>

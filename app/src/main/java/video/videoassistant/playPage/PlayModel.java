@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.azhon.basic.lifecycle.BaseViewModel;
 import com.azhon.basic.lifecycle.ResultListener;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import java.util.List;
 
@@ -24,6 +25,7 @@ import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.net.Api;
 import video.videoassistant.playPage.roomCollect.CollectDao;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
+import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 public class PlayModel extends BaseViewModel {
@@ -88,6 +90,12 @@ public class PlayModel extends BaseViewModel {
         dbRequest(new ObservableOnSubscribe<Void>() {
             @Override
             public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                List<CollectEntity> all = collectDao.getAll();
+                if (all.size() >= 80) {
+                    UiUtil.showToastSafe("收藏已经超过80条上限,请删除一些再试");
+                    return;
+                }
+
                 List<CollectEntity> list = collectDao.getUrlList(url);
                 if (!UiUtil.listIsEmpty(list)) {
                     UiUtil.showToastSafe("已经收藏该视频");
@@ -98,6 +106,7 @@ public class PlayModel extends BaseViewModel {
                 collectEntity.setJson(json);
                 collectDao.insert(collectEntity);
                 UiUtil.showToastSafe("收藏成功");
+                LiveEventBus.get(Constant.refreshCollectMovie, String.class).post("yes");
             }
         });
     }

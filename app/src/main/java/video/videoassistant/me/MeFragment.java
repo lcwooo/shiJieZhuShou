@@ -1,10 +1,13 @@
 package video.videoassistant.me;
 
+import android.content.Intent;
+
 import androidx.lifecycle.ViewModelProvider;
 
 import com.azhon.basic.base.BaseFragment;
 
 import video.videoassistant.R;
+import video.videoassistant.collectPage.CollectActivity;
 import video.videoassistant.databinding.FragmentMeBinding;
 import video.videoassistant.me.handleManage.HandleActivity;
 import video.videoassistant.me.handleManage.HandleAdapter;
@@ -53,5 +56,11 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
 
     public void handleManage(){
         toActivity(HandleActivity.class);
+    }
+
+    public void collectManager(int state){
+        Intent intent =  new Intent(context, CollectActivity.class);
+        intent.putExtra("page",state);
+        startActivity(intent);
     }
 }

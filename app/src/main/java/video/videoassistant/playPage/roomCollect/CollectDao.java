@@ -18,7 +18,10 @@ public interface CollectDao {
     List<CollectEntity> getUrlList(String url);
 
 
-    @Query("select * from CollectEntity")
+    @Query("delete  from CollectEntity where url=:url")
+    void deleteOne(String url);
+
+    @Query("select * from CollectEntity ORDER BY id desc")
     List<CollectEntity> getAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

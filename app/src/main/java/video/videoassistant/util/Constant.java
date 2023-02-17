@@ -24,4 +24,6 @@ public class Constant {
 
     public static String dlnaUrl = "dlnaUrl";
     public static String soWord = "soWord";
+
+    public static String refreshCollectMovie = "refreshCollectMovie";
 }

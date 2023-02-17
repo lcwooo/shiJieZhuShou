@@ -1,5 +1,6 @@
 package com.azhon.basic.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,7 +57,7 @@ public abstract class BaseDBRVAdapter<Data, DB extends ViewDataBinding> extends 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull BaseDBRVHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull BaseDBRVHolder holder, @SuppressLint("RecyclerView") final int position) {
         DB binding = DataBindingUtil.getBinding(holder.itemView);
         final Data itemData = data.get(position);
         binding.setVariable(variableId, itemData);
@@ -116,6 +117,11 @@ public abstract class BaseDBRVAdapter<Data, DB extends ViewDataBinding> extends 
      */
     public void addData(Data data) {
         this.data.add(data);
+        notifyDataSetChanged();
+    }
+
+    public void removeDate(Data data){
+        this.data.remove(data);
         notifyDataSetChanged();
     }
 
