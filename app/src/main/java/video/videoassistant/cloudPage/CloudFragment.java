@@ -132,6 +132,13 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
                 }
             }
         });
+
+        LiveEventBus.get(Constant.soWord, String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                dataBinding.so.setText(s);
+            }
+        });
     }
 
     private void initType(List<JointEntity> jointEntities) {

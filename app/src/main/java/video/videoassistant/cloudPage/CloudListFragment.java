@@ -158,6 +158,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         LiveEventBus.get(Constant.soWord, String.class).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
+
                 page = 1;
                 if (!TextUtils.isEmpty(s)) {
                     keyword = s;

@@ -120,6 +120,10 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         dataBinding.navigation.setOnNavigationItemSelectedListener(this);
     }
 
+    public void selectPage(int page){
+        dataBinding.page.setCurrentItem(page);
+    }
+
     @Override
     protected void initData() {
         viewModel.getAdRule();
