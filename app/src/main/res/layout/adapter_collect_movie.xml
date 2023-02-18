@@ -4,9 +4,7 @@
 
     <data>
 
-        <variable
-            name="bean"
-            type="video.videoassistant.cloudPage.XmlMovieBean" />
+
     </data>
 
     <RelativeLayout
@@ -21,8 +19,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentLeft="true"
-            android:layout_margin="5dp"
-            app:imageUrl="@{bean.pic}" />
+            android:layout_margin="5dp" />
 
         <LinearLayout
             android:id="@+id/info"
@@ -37,7 +34,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text='@{bean.name,default=""}'
                 android:textColor="@color/red"
                 android:textSize="@dimen/dp_13" />
 
@@ -46,7 +42,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text='@{bean.director,default=""}'
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/dp_13" />
 
@@ -55,7 +50,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="3"
-                android:text='@{bean.info,default=""}'
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/dp_13" />
 

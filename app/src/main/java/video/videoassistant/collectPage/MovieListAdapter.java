@@ -7,6 +7,7 @@ import android.widget.ImageView;
 
 import androidx.databinding.BindingAdapter;
 
+import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.BaseDBRVAdapter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -17,14 +18,21 @@ import video.videoassistant.R;
 import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.databinding.AdapterCollectMovieBinding;
 import video.videoassistant.databinding.ItemCollectMoviesBinding;
+import video.videoassistant.playPage.roomCollect.CollectEntity;
 
-public class MovieListAdapter extends BaseDBRVAdapter<XmlMovieBean, AdapterCollectMovieBinding> {
+public class MovieListAdapter extends BaseDBRVAdapter<CollectEntity, AdapterCollectMovieBinding> {
     public MovieListAdapter() {
         super(R.layout.adapter_collect_movie, BR.bean);
     }
 
     @Override
-    protected void initData(AdapterCollectMovieBinding binding, XmlMovieBean xmlMovieBean, int position) {
+    protected void initData(AdapterCollectMovieBinding binding, CollectEntity xmlMovieBean, int position) {
+        XmlMovieBean bean = JSON.parseObject(xmlMovieBean.getJson(), XmlMovieBean.class);
+        loadImage(binding.img,bean.getPic());
+        binding.name.setText(bean.getName());
+        binding.yanyuan.setText(bean.getDirector());
+        binding.jie.setText(bean.getInfo());
+
         binding.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -35,8 +43,8 @@ public class MovieListAdapter extends BaseDBRVAdapter<XmlMovieBean, AdapterColle
         });
     }
 
-    @BindingAdapter({"imageUrl"})
-    public static void loadImage(ImageView imageView, String url) {
+
+    public  void loadImage(ImageView imageView, String url) {
         if (TextUtils.isEmpty(url)) {
             return;
         }
@@ -60,7 +68,7 @@ public class MovieListAdapter extends BaseDBRVAdapter<XmlMovieBean, AdapterColle
     }
 
     public interface Delete {
-        void deleteCollect(XmlMovieBean xmlMovieBean, int p);
+        void deleteCollect(CollectEntity xmlMovieBean, int p);
     }
 
     public Delete delete;

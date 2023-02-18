@@ -1,6 +1,7 @@
 package video.videoassistant.indexPage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.alibaba.fastjson.JSON;
+import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
@@ -24,15 +26,20 @@ import java.util.List;
 
 import video.videoassistant.R;
 import video.videoassistant.cloudPage.XmlMovieBean;
+import video.videoassistant.collectPage.CollectActivity;
 import video.videoassistant.databinding.FragmentIndexBinding;
 import video.videoassistant.generated.callback.OnClickListener;
 import video.videoassistant.mainPage.MainActivity;
+import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
 import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 
 public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding> {
+
+    public String clickUrl;
+
     @Override
     protected IndexModel initViewModel() {
         return new ViewModelProvider(this).get(IndexModel.class);
@@ -91,27 +98,39 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
             dataBinding.more.setVisibility(View.VISIBLE);
             layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
             layoutParams.setMargins(20, 20, 20, 20);
-            List<XmlMovieBean> beanList = new ArrayList<>();
+            List<CollectEntity> newList = new ArrayList<>();
             for (CollectEntity entity : collectEntities) {
-                if (beanList.size() <= 8) {
-                    XmlMovieBean bean = JSON.parseObject(entity.getJson(), XmlMovieBean.class);
-                    beanList.add(bean);
+                if (newList.size() <= 8) {
+                    newList.add(entity);
                 } else {
                     break;
                 }
             }
-            initCollectRecyc(beanList);
+            initCollectRecyc(newList);
         }
         dataBinding.layout.setLayoutParams(layoutParams);
 
     }
 
-    private void initCollectRecyc(List<XmlMovieBean> beanList) {
+    private void initCollectRecyc(List<CollectEntity> beanList) {
         dataBinding.recycCollect.setNestedScrollingEnabled(false);
         dataBinding.recycCollect.setLayoutManager(new GridLayoutManager(context, 3));
         CollectMovieAdapter collectMovieAdapter = new CollectMovieAdapter();
         dataBinding.recycCollect.setAdapter(collectMovieAdapter);
         collectMovieAdapter.setNewData(beanList);
+        collectMovieAdapter.setOnItemListener(new OnItemClickListener<CollectEntity>() {
+            @Override
+            public void onItemClick(CollectEntity collectEntity, int position) {
+                clickUrl = collectEntity.getUrl();
+                viewModel.loadMovie(collectEntity.getUrl());
+            }
+
+            @Override
+            public boolean onItemLongClick(CollectEntity collectEntity, int position) {
+                return false;
+            }
+        });
+
     }
 
     @Override
@@ -137,6 +156,38 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
                 return false;
             }
         });
+
+        viewModel.jsonData.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (s.startsWith("<?xml")) {
+                    List<XmlMovieBean> beanList = MovieUtils.xml(s);
+                    if (UiUtil.listIsEmpty(beanList)) {
+                        UiUtil.showToastSafe("获取第三方网站数据出错");
+                        return;
+                    }
+                    toPlay(beanList.get(0));
+
+                } else if (s.startsWith("{")) {
+                    List<XmlMovieBean> beanList = MovieUtils.initJson(s);
+                    if (UiUtil.listIsEmpty(beanList)) {
+                        UiUtil.showToastSafe("获取第三方网站数据出错");
+                        return;
+                    }
+                    toPlay(beanList.get(0));
+                } else {
+                    UiUtil.showToastSafe("接口类型不正确,只支持苹果cms格式接口。");
+                }
+            }
+        });
+    }
+
+    public void toPlay(XmlMovieBean bean) {
+        Intent intent = new Intent(context, PlayActivity.class);
+        String jsonUrl = clickUrl + "?ac=detail&ids=" + bean.getId();
+        intent.putExtra("url", jsonUrl);
+        intent.putExtra("json", JSON.toJSONString(bean));
+        startActivity(intent);
     }
 
     public void so() {
@@ -153,5 +204,11 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
     public void closeKeybord(EditText mEditText) {
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+    }
+
+    public void movieList() {
+        Intent intent = new Intent(context, CollectActivity.class);
+        intent.putExtra("page", 0);
+        startActivity(intent);
     }
 }

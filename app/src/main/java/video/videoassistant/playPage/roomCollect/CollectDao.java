@@ -28,7 +28,7 @@ public interface CollectDao {
     void insert(CollectEntity entity);
 
     @Delete
-    void delete(JointEntity entity);
+    void delete(CollectEntity entity);
 
     @Query("delete  from CollectEntity")
     void deleteAll();

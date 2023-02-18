@@ -2,6 +2,7 @@ package video.videoassistant.collectPage;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.alibaba.fastjson.JSON;
+import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
@@ -22,14 +24,17 @@ import video.videoassistant.R;
 import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.databinding.FragmentMovieCollectBinding;
 import video.videoassistant.indexPage.CollectMovieAdapter;
+import video.videoassistant.indexPage.MovieUtils;
+import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
 import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
 public class MovieCollectFragment extends BaseFragment<CollectModel, FragmentMovieCollectBinding> {
 
-    List<XmlMovieBean> beanList;
+
     private MovieListAdapter adapter;
+    public String clickUrl;
 
     @Override
     protected CollectModel initViewModel() {
@@ -77,28 +82,67 @@ public class MovieCollectFragment extends BaseFragment<CollectModel, FragmentMov
         viewModel.collectList.observe(this, new Observer<List<CollectEntity>>() {
             @Override
             public void onChanged(List<CollectEntity> collectEntities) {
-                beanList = new ArrayList<>();
-                for (CollectEntity entity : collectEntities) {
-                    XmlMovieBean bean = JSON.parseObject(entity.getJson(), XmlMovieBean.class);
-                    bean.setBiao(entity.getUrl());
-                    beanList.add(bean);
+                initCollectRecyc(collectEntities);
+            }
+        });
+
+        viewModel.jsonData.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                if (s.startsWith("<?xml")) {
+                    List<XmlMovieBean> beanList = MovieUtils.xml(s);
+                    if (UiUtil.listIsEmpty(beanList)) {
+                        UiUtil.showToastSafe("获取第三方网站数据出错");
+                        return;
+                    }
+                    toPlay(beanList.get(0));
+
+                } else if (s.startsWith("{")) {
+                    List<XmlMovieBean> beanList = MovieUtils.initJson(s);
+                    if (UiUtil.listIsEmpty(beanList)) {
+                        UiUtil.showToastSafe("获取第三方网站数据出错");
+                        return;
+                    }
+                    toPlay(beanList.get(0));
+                } else {
+                    UiUtil.showToastSafe("接口类型不正确,只支持苹果cms格式接口。");
                 }
-                initCollectRecyc();
             }
         });
 
     }
 
-    private void initCollectRecyc() {
+    public void toPlay(XmlMovieBean bean) {
+        Intent intent = new Intent(context, PlayActivity.class);
+        String jsonUrl = clickUrl + "?ac=detail&ids=" + bean.getId();
+        intent.putExtra("url", jsonUrl);
+        intent.putExtra("json", JSON.toJSONString(bean));
+        startActivity(intent);
+    }
+
+    private void initCollectRecyc(List<CollectEntity> collectEntities) {
         dataBinding.recyc.setLayoutManager(new LinearLayoutManager(context));
         adapter = new MovieListAdapter();
         dataBinding.recyc.setAdapter(adapter);
-        adapter.setNewData(beanList);
+        adapter.setNewData(collectEntities);
         adapter.getDeleteListener(new MovieListAdapter.Delete() {
             @Override
-            public void deleteCollect(XmlMovieBean xmlMovieBean, int p) {
+            public void deleteCollect(CollectEntity xmlMovieBean, int p) {
+
                 viewModel.deleteMovie(xmlMovieBean);
                 adapter.removeDate(xmlMovieBean);
+            }
+        });
+        adapter.setOnItemListener(new OnItemClickListener<CollectEntity>() {
+            @Override
+            public void onItemClick(CollectEntity collectEntity, int position) {
+                clickUrl = collectEntity.getUrl();
+                viewModel.loadMovie(collectEntity.getUrl());
+            }
+
+            @Override
+            public boolean onItemLongClick(CollectEntity collectEntity, int position) {
+                return false;
             }
         });
     }
