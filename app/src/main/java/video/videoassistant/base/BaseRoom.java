@@ -6,6 +6,10 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
+import video.videoassistant.browserPage.browserRoom.BookmarkDao;
+import video.videoassistant.browserPage.browserRoom.BookmarkEntity;
+import video.videoassistant.browserPage.browserRoom.HistoryDao;
+import video.videoassistant.browserPage.browserRoom.HistoryEntity;
 import video.videoassistant.me.handleManage.HandleDao;
 import video.videoassistant.me.handleManage.HandleEntity;
 import video.videoassistant.me.jointManage.JointDao;
@@ -19,8 +23,13 @@ import video.videoassistant.playPage.roomCollect.CollectEntity;
 
 
 @Database(entities = {CollectionUrlEntity.class, JointEntity.class,
-        JsonEntity.class, HandleEntity.class, CollectEntity.class}, version = 1)
+        JsonEntity.class, HandleEntity.class, CollectEntity.class,
+        HistoryEntity.class, BookmarkEntity.class}, version = 2)
 public abstract class BaseRoom extends RoomDatabase {
+
+    public abstract BookmarkDao getBookmarkDao();
+
+    public abstract HistoryDao getHistoryDao();
 
     public abstract CollectionUrlDao urlTypeDao();
 

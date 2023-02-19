@@ -63,4 +63,8 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
         intent.putExtra("page",state);
         startActivity(intent);
     }
+
+    public void shuqian(){
+
+    }
 }

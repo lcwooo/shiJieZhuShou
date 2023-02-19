@@ -176,6 +176,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 if (s.contains("://") && !s.contains("http")) {
                     return true;
                 }
+                viewModel.addHistory(webView.getUrl(),webView.getTitle());
                 return false;
             }
 
@@ -311,7 +312,15 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             case 3:
                 finish();
                 break;
+            case 4:
+                addBookmark();
+                break;
         }
+    }
+
+    private void addBookmark() {
+        viewModel.addBookmark(dataBinding.x5.getUrl(), dataBinding.x5.getTitle());
+        UiUtil.showToastSafe("已经添加");
     }
 
     private void initXiuUrl(String s) {
@@ -320,7 +329,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         if (arr[0].equals("1")) {
             Intent intent = new Intent(this, PlayerActivity.class);
             intent.putExtra("url", arr[1]);
-            intent.putExtra("state",1);
+            intent.putExtra("state", 1);
             startActivity(intent);
         } else if (arr[0].equals("2")) {
             m3u8Down(arr[1]);

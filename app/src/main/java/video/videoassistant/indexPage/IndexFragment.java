@@ -28,7 +28,6 @@ import video.videoassistant.R;
 import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.collectPage.CollectActivity;
 import video.videoassistant.databinding.FragmentIndexBinding;
-import video.videoassistant.generated.callback.OnClickListener;
 import video.videoassistant.mainPage.MainActivity;
 import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.playPage.roomCollect.CollectEntity;

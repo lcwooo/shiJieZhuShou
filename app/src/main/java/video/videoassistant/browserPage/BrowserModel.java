@@ -10,12 +10,20 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import video.videoassistant.base.BaseApplication;
 import video.videoassistant.base.BaseRoom;
+import video.videoassistant.browserPage.browserRoom.BookmarkDao;
+import video.videoassistant.browserPage.browserRoom.BookmarkEntity;
+import video.videoassistant.browserPage.browserRoom.HistoryDao;
+import video.videoassistant.browserPage.browserRoom.HistoryEntity;
 import video.videoassistant.me.handleManage.HandleDao;
 import video.videoassistant.me.handleManage.HandleEntity;
+import video.videoassistant.util.UiUtil;
 
 public class BrowserModel extends BaseViewModel {
 
     HandleDao handleDao;
+    BookmarkDao bookmarkDao;
+
+    HistoryDao historyDao;
     public MutableLiveData<String> loadUrl = new MutableLiveData<>();
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
     //在线解析url
@@ -34,6 +42,8 @@ public class BrowserModel extends BaseViewModel {
 
     public BrowserModel() {
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
+        bookmarkDao = BaseRoom.getInstance(BaseApplication.getContext()).getBookmarkDao();
+        historyDao = BaseRoom.getInstance(BaseApplication.getContext()).getHistoryDao();
     }
 
     public void getHanleList() {
@@ -45,7 +55,7 @@ public class BrowserModel extends BaseViewModel {
         });
     }
 
-    public void setMenuState(int a){
+    public void setMenuState(int a) {
         menuState.postValue(a);
     }
 
@@ -56,5 +66,39 @@ public class BrowserModel extends BaseViewModel {
         } else {
             return loadUrl.getValue();
         }
+    }
+
+    public void addBookmark(String url, String title) {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                List<BookmarkEntity> all = bookmarkDao.getAll();
+                if (all.size() > 80) {
+                    UiUtil.showToastSafe("已经超过80条上限,请删除一些再试");
+                    return;
+                }
+                BookmarkEntity bookmarkEntity = new BookmarkEntity();
+                bookmarkEntity.setName(title);
+                bookmarkEntity.setUrl(url);
+                bookmarkDao.insert(bookmarkEntity);
+            }
+        });
+    }
+
+    public void addHistory(String url, String title) {
+
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                List<HistoryEntity> all = historyDao.getAll();
+                if (all.size() > 50) {
+                    historyDao.deleteOne(all.get(all.size() - 1).getUrl());
+                }
+                HistoryEntity historyEntity = new HistoryEntity();
+                historyEntity.setName(title);
+                historyEntity.setUrl(url);
+                historyDao.insert(historyEntity);
+            }
+        });
     }
 }

@@ -213,7 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:onClick="@{()->view.jointManage()}"
+                    android:onClick="@{()->view.shuqian()}"
                     android:padding="5dp">
 
                     <ImageView
@@ -227,7 +227,7 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="30dp"
-                        android:text="网址收藏管理"
+                        android:text="书签和历史记录"
                         android:textColor="@color/textColor"
                         android:textSize="@dimen/dp_13" />
 
@@ -304,7 +304,8 @@
                 </RelativeLayout>
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>lk
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            lk
         </LinearLayout>
 
     </ScrollView>
