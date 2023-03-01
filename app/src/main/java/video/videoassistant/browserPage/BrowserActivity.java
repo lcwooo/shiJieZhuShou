@@ -164,7 +164,6 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 if (!s.equals(viewModel.getLoadUrl())) {
                     viewModel.urlListState.setValue(2);
                     viewModel.loadUrl.setValue(s);
-
                 }
 
                 //Log.i(TAG, "onPageStarted: " + s);
@@ -176,12 +175,12 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 if (s.contains("://") && !s.contains("http")) {
                     return true;
                 }
-                viewModel.addHistory(webView.getUrl(),webView.getTitle());
                 return false;
             }
 
             @Override
             public void onPageFinished(WebView webView, String s) {
+                viewModel.addHistory(webView.getUrl(), webView.getTitle());
                 super.onPageFinished(webView, s);
             }
 

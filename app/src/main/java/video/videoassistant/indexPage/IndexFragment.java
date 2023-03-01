@@ -15,6 +15,7 @@ import android.widget.TextView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import video.videoassistant.R;
+import video.videoassistant.bookmarkAndHistory.BookmarkHistoryActivity;
+import video.videoassistant.browserPage.browserRoom.BookmarkEntity;
 import video.videoassistant.cloudPage.XmlMovieBean;
 import video.videoassistant.collectPage.CollectActivity;
 import video.videoassistant.databinding.FragmentIndexBinding;
@@ -60,6 +63,7 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
         dataBinding.setView(this);
 
         viewModel.getCollect();
+        viewModel.getBook();
 
         dataBinding.deleteUsername.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,8 +85,39 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
                 viewModel.getCollect();
             }
         });
+        viewModel.bookList.observe(this, new Observer<List<BookmarkEntity>>() {
+            @Override
+            public void onChanged(List<BookmarkEntity> bookmarkEntities) {
+                initBookMark(bookmarkEntities);
+            }
+        });
 
+    }
 
+    private void initBookMark(List<BookmarkEntity> bookmarkEntities) {
+        List<BookmarkEntity> list = new ArrayList<>();
+        for (BookmarkEntity entity : bookmarkEntities){
+            if(list.size()<10){
+                list.add(entity);
+            }else {
+                break;
+            }
+        }
+        initBookRecyc(list);
+    }
+
+    private void initBookRecyc(List<BookmarkEntity> list) {
+        dataBinding.recycUrl.setNestedScrollingEnabled(false);
+        dataBinding.recycUrl.setLayoutManager(new LinearLayoutManager(context));
+        UrlAdapter urlAdapter = new UrlAdapter();
+        dataBinding.recycUrl.setAdapter(urlAdapter);
+        urlAdapter.setNewData(list);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.getBook();
     }
 
     private void initCollectList(List<CollectEntity> collectEntities) {
@@ -209,5 +244,9 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
         Intent intent = new Intent(context, CollectActivity.class);
         intent.putExtra("page", 0);
         startActivity(intent);
+    }
+
+    public void openBook(){
+        toActivity(BookmarkHistoryActivity.class);
     }
 }

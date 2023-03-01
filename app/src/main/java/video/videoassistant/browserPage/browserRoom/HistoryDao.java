@@ -2,6 +2,7 @@ package video.videoassistant.browserPage.browserRoom;
 
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -19,9 +20,12 @@ public interface HistoryDao {
     @Query("delete  from historyentity where url=:url")
     void deleteOne(String url);
 
-    @Query("delete  from bookmarkentity")
+    @Query("delete  from historyentity")
     void deleteAll();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(HistoryEntity entity);
+
+    @Delete
+    void delete(HistoryEntity entity);
 }

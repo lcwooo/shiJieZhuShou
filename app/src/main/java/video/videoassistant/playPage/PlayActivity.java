@@ -1,5 +1,9 @@
 package video.videoassistant.playPage;
 
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
@@ -62,6 +66,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
     List<PlayBean> playBeans;
     private boolean isCanDlna = false;
+    private PlayInfoBean infoBean;
 
 
     @Override
@@ -403,6 +408,17 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                         }
                     }
                 });
+
+        LiveEventBus.get(Constant.playAddressInfo, PlayInfoBean.class)
+                .observe(this, new Observer<PlayInfoBean>() {
+                    @Override
+                    public void onChanged(PlayInfoBean playInfoBean) {
+                        infoBean = playInfoBean;
+                        dataBinding.rl.setVisibility(View.VISIBLE);
+                        dataBinding.movieInfo.setText("分辨率:" + playInfoBean.getInfo());
+                        dataBinding.movieUrl.setText("播放地址:" + playInfoBean.getUrl());
+                    }
+                });
     }
 
     private void downM3u8(String s) {
@@ -593,6 +609,47 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             return;
         }
         viewModel.addCollect(url, json);
+    }
+
+    public void movieMore() {
+        if (infoBean == null) {
+            return;
+        }
+
+        PopupMenu popupMenu = new PopupMenu(context, dataBinding.movieMore);
+        popupMenu.getMenuInflater().inflate(R.menu.play_movie_more, popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.copy:
+                        copyUrl(infoBean.getUrl());
+                        break;
+                    case R.id.other_play:
+                        otherPlay(infoBean.getUrl());
+                        break;
+                }
+                return true;
+            }
+        });
+    }
+
+    private void otherPlay(String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(url), "video/*");
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            UiUtil.showToastSafe("没有应用可以打开");
+        }
+    }
+
+    public void copyUrl(String url) {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setText(url);
+        UiUtil.showToastSafe("已复制");
     }
 
 }

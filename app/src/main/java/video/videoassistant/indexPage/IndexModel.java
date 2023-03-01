@@ -12,6 +12,8 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import video.videoassistant.base.BaseApplication;
 import video.videoassistant.base.BaseRoom;
+import video.videoassistant.browserPage.browserRoom.BookmarkDao;
+import video.videoassistant.browserPage.browserRoom.BookmarkEntity;
 import video.videoassistant.net.Api;
 import video.videoassistant.playPage.roomCollect.CollectDao;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
@@ -20,12 +22,16 @@ import video.videoassistant.util.UiUtil;
 public class IndexModel extends BaseViewModel {
 
     CollectDao collectDao;
+    BookmarkDao bookmarkDao;
     public MutableLiveData<String> keyword = new MutableLiveData<>();
     public MutableLiveData<List<CollectEntity>> collectList = new MutableLiveData<>();
     public MutableLiveData<String> jsonData = new MutableLiveData<>();
 
+    public MutableLiveData<List<BookmarkEntity>> bookList = new MutableLiveData<>();
+
     public IndexModel() {
         collectDao = BaseRoom.getInstance(BaseApplication.getContext()).getCollectDao();
+        bookmarkDao = BaseRoom.getInstance(BaseApplication.getContext()).getBookmarkDao();
     }
 
     public void getCollect() {
@@ -55,6 +61,16 @@ public class IndexModel extends BaseViewModel {
             public void onFail(String t) {
                 showDialog.setValue(false);
                 UiUtil.showToastSafe("获取第三方数据失败,请检查第三方网站是否能正常访问");
+            }
+        });
+    }
+
+    public void getBook() {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                List<BookmarkEntity> list =  bookmarkDao.getAll();
+                bookList.postValue(list);
             }
         });
     }

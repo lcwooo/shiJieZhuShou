@@ -27,65 +27,104 @@
 
         <RelativeLayout
             android:id="@+id/panel"
-            android:background="@color/line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/fragment">
+            android:layout_below="@id/fragment"
+            android:background="@color/line">
 
             <LinearLayout
-                android:padding="5dp"
+                android:id="@+id/ll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center">
+                android:gravity="center"
+                android:padding="5dp">
 
                 <TextView
-                    android:onClick="@{() -> view.collectMovie()}"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:drawableTop="@drawable/shoucang"
                     android:gravity="center"
+                    android:onClick="@{() -> view.collectMovie()}"
                     android:text="收藏"
                     android:textSize="@dimen/dp_13" />
 
                 <TextView
+                    android:id="@+id/json"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:drawableTop="@drawable/json"
                     android:gravity="center"
-                    android:id="@+id/json"
                     android:onClick="@{() -> view.json()}"
                     android:text="json解析"
                     android:textSize="@dimen/dp_13" />
 
                 <TextView
-                    android:onClick="@{() -> view.web()}"
-                    android:layout_width="0dp"
                     android:id="@+id/web_jie"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:drawableTop="@drawable/webm"
                     android:gravity="center"
+                    android:onClick="@{() -> view.web()}"
                     android:text="网页解析"
                     android:textSize="@dimen/dp_13" />
 
                 <TextView
-                    android:onClick="@{() -> view.moreSet()}"
-                    android:layout_width="0dp"
                     android:id="@+id/more"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
                     android:drawableTop="@drawable/more_set"
                     android:gravity="center"
+                    android:onClick="@{() -> view.moreSet()}"
                     android:text="更多操作"
                     android:textSize="@dimen/dp_13" />
             </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/ll"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="5dp">
+
+                <TextView
+                    android:id="@+id/movie_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/dp_10" />
+
+                <TextView
+                    android:id="@+id/movie_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/movie_info"
+                    android:maxLines="1"
+                    android:textColor="@color/red"
+                    android:textSize="@dimen/dp_10" />
+
+                <ImageView
+                    android:onClick="@{() -> view.movieMore()}"
+                    android:id="@+id/movie_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/more_f" />
+
+            </RelativeLayout>
+
 
         </RelativeLayout>
 

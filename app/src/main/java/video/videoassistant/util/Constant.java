@@ -26,4 +26,8 @@ public class Constant {
     public static String soWord = "soWord";
 
     public static String refreshCollectMovie = "refreshCollectMovie";
+
+    public static String playAddressInfo = "playAddressInfo";
+
+
 }

@@ -2,6 +2,7 @@ package video.videoassistant.browserPage.browserRoom;
 
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -25,4 +26,7 @@ public interface BookmarkDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(BookmarkEntity entity);
+
+    @Delete
+    void delete(BookmarkEntity entity);
 }

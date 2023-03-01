@@ -7,11 +7,11 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 
     <application
@@ -56,9 +56,18 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
 
-        <activity android:name=".collectPage.CollectActivity"
+        <activity
+            android:name=".collectPage.CollectActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".bookmarkAndHistory.BookmarkHistoryActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".importAndExport.ManageActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".base.X5ProcessInitService"
@@ -68,16 +77,17 @@
         <service
             android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
             android:label="dexopt"
-            android:process=":dexopt"/>
+            android:process=":dexopt" />
 
-        <service android:name="com.android.cast.dlna.dmc.DLNACastService"
+        <service
+            android:name="com.android.cast.dlna.dmc.DLNACastService"
             tools:ignore="Instantiatable" />
 
         <uses-library
             android:name="org.apache.http.legacy"
             android:required="false" />
 
-        <service android:name="com.android.cast.dlna.dmc.DLNACastService"/>
+        <service android:name="com.android.cast.dlna.dmc.DLNACastService" />
     </application>
 
 </manifest>

@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.azhon.basic.base.BaseFragment;
 
 import video.videoassistant.R;
+import video.videoassistant.bookmarkAndHistory.BookmarkHistoryActivity;
 import video.videoassistant.collectPage.CollectActivity;
 import video.videoassistant.databinding.FragmentMeBinding;
+import video.videoassistant.importAndExport.ManageActivity;
 import video.videoassistant.me.handleManage.HandleActivity;
 import video.videoassistant.me.handleManage.HandleAdapter;
 import video.videoassistant.me.jointManage.JointManageActivity;
@@ -58,6 +60,10 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
         toActivity(HandleActivity.class);
     }
 
+    public void manager(){
+        toActivity(ManageActivity.class);
+    }
+
     public void collectManager(int state){
         Intent intent =  new Intent(context, CollectActivity.class);
         intent.putExtra("page",state);
@@ -65,6 +71,6 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
     }
 
     public void shuqian(){
-
+        toActivity(BookmarkHistoryActivity.class);
     }
 }

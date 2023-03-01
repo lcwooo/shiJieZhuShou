@@ -16,6 +16,7 @@ import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
 
+import video.videoassistant.util.UiUtil;
 import xyz.doikki.videocontroller.component.GestureView;
 import xyz.doikki.videoplayer.player.BaseVideoView;
 import xyz.doikki.videoplayer.player.VideoView;
@@ -95,8 +96,8 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         });
 
         int state = 0;
-        if(getArguments()!=null){
-            state = getArguments().getInt("state",0);
+        if (getArguments() != null) {
+            state = getArguments().getInt("state", 0);
         }
         PlayBottomView vodControlView = new PlayBottomView(context);
         vodControlView.setHideBottom(state);
@@ -116,11 +117,20 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
 
                         break;
                     case VideoView.STATE_PLAYING:
-
+                        playSuccess();
                         break;
                 }
             }
         });
+    }
+
+    private void playSuccess() {
+        int[] arr = dataBinding.player.getVideoSize();
+        PlayInfoBean bean = new PlayInfoBean();
+        bean.setUrl(playUrl);
+        bean.setInfo(arr[0]+"x"+arr[1]);
+        LiveEventBus.get(Constant.playAddressInfo ,PlayInfoBean.class)
+                .post(bean);
     }
 
     @Override
