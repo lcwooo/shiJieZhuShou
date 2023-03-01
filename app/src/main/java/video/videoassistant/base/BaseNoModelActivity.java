@@ -1,5 +1,6 @@
 package video.videoassistant.base;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import androidx.databinding.ViewDataBinding;
 import com.azhon.basic.navigationbar.DefaultNavigationBar;
 import com.azhon.basic.utils.ActivityUtil;
 import com.azhon.basic.view.LoadingDialog;
+
+import video.videoassistant.util.UiUtil;
 
 
 /**
@@ -137,6 +140,12 @@ public abstract class BaseNoModelActivity<DB extends ViewDataBinding> extends Ap
                 .setRightClickListener(clickListener)
                 .builder();
 
+    }
+
+    public void copyUrl(String url) {
+        ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        cm.setText(url);
+        UiUtil.showToastSafe("已复制");
     }
 
 

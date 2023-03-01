@@ -120,7 +120,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         dataBinding.navigation.setOnNavigationItemSelectedListener(this);
     }
 
-    public void selectPage(int page){
+    public void selectPage(int page) {
         dataBinding.page.setCurrentItem(page);
     }
 
@@ -140,9 +140,12 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
     private void initAdGuard(RuleVersionBean ruleVersionBean) {
         File fi = getExternalFilesDir("app");
-        if(fi==null){
+        if (fi == null) {
             UiUtil.showToastSafe("文件系统出错");
             return;
+        }
+        if (!fi.exists()) {
+            fi.mkdirs();
         }
         String fs = getExternalFilesDir("app").getAbsolutePath() + "/" + "adRule.txt";
         File file = new File(fs);
@@ -150,10 +153,13 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
             downRule(ruleVersionBean, fs);
             return;
         }
+
         int version = PreferencesUtils.getInt(context, Constant.adRuleVersion, 0);
         if (ruleVersionBean.getVersion() <= version) {
             return;
         }
+
+        file.delete();
 
         downRule(ruleVersionBean, fs);
     }

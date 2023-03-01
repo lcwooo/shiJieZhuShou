@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.simple.spiderman.SpiderMan;
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.TbsListener;
@@ -53,6 +54,12 @@ public class BaseApplication extends Application {
         mMainThreadId = android.os.Process.myTid();
         initPlay(IjkPlayerFactory.create());
         initX5();
+        SpiderMan.setOnCrashListener(new SpiderMan.OnCrashListener() {
+            @Override
+            public void onCrash(Thread t, Throwable ex) {
+                Log.i(TAG, "onCrash: "+ex.getMessage());
+            }
+        });
     }
 
     private void initX5() {

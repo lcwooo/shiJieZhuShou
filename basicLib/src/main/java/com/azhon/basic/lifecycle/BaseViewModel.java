@@ -101,6 +101,7 @@ public abstract class BaseViewModel extends ViewModel {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
                         String msg = throwable.getMessage().toString();
+                        Log.i("haha", "accept: "+msg);
                         if (msg.contains("timeout")) {
                             msg = "连接超时";
                         }

@@ -5,10 +5,10 @@ import com.alibaba.fastjson.annotation.JSONField;
 import java.util.List;
 
 public class ManagerBean {
-    @JSONField(name = "wzdy")
+    @JSONField(name = "webDy")
     public List<String> webList;
 
-    @JSONField(name = "jkdy")
+    @JSONField(name = "jsonDy")
     public List<String> jointList;
 
     @JSONField(name = "jsonJx")
@@ -48,5 +48,16 @@ public class ManagerBean {
 
     public void setWebJx(List<String> webJx) {
         this.webJx = webJx;
+    }
+
+
+    @Override
+    public String toString() {
+        return "ManagerBean{" +
+                "webList=" + webList +
+                ", jointList=" + jointList +
+                ", jsonJx=" + jsonJx +
+                ", webJx=" + webJx +
+                '}';
     }
 }

@@ -1,5 +1,7 @@
 package video.videoassistant.net;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.azhon.basic.retrofit.BaseApi;
@@ -173,6 +175,7 @@ public class Api extends BaseApi implements RequestHandler {
         if (404 == response.code()) {
             throw new ApiException("接口不存在");
         }
+
         return response;
     }
 
