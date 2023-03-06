@@ -85,7 +85,7 @@ public class UiUtil {
 
         long time = System.currentTimeMillis();//long now = android.os.SystemClock.uptimeMillis();
 
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
         Date d1 = new Date(time);
 

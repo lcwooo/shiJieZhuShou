@@ -1,10 +1,12 @@
 package video.videoassistant.mainPage;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -18,11 +20,13 @@ import com.azhon.basic.base.BaseFragment;
 import com.azhon.basic.utils.TimeUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hjq.permissions.OnPermissionCallback;
+import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.Server;
 
 import java.io.File;
+import java.security.Permissions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -62,8 +66,10 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
 
     @Override
     protected void initView() {
+        //checkPermissions();
         startWeb();
         initPage();
+
     }
 
     private void startWeb() {
@@ -79,31 +85,6 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         }
     }
 
-    private void checkPermissions() {
-        XXPermissions.with(this)
-                // 申请单个权限
-                .permission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                .request(new OnPermissionCallback() {
-
-                    @Override
-                    public void onGranted(List<String> permissions, boolean all) {
-
-                    }
-
-                    @Override
-                    public void onDenied(List<String> permissions, boolean never) {
-                        if (never) {
-                            UiUtil.showToastSafe("被永久拒绝存储授权,APP将无法使用,请给与权限");
-                            // 如果是被永久拒绝就跳转到应用权限系统设置页面
-                            XXPermissions.startPermissionActivity(context, permissions);
-                            return;
-                        }
-                        if (permissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                            UiUtil.showToastSafe("获取权限成功");
-                        }
-                    }
-                });
-    }
 
     private void initPage() {
         fragments.add(new IndexFragment());

@@ -18,6 +18,9 @@ public interface JointDao {
     @Query("select * from jointentity ORDER BY position asc")
     List<JointEntity> getAll();
 
+    @Query("select * from JointEntity where url=:url")
+    List<JointEntity> getUrlList(String url);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(JointEntity entity);
 

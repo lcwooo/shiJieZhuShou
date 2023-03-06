@@ -36,6 +36,8 @@ public class ManageModel extends BaseViewModel {
     private CollectionUrlDao urlDao;
 
     public MutableLiveData<ManagerBean> managerBeanMutable = new MutableLiveData<>();
+    public MutableLiveData<String> json = new MutableLiveData<>();
+    public MutableLiveData<Boolean> isComplete = new MutableLiveData<>();
 
     public ManageModel() {
         jsonDao = BaseRoom.getInstance(BaseApplication.getContext()).getJsonDao();
@@ -90,6 +92,82 @@ public class ManageModel extends BaseViewModel {
         });
     }
 
+    public void importData(ManagerBean bean) {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                if (!UiUtil.listIsEmpty(bean.getJointList())) {
+                    List<String> list = bean.getJointList();
+                    for (String j : list) {
+                        if (j.contains("||")) {
+                            String[] arr = j.split("\\|\\|");
+                            if (jointDao.getUrlList(arr[1]).size() == 0) {
+                                JointEntity jointEntity = new JointEntity();
+                                jointEntity.setPosition(0);
+                                jointEntity.setName(arr[0]);
+                                jointEntity.setUrl(arr[1]);
+                                jointDao.insert(jointEntity);
+                            }
+                        }
+                    }
+                }
+
+                if (!UiUtil.listIsEmpty(bean.getWebList())) {
+                    List<String> list = bean.getWebList();
+                    for (String j : list) {
+                        if (j.contains("||")) {
+                            String[] arr = j.split("\\|\\|");
+                            if (urlDao.getUrlList(arr[1]).size() == 0) {
+                                CollectionUrlEntity jointEntity = new CollectionUrlEntity();
+                                jointEntity.setPosition(0);
+                                jointEntity.setName(arr[0]);
+                                jointEntity.setUrl(arr[1]);
+                                urlDao.insert(jointEntity);
+                            }
+                        }
+                    }
+                }
+
+                if (!UiUtil.listIsEmpty(bean.getJsonJx())) {
+                    List<String> list = bean.getWebList();
+                    for (String j : list) {
+                        if (j.contains("||")) {
+                            String[] arr = j.split("\\|\\|");
+                            if (jsonDao.getUrlList(arr[1]).size() == 0) {
+                                JsonEntity jointEntity = new JsonEntity();
+                                jointEntity.setPosition(0);
+                                jointEntity.setName(arr[0]);
+                                jointEntity.setUrl(arr[1]);
+                                jsonDao.insert(jointEntity);
+                            }
+                        }
+                    }
+                }
+
+                if (!UiUtil.listIsEmpty(bean.getWebJx())) {
+                    List<String> list = bean.getWebList();
+                    for (String j : list) {
+                        if (j.contains("||")) {
+                            String[] arr = j.split("\\|\\|");
+                            if (handleDao.getUrlList(arr[1]).size() == 0) {
+                                HandleEntity jointEntity = new HandleEntity();
+                                jointEntity.setPosition(0);
+                                jointEntity.setName(arr[0]);
+                                jointEntity.setUrl(arr[1]);
+                                handleDao.insert(jointEntity);
+                            }
+                        }
+                    }
+                }
+
+
+                isComplete.postValue(true);
+            }
+
+        });
+
+    }
+
     public void getUrlData(String url) {
 
         showDialog.setValue(true);
@@ -99,7 +177,7 @@ public class ManageModel extends BaseViewModel {
             @Override
             public void onSucceed(String data) {
                 showDialog.setValue(false);
-                UiUtil.showToastSafe(data);
+                json.postValue(data);
             }
 
             @Override

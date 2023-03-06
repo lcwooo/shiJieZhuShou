@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
-import com.simple.spiderman.SpiderMan;
+import androidx.multidex.MultiDexApplication;
+
+
 import com.tencent.smtt.export.external.TbsCoreSettings;
 import com.tencent.smtt.sdk.QbSdk;
 import com.tencent.smtt.sdk.TbsListener;
@@ -25,7 +27,7 @@ import xyz.doikki.videoplayer.player.VideoViewConfig;
 import xyz.doikki.videoplayer.player.VideoViewManager;
 
 
-public class BaseApplication extends Application {
+public class BaseApplication extends MultiDexApplication {
 
     private static final String TAG = "BaseApplication";
     private static Context context;
@@ -54,12 +56,6 @@ public class BaseApplication extends Application {
         mMainThreadId = android.os.Process.myTid();
         initPlay(IjkPlayerFactory.create());
         initX5();
-        SpiderMan.setOnCrashListener(new SpiderMan.OnCrashListener() {
-            @Override
-            public void onCrash(Thread t, Throwable ex) {
-                Log.i(TAG, "onCrash: "+ex.getMessage());
-            }
-        });
     }
 
     private void initX5() {
