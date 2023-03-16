@@ -14,7 +14,53 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="5dp"
+            android:text="请选择解析源"
+            android:textColor="@color/textColor"
+            android:textSize="@dimen/dp_13" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="5dp"
+            android:text="由于现在解析出来的播放源只能播放一次，所以app不能和投屏共享播放源，请重新获取播放源然后投屏"
+            android:textSize="@dimen/dp_10" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/json"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/shap_list_b"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="JSON解析"
+                android:textSize="@dimen/dp_13" />
+
+            <TextView
+                android:id="@+id/web"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/shap_list_b"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="网页解析"
+                android:textSize="@dimen/dp_13" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
             android:text="请选择投屏设备"
             android:textColor="@color/textColor"
             android:textSize="@dimen/dp_13" />
@@ -22,7 +68,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
+            android:paddingLeft="5dp"
             android:text="请确保投屏和被投屏的设备在同一WIFI下面,如果60秒内没有搜索到投屏设备,请检查投屏设备是否正常,开始搜索请稍后......"
             android:textSize="@dimen/dp_10" />
 

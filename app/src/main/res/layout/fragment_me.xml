@@ -278,7 +278,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:onClick="@{()->view.jsonManage()}"
-                    android:padding="5dp">
+                    android:padding="5dp"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="20dp"
@@ -310,7 +311,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:onClick="@{()->view.handleManage()}"
-                    android:padding="5dp">
+                    android:padding="5dp"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="20dp"

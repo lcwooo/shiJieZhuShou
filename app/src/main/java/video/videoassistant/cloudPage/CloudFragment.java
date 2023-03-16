@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,15 +23,27 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.alibaba.fastjson.JSON;
 import com.azhon.basic.adapter.OnItemClickListener;
 import com.azhon.basic.base.BaseFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentCloudBinding;
 import video.videoassistant.me.jointManage.JointEntity;
@@ -42,6 +55,8 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
 
 
     private CloudListFragment listFragment;
+    private static final String TAG = "CloudFragment";
+    private TypeNameAdapter nameAdapter;
 
     @Override
     protected CloudModel initViewModel() {
@@ -125,9 +140,9 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
         viewModel.keyword.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                if(TextUtils.isEmpty(s)){
+                if (TextUtils.isEmpty(s)) {
                     dataBinding.deleteUsername.setVisibility(View.GONE);
-                }else {
+                } else {
                     dataBinding.deleteUsername.setVisibility(View.VISIBLE);
                 }
             }
@@ -137,16 +152,119 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
             @Override
             public void onChanged(String s) {
                 dataBinding.so.setText(s);
+                soTypeList(s);
+            }
+        });
+
+        viewModel.soSum.observe(this, new Observer<SoSumBean>() {
+            @Override
+            public void onChanged(SoSumBean soSumBean) {
+                String s = soSumBean.getJson();
+                int index = soSumBean.getIndex();
+                if (TextUtils.isEmpty(s)) {
+                    return;
+                }
+                if (s.startsWith("<?xml")) {
+                    try {
+                        initXms(s, index);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (s.startsWith("{")) {
+                    initJson(s, index);
+                } else {
+                    UiUtil.showToastSafe("接口类型不正确,只支持苹果cms格式接口。");
+                }
             }
         });
     }
 
+    private void initXms(String s, int index) {
+        int sum = 0;
+        try {
+            TypeBean videoBean = null;
+            InputStream inputStream = new ByteArrayInputStream(s.getBytes());
+            // 创建一个xml解析的工厂
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            // 获得xml解析类的引用
+            XmlPullParser parser = factory.newPullParser();
+            parser.setInput(inputStream, "UTF-8");
+            // 获得事件的类型
+            int eventType = parser.getEventType();
+
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                switch (eventType) {
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
+                    case XmlPullParser.START_TAG:
+                        if ("video".equals(parser.getName())) {
+                            sum++;
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        if ("ty".equals(parser.getName())) {
+
+                        }
+                        break;
+                }
+                eventType = parser.next();
+            }
+        } catch (Exception e) {
+            UiUtil.showToastSafe("xml解析异常");
+        }
+        Log.i(TAG, "initXms: " + index + "---" + sum);
+        nameAdapter.setSum(index, sum);
+    }
+
+    private void initJson(String s, int index) {
+        TypeListBean bean = null;
+        try {
+            bean = JSON.parseObject(s, TypeListBean.class);
+        } catch (Exception e) {
+            return;
+        }
+        if (UiUtil.listIsEmpty(bean.getList())) {
+            return;
+        }
+        Log.i(TAG, "initJson: " + index + "===" + bean.getList().size());
+        nameAdapter.setSum(index, bean.getList().size());
+    }
+
+    private void soTypeList(String s) {
+        viewModel.cancelRequests();
+        if(TextUtils.isEmpty(s)){
+            if(nameAdapter!=null){
+                nameAdapter.clearSum();
+            }
+            return;
+        }
+        if (viewModel.listJoint.getValue() == null) {
+            return;
+        }
+        List<JointEntity> list = viewModel.listJoint.getValue();
+        List<String> urlList = new ArrayList<>();
+        for (JointEntity entity : list) {
+            String url = entity.getUrl();
+            if (url.contains("?")) {
+                url = url.substring(0, url.indexOf("?"));
+            }
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
+            }
+            url = url + "?ac=list&wd=" + s;
+            urlList.add(url);
+        }
+        Collections.reverse(urlList);
+        viewModel.getSoSum(urlList);
+    }
+
+
     private void initType(List<JointEntity> jointEntities) {
-        if(UiUtil.listIsEmpty(jointEntities)){
+        if (UiUtil.listIsEmpty(jointEntities)) {
             return;
         }
         dataBinding.type.setLayoutManager(new LinearLayoutManager(context));
-        TypeNameAdapter nameAdapter = new TypeNameAdapter();
+        nameAdapter = new TypeNameAdapter();
         dataBinding.type.setAdapter(nameAdapter);
         nameAdapter.setNewData(jointEntities);
         listFragment = CloudListFragment.newInstance(jointEntities.get(0).url,

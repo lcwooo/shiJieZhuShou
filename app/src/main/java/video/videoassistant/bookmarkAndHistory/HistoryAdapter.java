@@ -1,11 +1,13 @@
 package video.videoassistant.bookmarkAndHistory;
 
+import android.content.Intent;
 import android.view.View;
 
 import com.azhon.basic.adapter.BaseDBRVAdapter;
 
 import video.videoassistant.BR;
 import video.videoassistant.R;
+import video.videoassistant.browserPage.BrowserActivity;
 import video.videoassistant.browserPage.browserRoom.HistoryEntity;
 import video.videoassistant.databinding.AdapterMarkBinding;
 
@@ -24,6 +26,15 @@ public class HistoryAdapter extends BaseDBRVAdapter<HistoryEntity, AdapterMarkBi
                 if (delete != null) {
                     delete.deleteCollect(bean, position);
                 }
+            }
+        });
+
+        binding.getRoot().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, BrowserActivity.class);
+                intent.putExtra("url", bean.getUrl());
+                context.startActivity(intent);
             }
         });
     }

@@ -56,11 +56,10 @@ public class HandleActivity extends BaseActivity<HandleModel, ActivityHandleBind
             public void onChanged(List<HandleEntity> urlTypeEntities) {
                 if (UiUtil.listIsEmpty(urlTypeEntities)) {
                     AddDefaultType();
-                    return;
                 }
-                for (HandleEntity e : urlTypeEntities) {
+            /*    for (HandleEntity e : urlTypeEntities) {
                     Log.i(TAG, "onChanged: " + e.toString());
-                }
+                }*/
                 initRecycview(urlTypeEntities);
             }
         });

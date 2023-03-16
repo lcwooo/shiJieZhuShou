@@ -1,5 +1,7 @@
 package video.videoassistant.me.urlManage;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -56,11 +58,9 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
             @Override
             public void onChanged(List<CollectionUrlEntity> urlTypeEntities) {
                 if (UiUtil.listIsEmpty(urlTypeEntities)) {
-                    AddDefaultType();
-                    return;
-                }
-                for (CollectionUrlEntity e : urlTypeEntities) {
-                    Log.i(TAG, "onChanged: " + e.toString());
+                    dataBinding.clear.setVisibility(View.GONE);
+                }else {
+                    dataBinding.clear.setVisibility(View.VISIBLE);
                 }
                 initRecycview(urlTypeEntities);
             }
@@ -157,9 +157,7 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
         isSort = false;
     }
 
-    private void AddDefaultType() {
 
-    }
 
     public void addUrlTypeDialog() {
        DialogAddUrl dialogAddUrl = new DialogAddUrl(this);
@@ -205,6 +203,20 @@ public class UrlManageActivity extends BaseActivity<UrlManageModel, ActivityUrlM
             return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    public void clearData(){
+        new AlertDialog.Builder(context)
+                .setTitle("提醒")
+                .setMessage("此操作将清空所以数据，您确认要清空所有数据?")
+                .setNegativeButton("确认", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        viewModel.clearData();
+                    }
+                })
+                .setNeutralButton("取消", null).show();
+
     }
 
 

@@ -30,12 +30,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
@@ -90,6 +92,21 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 .commit();
         loadView();
         loadDlna();
+        test();
+    }
+
+    public void test(){
+        Disposable disposable = Observable.interval(5, TimeUnit.SECONDS)
+                .take(1) // 只发射10个数字
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(num -> {
+                    Log.d(TAG, "onNext: " + num);
+                }, throwable -> {
+                    Log.e(TAG, "onError: " + throwable.getMessage());
+                }, () -> {
+                    Log.d(TAG, "onComplete");
+                });
     }
 
     private void loadDlna() {
@@ -393,8 +410,9 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                     @Override
                     public void onChanged(Device device) {
                         UiUtil.showToastSafe(device.getDetails().getFriendlyName());
-                        //http://192.168.0.28:8080/webPlay.m3u8
-                        if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
+                        DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+
+   /*                     if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
                             DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
                         } else {
                             String playUrl = "";
@@ -405,7 +423,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                             }
 
                             DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
-                        }
+                        }*/
                     }
                 });
 

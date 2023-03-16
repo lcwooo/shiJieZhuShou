@@ -129,7 +129,7 @@ public class ManageModel extends BaseViewModel {
                 }
 
                 if (!UiUtil.listIsEmpty(bean.getJsonJx())) {
-                    List<String> list = bean.getWebList();
+                    List<String> list = bean.getJsonJx();
                     for (String j : list) {
                         if (j.contains("||")) {
                             String[] arr = j.split("\\|\\|");
@@ -145,7 +145,7 @@ public class ManageModel extends BaseViewModel {
                 }
 
                 if (!UiUtil.listIsEmpty(bean.getWebJx())) {
-                    List<String> list = bean.getWebList();
+                    List<String> list = bean.getWebJx();
                     for (String j : list) {
                         if (j.contains("||")) {
                             String[] arr = j.split("\\|\\|");

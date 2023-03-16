@@ -123,33 +123,6 @@ public class Api extends BaseApi implements RequestHandler {
     };
 
 
-    public SSLContext getSSLContext() {
-        X509TrustManager xtm = new X509TrustManager() {
-            public void checkClientTrusted(X509Certificate[] chain, String authType) {
-            }
-
-            public void checkServerTrusted(X509Certificate[] chain, String authType) {
-            }
-
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                X509Certificate[] x509Certificates = new X509Certificate[0];
-                return x509Certificates;
-            }
-        };
-        SSLContext sslContext = null;
-        try {
-            sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[]{xtm}, new SecureRandom());
-            //sslContext = SSLContext.getInstance("TLSv1.2");
-            //sslContext.init(null, null, null);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-        return sslContext;
-    }
 
     @Override
     public Request onBeforeRequest(Request request, Interceptor.Chain chain) {

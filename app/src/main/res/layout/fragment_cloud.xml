@@ -86,13 +86,13 @@
             android:orientation="horizontal">
 
             <RelativeLayout
-                android:layout_width="80dp"
+                android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:background="#F4F4F4">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/type"
-                    android:layout_width="80dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent" />
             </RelativeLayout>
 

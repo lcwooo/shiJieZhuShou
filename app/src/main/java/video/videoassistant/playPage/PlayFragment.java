@@ -128,8 +128,8 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         int[] arr = dataBinding.player.getVideoSize();
         PlayInfoBean bean = new PlayInfoBean();
         bean.setUrl(playUrl);
-        bean.setInfo(arr[0]+"x"+arr[1]);
-        LiveEventBus.get(Constant.playAddressInfo ,PlayInfoBean.class)
+        bean.setInfo(arr[0] + "x" + arr[1]);
+        LiveEventBus.get(Constant.playAddressInfo, PlayInfoBean.class)
                 .post(bean);
     }
 
@@ -142,6 +142,14 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                     public void onChanged(String s) {
 
                         play(s);
+                    }
+                });
+
+        LiveEventBus.get(Constant.fullScreen, String.class)
+                .observe(this, new Observer<String>() {
+                    @Override
+                    public void onChanged(String s) {
+                        dataBinding.player.startFullScreen();
                     }
                 });
 

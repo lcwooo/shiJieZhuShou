@@ -24,10 +24,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentX5Binding;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.UiUtil;
 
 public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
@@ -35,8 +41,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
     private static final String TAG = "X5PlayFragment";
     private List<String> playArr = new ArrayList<>();
     private static final String mHomeUrl = "file:///android_asset/homePage.html";
-
-
+    private Disposable disposable;
 
 
     @Override
@@ -87,16 +92,28 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-                Log.i(TAG, "shouldInterceptRequest: "+s);
-                if ((s.contains("m3u8") || s.contains(".mp4"))) {
+                Log.i(TAG, "shouldInterceptRequest: " + s);
+
+                if (s.contains("myqcloud.com") && s.contains(".m3u8") || s.contains(".mp4")) {
                     if (!playArr.contains(s) && playArr.size() < 1) {
                         Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
                         playArr.add(s);
                         checkM3u8();
                         stopLoad(s);
                     }
+                } else {
+                    if ((s.contains("m3u8") || s.contains(".mp4")) && !s.contains("m3u8.tv")) {
+                        if (!playArr.contains(s) && playArr.size() < 1) {
+                            Log.i(TAG, "shouldInterceptRequest(播放地址): " + s);
+                            playArr.add(s);
+                            checkM3u8();
+                            stopLoad(s);
+                        }
 
+                    }
                 }
+
+
                 return super.shouldInterceptRequest(webView, s);
             }
 
@@ -137,6 +154,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 dataBinding.web.loadUrl(mHomeUrl);
                 LiveEventBus.get(Constant.playAddress, String.class).post(s);
                 dismissDialog();
+                disposable.dispose();
             }
         });
     }
@@ -147,8 +165,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
         if (url.contains(".mp4") || url.contains("233dy")) {
             return;
         }
-
-
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             String fs = getActivity().getExternalFilesDir("playList").getAbsolutePath() + "/webPlay.m3u8";
@@ -156,9 +172,10 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             String str = "";
             if (conn.getResponseCode() == 200) {
                 int index;
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[4096];
                 FileOutputStream downloadFile = new FileOutputStream(fs);
                 while ((index = input.read(bytes)) != -1) {
+                    Log.i(TAG, "checkM3u8: "+bytes.toString());
                     str += new String(bytes, 0, index);
                     downloadFile.write(bytes, 0, index);
                     downloadFile.flush();
@@ -167,7 +184,7 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 downloadFile.close();
                 if (str.contains("https://") || str.contains("http://")) {
                     LiveEventBus.get(Constant.dlnaUrl, String.class).post("ok");
-                }else {
+                } else {
                     LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
                 }
                 Log.i(TAG, "dowmM3U8a: 下载完成" + fs);
@@ -187,10 +204,29 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
                 .observe(this, new Observer<String>() {
                     @Override
                     public void onChanged(String s) {
-                        showDialog("正在解析...", true);
-                        LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
-                        dataBinding.web.loadUrl(s);
+                        loadJiexi(s);
                     }
+                });
+    }
+
+    private void loadJiexi(String s) {
+        showDialog("正在解析...", true);
+        LiveEventBus.get(Constant.dlnaUrl, String.class).post("no");
+        dataBinding.web.loadUrl(s);
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        disposable = Observable.interval(8, TimeUnit.SECONDS)
+                .take(1) // 只发射10个数字
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(num -> {
+                    Log.d(TAG, "onNext: " + num);
+                }, throwable -> {
+                    Log.e(TAG, "onError: " + throwable.getMessage());
+                }, () -> {
+                    dismissDialog();
+                    UiUtil.showToastSafe("网页解析失败，请更换解析或者使用浏览器打开试试");
                 });
     }
 

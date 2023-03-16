@@ -97,4 +97,14 @@ public class UrlManageModel extends BaseViewModel {
             }
         });
     }
+
+    public void clearData() {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                urlTypeDao.deleteAll();
+                getAllUrlType();
+            }
+        });
+    }
 }

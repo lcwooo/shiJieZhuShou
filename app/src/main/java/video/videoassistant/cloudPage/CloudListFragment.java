@@ -27,11 +27,14 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import me.jingbin.library.ByRecyclerView;
 import video.videoassistant.R;
@@ -88,24 +91,20 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     protected void initView() {
         dataBinding.setView(this);
         url = getArguments().getString("url");
+        if (url.contains("?")) {
+            url = url.substring(0, url.indexOf("?"));
+        }
         type = getArguments().getString("type");
         keyword = getArguments().getString("keyword");
         getAllType();
     }
 
-    public void initAllType(String u, String t) {
-        url = u;
-        type = t;
-        page = 1;
-        getAllType();
-    }
 
     public void getAllType() {
-        if (url.contains("?")) {
-            url = url.substring(0, url.indexOf("?"));
-        }
+
         map.clear();
         map.put("ac", "list");
+        Log.i(TAG, "getAllType: " + JSON.toJSONString(map));
         viewModel.getAllType(url, map);
     }
 
@@ -146,7 +145,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                     UiUtil.showToastSafe("接口数据类型不正确,只支持苹果cms格式接口。");
                 }
                 map.clear();
-                String url = getArguments().getString("url");
                 if (!url.contains("ac=")) {
                     map.put("ac", "detail");
                 }
@@ -195,6 +193,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                         videoBean.setTypeName(parser.nextText());
                         videoBean.setTypeId(id);
                         typeBeanList.add(videoBean);
+                    } else if ("video".equals(parser.getName())) {
+
                     }
                     break;
                 case XmlPullParser.END_TAG:
@@ -249,7 +249,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         bean.setName(movieBean.getVodName());
         bean.setYear(movieBean.getVodYear());
         bean.setLang(movieBean.getVodLang());
-        bean.setId(movieBean.getVodId()+"");
+        bean.setId(movieBean.getVodId() + "");
         bean.setNote(movieBean.getVodRemarks());
         bean.setInfo(movieBean.getVodContent());
         List<MovieItemBean> list = new ArrayList<>();
@@ -271,7 +271,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         }
         bean.setMovieItemBeans(list);
         Intent intent = new Intent(context, PlayActivity.class);
-        String jsonUrl = url+"?ac=detail&ids="+bean.getId();
+        String jsonUrl = url + "?ac=detail&ids=" + bean.getId();
         intent.putExtra("url", jsonUrl);
         intent.putExtra("json", JSON.toJSONString(bean));
         startActivity(intent);
@@ -319,7 +319,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                         movieBean.setYear(parser.nextText());
                     } else if ("note".equals(parser.getName())) {
                         movieBean.setNote(parser.nextText());
-                    }else if ("id".equals(parser.getName())) {
+                    } else if ("id".equals(parser.getName())) {
                         movieBean.setId(parser.nextText());
                     } else if ("actor".equals(parser.getName())) {
                         movieBean.setActor(parser.nextText());
@@ -370,8 +370,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             @Override
             public void onItemClick(XmlMovieBean xmlMovieBean, int position) {
                 Intent intent = new Intent(context, PlayActivity.class);
-                String jsonUrl = url+"?ac=detail&ids="+xmlMovieBean.getId();
-                intent.putExtra("url",jsonUrl);
+                String jsonUrl = url + "?ac=detail&ids=" + xmlMovieBean.getId();
+                intent.putExtra("url", jsonUrl);
                 intent.putExtra("json", JSON.toJSONString(xmlMovieBean));
                 startActivity(intent);
             }
@@ -437,7 +437,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
     public void toGo() {
         map.clear();
-        String url = getArguments().getString("url");
         if (!url.contains("ac=")) {
             map.put("ac", "detail");
         }
@@ -452,7 +451,6 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     public void onRefresh() {
         page = 1;
         map.clear();
-        String url = getArguments().getString("url");
         if (!url.contains("ac=")) {
             map.put("ac", "detail");
         }

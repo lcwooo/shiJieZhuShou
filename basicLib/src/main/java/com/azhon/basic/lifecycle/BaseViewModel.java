@@ -111,6 +111,9 @@ public abstract class BaseViewModel extends ViewModel {
         addDisposable(disposable);
     }
 
+
+
+
     public void dbRequest(ObservableOnSubscribe<Void> t){
         Observable.create(t).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())

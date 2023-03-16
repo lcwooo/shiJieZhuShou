@@ -37,7 +37,7 @@
             <TextView
                 android:padding="5dp"
                 android:onClick="@{()->view.addUrlTypeDialog()}"
-                android:textColor="@color/red"
+                android:textColor="@color/blue"
                 android:textSize="@dimen/dp_13"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"

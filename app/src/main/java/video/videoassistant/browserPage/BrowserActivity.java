@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.hardware.lights.LightState;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -98,6 +99,8 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
         dataBinding.progressBar.setMax(100);
         dataBinding.progressBar.setProgressDrawable(this.getResources()
                 .getDrawable(R.drawable.color_progressbar));
+
+
     }
 
     private void initAdList() {
@@ -171,11 +174,19 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, String s) {
-                if (s.contains("://") && !s.contains("http")) {
-                    return true;
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                if (url.startsWith("http:") || url.startsWith("https:")) {
+                    webView.loadUrl(url);
+                    return false;
+                } else {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        //startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        return false;
+                    }
                 }
-                return false;
             }
 
             @Override
@@ -186,21 +197,19 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
 
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView webView, String s) {
-                //Log.i(TAG, "shouldInterceptRequest: " + s);
-                if ((s.contains("m3u8") || s.contains(".mp4"))
-                        && !s.contains("url=") && !s.contains(".ts") && !s.contains(".js")) {
-                    if (!playList.contains(s) && playList.size() < 3) {
-                        //Log.i(TAG, "shouldInterceptRequest: " + s);
-                        playList.add(0, s);
-                    } else {
-                        playList.remove(playList.size() - 1);
-                        playList.add(0, s);
-                    }
+                Log.i(TAG, "shouldInterceptRequest: " + s);
+                if (s.contains("myqcloud.com") && s.contains(".m3u8") || s.contains(".mp4")) {
+                    addPlay(s);
+                    viewModel.urlListState.postValue(1);
+                }
+                if ((s.contains(".m3u8") || s.contains(".mp4"))
+                        && !s.contains("url=") && !s.contains(".ts") && !s.contains(".js")
+                        && !s.contains("m3u8.")) {
+                    addPlay(s);
                     viewModel.urlListState.postValue(1);
                 }
 
                 if (isIntercept(s)) {
-
                     //Log.i(TAG, "shouldInterceptRequest(拦截): " + s);
                     return new WebResourceResponse("image/png", "", null);
 
@@ -233,7 +242,6 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
-                Log.i(TAG, "onProgressChanged: " + i);
                 if (i == 100) {
                     dataBinding.progressBar.setVisibility(View.GONE);//加载完网页进度条消失
                 } else {
@@ -242,6 +250,16 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 }
             }
         });
+    }
+
+    public void addPlay(String s) {
+        if (!playList.contains(s) && playList.size() < 3) {
+            Log.i(TAG, "shouldInterceptRequest: " + s);
+            playList.add(0, s);
+        } else {
+            playList.remove(playList.size() - 1);
+            playList.add(0, s);
+        }
     }
 
 

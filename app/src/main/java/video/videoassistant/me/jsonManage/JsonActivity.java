@@ -56,13 +56,13 @@ public class JsonActivity extends BaseActivity<JsonModel, ActivityJsonBinding> {
         viewModel.urlList.observe(this, new Observer<List<JsonEntity>>() {
             @Override
             public void onChanged(List<JsonEntity> urlTypeEntities) {
-                if (UiUtil.listIsEmpty(urlTypeEntities)) {
+ /*               if (UiUtil.listIsEmpty(urlTypeEntities)) {
                     AddDefaultType();
                     return;
                 }
                 for (JsonEntity e : urlTypeEntities) {
                     Log.i(TAG, "onChanged: " + e.toString());
-                }
+                }*/
                 initRecycview(urlTypeEntities);
             }
         });

@@ -12,7 +12,11 @@ import android.widget.Toast;
 import com.azhon.basic.utils.ActivityUtil;
 
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -178,6 +182,29 @@ public class UiUtil {
                     + "." + (i >> 24 & 0xFF);
         }
         return ip;
+    }
+
+    public static String getIPv4Address() {
+        try {
+            // 获取所有网络接口列表
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            // 遍历所有网络接口
+            for (NetworkInterface intf : interfaces) {
+                // 获取接口的所有 IP 地址列表
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                // 遍历 IP 地址列表
+                for (InetAddress addr : addrs) {
+                    // 判断 IP 地址是否为 IPv4 地址，并且不是回环地址
+                    if (addr instanceof Inet4Address && !addr.isLoopbackAddress()) {
+                        // 返回 IPv4 地址的字符串形式
+                        return addr.getHostAddress();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

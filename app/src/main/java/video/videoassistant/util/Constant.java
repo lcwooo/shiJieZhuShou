@@ -29,5 +29,7 @@ public class Constant {
 
     public static String playAddressInfo = "playAddressInfo";
 
+    public static String fullScreen = "fullScreen";
+
 
 }

@@ -3,7 +3,9 @@ package video.videoassistant.mainPage;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -17,6 +19,7 @@ import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.task.DownloadTask;
 import com.azhon.basic.base.BaseFragment;
+import com.azhon.basic.utils.ActivityUtil;
 import com.azhon.basic.utils.TimeUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hjq.permissions.OnPermissionCallback;
@@ -53,6 +56,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     private MainAdapter mainAdapter;
     private List<BaseFragment> fragments = new ArrayList<>();
     private static final String TAG = "MainActivity";
+    private Server server;
 
     @Override
     protected MainModel initViewModel() {
@@ -67,21 +71,58 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     @Override
     protected void initView() {
         //checkPermissions();
-        startWeb();
+        initWeb();
         initPage();
+        startServer();
+        test();
 
     }
 
-    private void startWeb() {
+    private void test() {
+
+    }
+
+    private void initWeb() {
         try {
-            Server server = AndServer.webServer(this)
+            server = AndServer.webServer(this)
                     .port(8080)
                     .timeout(10, TimeUnit.SECONDS)
+                    .listener(new Server.ServerListener() {
+                        @Override
+                        public void onStarted() {
+                            Log.i(TAG, "startWeb(本地服务器启动成功): " + UiUtil.getIPv4Address());
+                        }
+
+                        @Override
+                        public void onStopped() {
+                            Log.i(TAG, "onStopped:本地服务器已经停止");
+                        }
+
+                        @Override
+                        public void onException(Exception e) {
+                            Log.i(TAG, "onStopped:本地服务器异常");
+                        }
+                    })
                     .build();
-            server.startup();
         } catch (Exception e) {
-            e.printStackTrace();
             UiUtil.showToastSafe("本地服务端口启动异常");
+        }
+    }
+
+    public void startServer() {
+        if (server.isRunning()) {
+            // TODO The server is already up.
+        } else {
+            Log.i(TAG, "startServer: "+UiUtil.getIPv4Address());
+            server.startup();
+        }
+    }
+
+    public void stopServer() {
+        if (server.isRunning()) {
+            server.shutdown();
+        } else {
+            //server.startup();
         }
     }
 
@@ -245,6 +286,24 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     @Download.onTaskRunning
     protected void running(DownloadTask task) {
         Log.i(TAG, "running: " + task.getPercent());
+    }
+
+
+    private long exitTime = 0;
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if ((System.currentTimeMillis() - exitTime) > 2000) {
+                Toast.makeText(this, "再按一次退出程序", Toast.LENGTH_LONG).show();
+                exitTime = System.currentTimeMillis();
+            } else {
+                PreferencesUtils.putString(this, "copyString", "");
+                ActivityUtil.getInstance().finishAllActivity();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 

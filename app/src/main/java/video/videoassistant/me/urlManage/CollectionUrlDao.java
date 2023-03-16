@@ -27,5 +27,8 @@ public interface CollectionUrlDao {
     @Delete
     void delete(CollectionUrlEntity entity);
 
+    @Query("delete  from CollectionUrlEntity")
+    void deleteAll();
+
 
 }
