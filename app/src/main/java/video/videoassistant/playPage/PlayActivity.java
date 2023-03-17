@@ -69,6 +69,11 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     List<PlayBean> playBeans;
     private boolean isCanDlna = false;
     private PlayInfoBean infoBean;
+    List<JsonEntity> jsonList;
+
+    private DlnaDialog dlnaDialog;
+
+    Device selectDevice;
 
 
     @Override
@@ -91,23 +96,9 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
                 .commit();
         loadView();
-        loadDlna();
-        test();
+        //loadDlna();
     }
 
-    public void test(){
-        Disposable disposable = Observable.interval(5, TimeUnit.SECONDS)
-                .take(1) // 只发射10个数字
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(num -> {
-                    Log.d(TAG, "onNext: " + num);
-                }, throwable -> {
-                    Log.e(TAG, "onError: " + throwable.getMessage());
-                }, () -> {
-                    Log.d(TAG, "onComplete");
-                });
-    }
 
     private void loadDlna() {
         DLNACastManager.getInstance().registerDeviceListener(new OnDeviceRegistryListener() {
@@ -328,6 +319,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                 if (UiUtil.listIsEmpty(jsonEntities)) {
                     jsonEntity = null;
                 } else {
+                    jsonList = jsonEntities;
                     BaseApplication.getInstance().setJsonEntities(jsonEntities);
                     jsonEntity = jsonEntities.get(0);
                 }
@@ -405,27 +397,6 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             }
         });
 
-        LiveEventBus.get(Constant.dlnaPlay, Device.class)
-                .observe(this, new Observer<Device>() {
-                    @Override
-                    public void onChanged(Device device) {
-                        UiUtil.showToastSafe(device.getDetails().getFriendlyName());
-                        DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
-
-   /*                     if (playUrl.contains(".m3u8") || playUrl.contains(".mp4")) {
-                            DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
-                        } else {
-                            String playUrl = "";
-                            if (isCanDlna) {
-                                playUrl = UiUtil.getWifiIP(context) + ":8080/webPlay.m3u8";
-                            } else {
-                                playUrl = PlayFragment.getInstance("").getPlayUrl();
-                            }
-
-                            DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
-                        }*/
-                    }
-                });
 
         LiveEventBus.get(Constant.playAddressInfo, PlayInfoBean.class)
                 .observe(this, new Observer<PlayInfoBean>() {
@@ -437,6 +408,17 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                         dataBinding.movieUrl.setText("播放地址:" + playInfoBean.getUrl());
                     }
                 });
+
+        viewModel.dlnaAddress.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                DLNACastManager.getInstance().cast(selectDevice, new CastObject(s, UUID.randomUUID().toString(), ""));
+                UiUtil.showToastSafe(s);
+                if (dlnaDialog != null) {
+                    dlnaDialog.dismiss();
+                }
+            }
+        });
     }
 
     private void downM3u8(String s) {
@@ -482,8 +464,30 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     }
 
     private void dlna() {
-        DlnaDialog dlnaDialog = new DlnaDialog(context);
+
+        dlnaDialog = new DlnaDialog(context, jsonList, playUrl);
         dlnaDialog.show();
+
+        //     DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+        //
+        dlnaDialog.getDlnaSelectListener(new DlnaDialog.DlnaSelect() {
+            @Override
+            public void selectDlna(Device device, JsonEntity entity) {
+                if (!playUrl.endsWith("m3u8") && !playUrl.endsWith("mp4")) {
+                    if (entity == null) {
+                        UiUtil.showToastSafe("请先添加json解析再进行投屏");
+                        return;
+                    }
+                    selectDevice = device;
+                    viewModel.getDlnaAddress(playUrl, entity);
+
+                } else {
+                    DLNACastManager.getInstance().cast(device, new CastObject(playUrl, UUID.randomUUID().toString(), ""));
+                    dlnaDialog.dismiss();
+                }
+            }
+        });
+
     }
 
     private void upPlay() {

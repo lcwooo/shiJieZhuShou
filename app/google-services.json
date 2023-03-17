@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "405171599889",
+    "project_id": "video-652cd",
+    "storage_bucket": "video-652cd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:405171599889:android:ebce09aaf8541b5ad3cfb0",
+        "android_client_info": {
+          "package_name": "video.videoassistant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "405171599889-7bclk7dj1clcdpb8qpltn9tq5tom2kof.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVCT4qJ3PYk42jnTrs1HuWQIBvBeU0UPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "405171599889-7bclk7dj1clcdpb8qpltn9tq5tom2kof.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

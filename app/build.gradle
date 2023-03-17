@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.yanzhenjie.andserver'
+apply plugin: 'com.google.gms.google-services'
 
 
 android {
@@ -98,6 +99,11 @@ dependencies {
     api 'com.github.devin1014.DLNA-Cast:dlna-dmc:V1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.github.ZLYang110:FileSelector:2.1.6'
+
+    //谷歌统计
+    implementation platform('com.google.firebase:firebase-bom:31.2.3')
+    implementation 'com.google.firebase:firebase-analytics'
+
 
 
 }

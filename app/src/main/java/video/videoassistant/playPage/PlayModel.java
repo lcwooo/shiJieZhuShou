@@ -38,6 +38,8 @@ public class PlayModel extends BaseViewModel {
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
     public MutableLiveData<String> playAddress = new MutableLiveData<>();
 
+    public MutableLiveData<String> dlnaAddress = new MutableLiveData<>();
+
 
     public PlayModel() {
         jsonDao = BaseRoom.getInstance(BaseApplication.getContext()).getJsonDao();
@@ -107,6 +109,29 @@ public class PlayModel extends BaseViewModel {
                 collectDao.insert(collectEntity);
                 UiUtil.showToastSafe("收藏成功");
                 LiveEventBus.get(Constant.refreshCollectMovie, String.class).post("yes");
+            }
+        });
+    }
+
+    public void getDlnaAddress(String playUrl, JsonEntity entity) {
+
+        Flowable<PlayBean> api = Api.getApi().getPlayUrl(entity.getUrl()+playUrl);
+        showDialog.setValue(true);
+        request(api, new ResultListener<PlayBean>() {
+            @Override
+            public void onSucceed(PlayBean data) {
+                showDialog.setValue(false);
+                if (TextUtils.isEmpty(data.getUrl())) {
+                    UiUtil.showToastSafe("解析失败,请更换解析试试");
+                } else {
+                    dlnaAddress.setValue(data.getUrl());
+                }
+            }
+
+            @Override
+            public void onFail(String t) {
+                showDialog.setValue(false);
+                UiUtil.showToastSafe(t);
             }
         });
     }

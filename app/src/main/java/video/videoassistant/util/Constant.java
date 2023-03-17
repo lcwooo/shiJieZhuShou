@@ -20,7 +20,7 @@ public class Constant {
     public static String playUrl = "playUrl";
 
     public static String selectJiexi = "selectJiexi";
-    public static String dlnaPlay = "dlnaPlay";
+
 
     public static String dlnaUrl = "dlnaUrl";
     public static String soWord = "soWord";
