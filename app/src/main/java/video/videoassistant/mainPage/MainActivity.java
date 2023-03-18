@@ -1,10 +1,18 @@
 package video.videoassistant.mainPage;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -50,7 +58,8 @@ import video.videoassistant.util.Constant;
 import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
-public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> implements ViewPager.OnPageChangeListener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
+        implements ViewPager.OnPageChangeListener, BottomNavigationView.OnNavigationItemSelectedListener {
 
 
     private MainAdapter mainAdapter;
@@ -113,7 +122,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         if (server.isRunning()) {
             // TODO The server is already up.
         } else {
-            Log.i(TAG, "startServer: "+UiUtil.getIPv4Address());
+            Log.i(TAG, "startServer: " + UiUtil.getIPv4Address());
             server.startup();
         }
     }
@@ -155,8 +164,65 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
             @Override
             public void onChanged(RuleVersionBean ruleVersionBean) {
                 initAdGuard(ruleVersionBean);
+                initVersion(ruleVersionBean);
             }
         });
+    }
+
+    private void initVersion(RuleVersionBean ruleVersionBean) {
+        if (ruleVersionBean.getAppVersion() > getVersionCode()) {
+            showUpdateDialog(ruleVersionBean);
+        }
+    }
+
+
+    private void showUpdateDialog(RuleVersionBean ruleVersionBean) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_update, null);
+        builder.setView(view);
+        TextView info = view.findViewById(R.id.tv_description);
+        TextView cancel = view.findViewById(R.id.btn_cancel);
+        Button update = view.findViewById(R.id.btn_update);
+        info.setText(ruleVersionBean.getDescription());
+        builder.setCancelable(false);
+        AlertDialog dialog = builder.create();
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(ruleVersionBean.getUpdateUrl()));
+                    startActivity(intent);
+                } catch (Exception e) {
+                    UiUtil.showToastSafe("没有应用可以打开，请检查设备是否安装了浏览器");
+                }
+
+            }
+        });
+        dialog.show();
+
+
+    }
+
+
+    public int getVersionCode() {
+        int versionCode = 0;
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionCode = pInfo.versionCode;
+            // 在此处使用versionCode
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return versionCode;
+
     }
 
 
@@ -177,7 +243,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         }
 
         int version = PreferencesUtils.getInt(context, Constant.adRuleVersion, 0);
-        if (ruleVersionBean.getVersion() <= version) {
+        if (ruleVersionBean.getAdVersion() <= version) {
             return;
         }
 
@@ -187,24 +253,19 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
     }
 
     public void downRule(RuleVersionBean ruleVersionBean, String file) {
-/*        UiUtil.showToastSafe("开始下载");
-        Aria.download(this)
-                .load(ruleVersionBean.getUrl())
-                .setFilePath(fs)
-                .create();*/
         String fs = getExternalFilesDir("app").getAbsolutePath();
         String downName = "adRule.txt";
         new Retrofit.Builder()
                 .baseUrl(ApiService.URL)
                 .build()
                 .create(DownService.class)
-                .downloadFile(ruleVersionBean.getUrl())//可以是完整的地址，也可以是baseurl后面的动态地址
+                .downloadFile(ruleVersionBean.getAdUrl())//可以是完整的地址，也可以是baseurl后面的动态地址
                 .enqueue(new FileCallBack(fs.toString(), downName) {
                     @Override
                     public void onSuccess(File file, Progress progress) {
                         if (progress.status == 5) {
-                            UiUtil.showToastSafe("广告拦截库同步完成版本：" + ruleVersionBean.getVersion());
-                            PreferencesUtils.putInt(context, Constant.adRuleVersion, ruleVersionBean.getVersion());
+                            UiUtil.showToastSafe("广告拦截库同步完成版本：" + ruleVersionBean.getAdVersion());
+                            PreferencesUtils.putInt(context, Constant.adRuleVersion, ruleVersionBean.getAdVersion());
                         }
                     }
 
@@ -266,26 +327,6 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding> i
         }
         return false;
 
-    }
-
-
-    //在这里处理任务完成的状态
-    @Download.onTaskComplete
-    void taskComplete(DownloadTask task) {
-        if (task.getKey().equals(viewModel.versionBeanData.getValue().getUrl())) {
-            UiUtil.showToastSafe("广告拦截库初始化完成");
-        }
-    }
-
-    @Download.onTaskFail
-    void taskFail(DownloadTask task) {
-        UiUtil.showToastSafe("下载出错：" + task.getKey());
-    }
-
-    //在这里处理任务执行中的状态，如进度进度条的刷新
-    @Download.onTaskRunning
-    protected void running(DownloadTask task) {
-        Log.i(TAG, "running: " + task.getPercent());
     }
 
 

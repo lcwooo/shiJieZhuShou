@@ -2,14 +2,33 @@ package video.videoassistant.mainPage;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+
+
 public class RuleVersionBean {
 
+
     @JSONField(name = "code")
-    public String code;
-    @JSONField(name = "url")
-    public String url;
-    @JSONField(name = "version")
-    public int version;
+    private String code;
+    @JSONField(name = "adUrl")
+    private String adUrl;
+    @JSONField(name = "adVersion")
+    private int adVersion;
+    @JSONField(name = "appVersion")
+    private int appVersion;
+    @JSONField(name = "updateUrl")
+    private String updateUrl;
+
+    @JSONField(name = "description")
+    private String description;
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getCode() {
         return code;
@@ -19,19 +38,35 @@ public class RuleVersionBean {
         this.code = code;
     }
 
-    public String getUrl() {
-        return url;
+    public String getAdUrl() {
+        return adUrl;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setAdUrl(String adUrl) {
+        this.adUrl = adUrl;
     }
 
-    public int getVersion() {
-        return version;
+    public int getAdVersion() {
+        return adVersion;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
+    public void setAdVersion(int adVersion) {
+        this.adVersion = adVersion;
+    }
+
+    public int getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(int appVersion) {
+        this.appVersion = appVersion;
+    }
+
+    public String getUpdateUrl() {
+        return updateUrl;
+    }
+
+    public void setUpdateUrl(String updateUrl) {
+        this.updateUrl = updateUrl;
     }
 }

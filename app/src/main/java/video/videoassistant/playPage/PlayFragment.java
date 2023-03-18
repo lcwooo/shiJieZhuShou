@@ -26,6 +26,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     public static PlayFragment playFragment;
     public String playUrl;
     private static final String TAG = "PlayFragment";
+    TitleView titleView;
 
     @Override
     protected PlayModel initViewModel() {
@@ -84,7 +85,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
 
     private void initPlay() {
         StandardVideoController controller = new StandardVideoController(context);
-        TitleView titleView = new TitleView(context);
+        titleView = new TitleView(context);
         controller.addControlComponent(titleView);
         RightControlView rightControlView = new RightControlView(context);
         controller.addControlComponent(rightControlView);
@@ -152,6 +153,13 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                         dataBinding.player.startFullScreen();
                     }
                 });
+
+        LiveEventBus.get("movieName",String.class).observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                titleView.setTitle(s);
+            }
+        });
 
     }
 

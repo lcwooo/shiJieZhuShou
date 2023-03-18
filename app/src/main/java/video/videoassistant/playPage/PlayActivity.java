@@ -169,11 +169,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         adapter.notifyDataSetChanged();
         adapter.setOnItemClickListener(new PlayAddressAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String typeId, String typeName) {
+            public void onItemClick(String typeId, String typeName,String name) {
 
                 playUrl = typeName;
                 initAddress();
                 dataBinding.group.selectLocation(Integer.parseInt(typeId));
+                LiveEventBus.get("movieName",String.class).post(name);
             }
         });
     }
@@ -507,7 +508,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         dataBinding.group.selectLocation(getLocation() - 1);
         playUrl = playBeans.get(getLocation() - 1).getUrl();
-
+        LiveEventBus.get("movieName",String.class).post(playBeans.get(getLocation()).getName());
         initAddress();
     }
 
@@ -528,6 +529,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         dataBinding.group.selectLocation(getLocation() + 1);
         playUrl = playBeans.get(getLocation() + 1).getUrl();
+        LiveEventBus.get("movieName",String.class).post(playBeans.get(getLocation()).getName());
         initAddress();
     }
 

@@ -47,7 +47,7 @@ public class PlayAddressAdapter extends TagFlowAdapter {
     }
 
     public interface OnItemClickListener {
-        void onItemClick(String typeId, String typeName);
+        void onItemClick(String typeId, String typeName,String name);
     }
 
 
@@ -61,7 +61,7 @@ public class PlayAddressAdapter extends TagFlowAdapter {
             public void onClick(View v) {
                 if (mListener != null) {
                     mListener.onItemClick(position + "",
-                            types.get(position).getUrl());
+                            types.get(position).getUrl(),types.get(position).getName());
                 }
             }
         });
