@@ -115,10 +115,17 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             public void onPlayStateChanged(int playState) {
                 switch (playState) {
                     case VideoView.STATE_ERROR:
-
+                        Log.i(TAG, "onPlayStateChanged: 错误");
                         break;
                     case VideoView.STATE_PLAYING:
+                        Log.i(TAG, "onPlayStateChanged: 播放成功");
                         playSuccess();
+                        break;
+                    case VideoView.STATE_START_ABORT:
+                        Log.i(TAG, "onPlayStateChanged: 播放终止");
+                        break;
+                    case VideoView.STATE_PAUSED:
+                        Log.i(TAG, "onPlayStateChanged: 播放暂停");
                         break;
                 }
             }
@@ -154,7 +161,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                     }
                 });
 
-        LiveEventBus.get("movieName",String.class).observe(this, new Observer<String>() {
+        LiveEventBus.get("movieName", String.class).observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 titleView.setTitle(s);
