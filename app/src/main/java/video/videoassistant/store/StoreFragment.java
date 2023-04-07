@@ -1,5 +1,7 @@
 package video.videoassistant.store;
 
+import android.view.View;
+
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -13,6 +15,7 @@ import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentStoreBinding;
 import video.videoassistant.me.urlManage.CollectionUrlEntity;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.UiUtil;
 
 
 public class StoreFragment extends BaseFragment<StoreModel, FragmentStoreBinding> {
@@ -57,6 +60,11 @@ public class StoreFragment extends BaseFragment<StoreModel, FragmentStoreBinding
     }
 
     private void initList(List<CollectionUrlEntity> list) {
+        if (UiUtil.listIsEmpty(list)) {
+            dataBinding.empty.setVisibility(View.VISIBLE);
+        } else {
+            dataBinding.empty.setVisibility(View.GONE);
+        }
         ListAdapter adapter = new ListAdapter();
         dataBinding.recyc.setAdapter(adapter);
         adapter.setNewData(list);

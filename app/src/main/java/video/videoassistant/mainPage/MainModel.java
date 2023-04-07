@@ -30,7 +30,7 @@ public class MainModel extends BaseViewModel {
 
 
     public void getAdRule() {
-        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("https://www.233dy.top/initApp");
+        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("https://www.233dy.top/public/config.json");
 
         request(api, new ResultListener<RuleVersionBean>() {
             @Override

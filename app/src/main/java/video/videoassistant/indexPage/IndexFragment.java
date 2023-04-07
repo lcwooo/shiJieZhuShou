@@ -218,7 +218,7 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
 
     public void toPlay(XmlMovieBean bean) {
         Intent intent = new Intent(context, PlayActivity.class);
-        String jsonUrl = clickUrl + "?ac=detail&ids=" + bean.getId();
+        String jsonUrl = clickUrl + "?ac=videolist&ids=" + bean.getId();
         intent.putExtra("url", jsonUrl);
         intent.putExtra("json", JSON.toJSONString(bean));
         startActivity(intent);

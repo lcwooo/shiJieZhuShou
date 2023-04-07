@@ -67,7 +67,8 @@ public class JointModel extends BaseViewModel {
             @Override
             public void subscribe(@NotNull ObservableEmitter<Void> emitter) throws Exception {
                 if(jointDao.getUrlList(entity.url).size()>0){
-                    UiUtil.showToastSafe("已存在");
+                    jointDao.update(entity);
+                    getAll();
                     return;
                 }
                 jointDao.insert(entity);

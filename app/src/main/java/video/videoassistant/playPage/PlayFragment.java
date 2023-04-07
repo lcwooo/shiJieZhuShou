@@ -13,6 +13,7 @@ import com.azhon.basic.base.BaseFragment;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import video.videoassistant.R;
+import video.videoassistant.base.BaseApplication;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
 
@@ -201,6 +202,9 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     private void saveProgress() {
+        if(!BaseApplication.getInstance().isSaveProgress()){
+            return;
+        }
         //180000
         Log.i(TAG, "play: 保存播放进度" + "\n" + "上个播放视频的时长:" + duration);
         //获取当前播放的时间

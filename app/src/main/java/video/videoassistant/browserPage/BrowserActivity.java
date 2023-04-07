@@ -43,6 +43,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
+import video.videoassistant.base.BaseApplication;
 import video.videoassistant.databinding.ActivityBrowserBinding;
 import video.videoassistant.mainPage.DownService;
 import video.videoassistant.mainPage.FileCallBack;
@@ -81,6 +82,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     protected void initView() {
         dataBinding.setView(this);
         loadUrl = getIntent().getStringExtra("url");
+        BaseApplication.getInstance().setSaveProgress(false);
         if (TextUtils.isEmpty(loadUrl)) {
             return;
         }

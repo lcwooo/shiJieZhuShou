@@ -146,7 +146,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 }
                 map.clear();
                 if (!url.contains("ac=")) {
-                    map.put("ac", "detail");
+                    map.put("ac", "videolist");
                 }
                 map.put("wd", keyword);
                 viewModel.getData(url, map, true);
@@ -438,7 +438,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
     public void toGo() {
         map.clear();
         if (!url.contains("ac=")) {
-            map.put("ac", "detail");
+            map.put("ac", "videolist");
         }
         map.put("t", soType);
         map.put("pg", page + "");
@@ -452,7 +452,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         page = 1;
         map.clear();
         if (!url.contains("ac=")) {
-            map.put("ac", "detail");
+            map.put("ac", "videolist");
         }
         viewModel.getData(url, map, true);
     }

@@ -244,6 +244,7 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
         List<JointEntity> list = viewModel.listJoint.getValue();
         List<String> urlList = new ArrayList<>();
         for (JointEntity entity : list) {
+            Log.i(TAG, "soTypeList: "+entity.getName());
             String url = entity.getUrl();
             if (url.contains("?")) {
                 url = url.substring(0, url.indexOf("?"));
@@ -252,7 +253,9 @@ public class CloudFragment extends BaseFragment<CloudModel, FragmentCloudBinding
                 url = url.substring(0, url.length() - 1);
             }
             url = url + "?ac=list&wd=" + s;
-            urlList.add(url);
+            if(urlList.size()<10){
+                urlList.add(url);
+            }
         }
         Collections.reverse(urlList);
         viewModel.getSoSum(urlList);

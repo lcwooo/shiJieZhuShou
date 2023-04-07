@@ -2,8 +2,10 @@ package video.videoassistant.importAndExport;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -17,12 +19,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.hjq.permissions.OnPermissionCallback;
-import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
 import com.jeremyliao.liveeventbus.LiveEventBus;
-import com.zlylib.fileselectorlib.FileSelector;
-import com.zlylib.fileselectorlib.bean.EssFile;
-import com.zlylib.fileselectorlib.utils.Const;
 
 import org.apache.httpcore.util.TextUtils;
 
@@ -31,9 +29,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
@@ -44,7 +44,11 @@ import video.videoassistant.util.UiUtil;
 public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBinding> {
 
     private static final String TAG = "ManageActivity";
-    boolean is = false;
+
+    public static final String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    };
 
     @Override
     protected ManageModel initViewModel() {
@@ -82,7 +86,7 @@ public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBind
 
         XXPermissions.with(this)
                 // 申请单个权限
-                .permission(Permission.Group.STORAGE)
+                .permission(PERMISSIONS_STORAGE)
                 .request(new OnPermissionCallback() {
 
                     @Override
@@ -246,7 +250,7 @@ public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBind
 
         String time = UiUtil.getTime();
         String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/" + Environment.DIRECTORY_DOWNLOADS + "/video.videoAssistant/dataBackup";
+                + "/" + Environment.DIRECTORY_DOWNLOADS + "/video.videoassistant/dataBackup";
         File fi = new File(absolutePath);
         if (!fi.exists()) {
             fi.mkdirs();
@@ -263,7 +267,7 @@ public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBind
             FileOutputStream outputStream = new FileOutputStream(fs);
             OutputStreamWriter writer = new OutputStreamWriter(
                     outputStream, "UTF-8");
-            UiUtil.showToastSafe("生成备份成功,数据备份在 android/Download/video.videoAssistant/dataBackup 目录下面");
+            UiUtil.showToastSafe("生成备份成功,数据备份在 android/Download/video.videoassistant/dataBackup 目录下面");
             try {
                 writer.write(txt);
             } finally {
@@ -296,44 +300,73 @@ public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBind
 
     public void locationFile() {
 
+        if (!checkMyAppPermission()) {
+            showTips();
+            return;
+        }
 
-        /**
-         *  设置 onlyShowFolder() 只显示文件夹 后 再设置setFileTypes（）不生效
-         *  设置 onlyShowFolder() 只显示文件夹 后 默认设置了onlySelectFolder（）
-         *  设置 onlySelectFolder() 只能选择文件夹 后 默认设置了isSingle（）
-         *  设置 isSingle() 只能选择一个 后 再设置了setMaxCount（） 不生效
-         *
-         */
-        FileSelector.from(this)
-                // .onlyShowFolder()  //只显示文件夹
-                //.onlySelectFolder()  //只能选择文件夹
-                // .isSingle() // 只能选择一个
-                .setMaxCount(1) //设置最大选择数
-                .setFileTypes("txt", "json") //设置文件类型
-                .setSortType(FileSelector.BY_NAME_ASC) //设置名字排序
-                //.setSortType(FileSelector.BY_TIME_ASC) //设置时间排序
-                //.setSortType(FileSelector.BY_SIZE_DESC) //设置大小排序
-                //.setSortType(FileSelector.BY_EXTENSION_DESC) //设置类型排序
-                .requestCode(1) //设置返回码
-                .setTargetPath("/storage/emulated/0/") //设置默认目录
-                .start();
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*"); // 所有文件类型
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, 2);
+
+
+
+
 
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (data != null) {
-                ArrayList<EssFile> essFileList = data.getParcelableArrayListExtra(Const.EXTRA_RESULT_SELECTION);
-                importData(essFileList.get(0).getAbsolutePath());
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            if (uri != null) {
+                //String filePath = getRealPathFromUri(this, uri);
+                importData(uri);
             }
         }
     }
 
-    public void importData(String absolutePath) {
+    private String readTextFromUri(Uri uri) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (InputStream inputStream =
+                     getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (Exception e) {
+            UiUtil.showToastSafe(e.getMessage());
+        }
+        return stringBuilder.toString();
+    }
+
+
+    public static String getRealPathFromUri(Context context, Uri uri) {
+        String path = uri.getPath();
+        if (path.contains("primary:")) {
+            String realPath = path.substring(path.lastIndexOf("/") + 1);
+            String absolutePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                    + "/" + Environment.DIRECTORY_DOWNLOADS + "/video.videoassistant/dataBackup/";
+            return absolutePath + realPath;
+        } else {
+            return path;
+        }
+    }
+
+
+    public void importData(Uri uri) {
+        String absolutePath = uri.getPath();
         if (absolutePath.endsWith(".txt") || absolutePath.endsWith(".json")) {
-            String json = openText(absolutePath);
+            String json = "";
+            if (absolutePath.contains("primary:")) {
+                json = readTextFromUri(uri);
+            } else {
+                json = openText(absolutePath);
+            }
             if (TextUtils.isEmpty(json)) {
                 UiUtil.showToastSafe("文件没有数据");
             } else {
@@ -347,6 +380,12 @@ public class ManageActivity extends BaseActivity<ManageModel, ActivityManageBind
 
     // 从指定路径的文本文件中读取内容字符串 输入流
     public String openText(String path) {
+        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "2023-04-07_19.19.40.txt");
+
+        Log.i(TAG, "openText------------: " + path);
+        Log.i(TAG, "openText: " + new File(path).exists());
+        Log.i(TAG, "openText: " + file.getAbsolutePath());
+
         BufferedReader is = null;
         StringBuilder sb = new StringBuilder();
         try {

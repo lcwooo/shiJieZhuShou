@@ -9,10 +9,22 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyc"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/empty"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:drawableTop="@drawable/empty"
+            android:drawablePadding="5dp"
+            android:text="数据为空,请添加数据"
+            android:textSize="@dimen/dp_10" />
 
     </RelativeLayout>
 </layout>
