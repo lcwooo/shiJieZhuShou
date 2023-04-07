@@ -46,6 +46,8 @@ public class BaseApplication extends MultiDexApplication {
     List<JsonEntity> jsonEntities;
     List<HandleEntity> handleEntities;
 
+    private boolean saveProgress;
+
 
     @Override
     public void onCreate() {
@@ -185,5 +187,13 @@ public class BaseApplication extends MultiDexApplication {
 
     public void setHandleEntities(List<HandleEntity> handleEntities) {
         this.handleEntities = handleEntities;
+    }
+
+    public boolean isSaveProgress() {
+        return saveProgress;
+    }
+
+    public void setSaveProgress(boolean saveProgress) {
+        this.saveProgress = saveProgress;
     }
 }

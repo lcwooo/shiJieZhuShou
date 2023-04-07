@@ -1,6 +1,7 @@
 package video.videoassistant.playPage;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,6 +26,8 @@ import video.videoassistant.me.jsonManage.JsonEntity;
 import video.videoassistant.net.Api;
 import video.videoassistant.playPage.roomCollect.CollectDao;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
+import video.videoassistant.playPage.roomCollect.RememberDao;
+import video.videoassistant.playPage.roomCollect.RememberEntity;
 import video.videoassistant.util.Constant;
 import video.videoassistant.util.UiUtil;
 
@@ -32,7 +35,7 @@ public class PlayModel extends BaseViewModel {
 
     private JsonDao jsonDao;
     HandleDao handleDao;
-
+    RememberDao rememberDao;
     CollectDao collectDao;
     public MutableLiveData<List<JsonEntity>> jsonList = new MutableLiveData<>();
     public MutableLiveData<List<HandleEntity>> handleList = new MutableLiveData<>();
@@ -40,11 +43,14 @@ public class PlayModel extends BaseViewModel {
 
     public MutableLiveData<String> dlnaAddress = new MutableLiveData<>();
 
+    public MutableLiveData<Long> playProgress = new MutableLiveData<>();
+
 
     public PlayModel() {
         jsonDao = BaseRoom.getInstance(BaseApplication.getContext()).getJsonDao();
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
         collectDao = BaseRoom.getInstance(BaseApplication.getContext()).getCollectDao();
+        rememberDao = BaseRoom.getInstance(BaseApplication.getContext()).getRememberDao();
     }
 
     public void getJsonList() {
@@ -115,7 +121,7 @@ public class PlayModel extends BaseViewModel {
 
     public void getDlnaAddress(String playUrl, JsonEntity entity) {
 
-        Flowable<PlayBean> api = Api.getApi().getPlayUrl(entity.getUrl()+playUrl);
+        Flowable<PlayBean> api = Api.getApi().getPlayUrl(entity.getUrl() + playUrl);
         showDialog.setValue(true);
         request(api, new ResultListener<PlayBean>() {
             @Override
@@ -132,6 +138,37 @@ public class PlayModel extends BaseViewModel {
             public void onFail(String t) {
                 showDialog.setValue(false);
                 UiUtil.showToastSafe(t);
+            }
+        });
+    }
+
+    public void saveProgress(String jieUrl, long time) {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                RememberEntity entity = new RememberEntity();
+                entity.setUrl(jieUrl);
+                entity.setTime(time);
+                RememberEntity dao = rememberDao.get(jieUrl);
+                if (dao == null) {
+                    rememberDao.insert(entity);
+                    return;
+                }
+                rememberDao.updateUser(entity);
+            }
+        });
+    }
+
+    public void checkProgress(String jieUrl) {
+        dbRequest(new ObservableOnSubscribe<Void>() {
+            @Override
+            public void subscribe(ObservableEmitter<Void> emitter) throws Exception {
+                RememberEntity entity = rememberDao.get(jieUrl);
+                if (entity == null) {
+                    return;
+                }
+                long lastTime = entity.time;
+                playProgress.postValue(lastTime);
             }
         });
     }

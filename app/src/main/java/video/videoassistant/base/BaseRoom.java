@@ -20,11 +20,13 @@ import video.videoassistant.me.urlManage.CollectionUrlDao;
 import video.videoassistant.me.urlManage.CollectionUrlEntity;
 import video.videoassistant.playPage.roomCollect.CollectDao;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
+import video.videoassistant.playPage.roomCollect.RememberDao;
+import video.videoassistant.playPage.roomCollect.RememberEntity;
 
 
 @Database(entities = {CollectionUrlEntity.class, JointEntity.class,
         JsonEntity.class, HandleEntity.class, CollectEntity.class,
-        HistoryEntity.class, BookmarkEntity.class}, version = 2)
+        HistoryEntity.class, BookmarkEntity.class, RememberEntity.class}, version = 3)
 public abstract class BaseRoom extends RoomDatabase {
 
     public abstract BookmarkDao getBookmarkDao();
@@ -40,6 +42,8 @@ public abstract class BaseRoom extends RoomDatabase {
     public abstract HandleDao getHandleDao();
 
     public abstract CollectDao getCollectDao();
+
+    public abstract RememberDao getRememberDao();
 
     // 单例
     private static BaseRoom database;

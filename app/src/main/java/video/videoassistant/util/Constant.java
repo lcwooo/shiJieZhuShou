@@ -32,4 +32,7 @@ public class Constant {
     public static String fullScreen = "fullScreen";
 
 
+    public static String urlIng = "urlIng";
+
+
 }

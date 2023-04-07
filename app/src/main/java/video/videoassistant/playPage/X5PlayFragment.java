@@ -120,9 +120,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             @Override
             public void onPageFinished(WebView webView, String s) {
                 super.onPageFinished(webView, s);
-                if (dataBinding.web.getProgress() == 100) {
-                    Log.i(TAG, "onPageFinished: 加载完成");
-                }
             }
         });
         dataBinding.web.setWebChromeClient(new WebChromeClient() {
@@ -140,9 +137,6 @@ public class X5PlayFragment extends BaseFragment<PlayModel, FragmentX5Binding> {
             @Override
             public void onProgressChanged(WebView webView, int i) {
                 super.onProgressChanged(webView, i);
-                if (i == 100 && dataBinding.web.getProgress() == 100) {
-                    Log.i(TAG, "onProgressChanged: 加载完成");
-                }
             }
         });
     }

@@ -16,6 +16,7 @@ import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentPlayBinding;
 import video.videoassistant.util.Constant;
 
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 import xyz.doikki.videocontroller.component.GestureView;
 import xyz.doikki.videoplayer.player.BaseVideoView;
@@ -27,6 +28,10 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     public String playUrl;
     private static final String TAG = "PlayFragment";
     TitleView titleView;
+
+    //视频信息 解析播放地址 时长
+    private String jieUrl;
+    private long duration;
 
     @Override
     protected PlayModel initViewModel() {
@@ -125,6 +130,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
                         Log.i(TAG, "onPlayStateChanged: 播放终止");
                         break;
                     case VideoView.STATE_PAUSED:
+                        saveProgress();
                         Log.i(TAG, "onPlayStateChanged: 播放暂停");
                         break;
                 }
@@ -132,7 +138,10 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         });
     }
 
+
     private void playSuccess() {
+        viewModel.checkProgress(jieUrl);
+        duration = dataBinding.player.getDuration();
         int[] arr = dataBinding.player.getVideoSize();
         PlayInfoBean bean = new PlayInfoBean();
         bean.setUrl(playUrl);
@@ -168,19 +177,36 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             }
         });
 
+        viewModel.playProgress.observe(this, new Observer<Long>() {
+            @Override
+            public void onChanged(Long aLong) {
+                dataBinding.player.seekTo(aLong);
+            }
+        });
+
     }
 
     public void play(String url) {
+        jieUrl = PreferencesUtils.getString(context, Constant.urlIng, "");
         playUrl = url;
-        if (dataBinding.player != null) {
-            try {
-                dataBinding.player.release();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            dataBinding.player.setUrl(url);
-            dataBinding.player.start();
+        dataBinding.player.release();
+        dataBinding.player.setUrl(url);
+        dataBinding.player.start();
+
+    }
+
+    private void saveProgress() {
+        //180000
+        Log.i(TAG, "play: 保存播放进度" + "\n" + "上个播放视频的时长:" + duration);
+        //获取当前播放的时间
+        long time = dataBinding.player.getCurrentPosition();
+        Log.i(TAG, "saveProgress: "+time);
+        if (time < 180000 || time > (duration - 180000)) {
+            return;
         }
+
+        viewModel.saveProgress(jieUrl, time);
+
     }
 
     @Override

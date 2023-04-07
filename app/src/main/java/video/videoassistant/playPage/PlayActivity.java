@@ -90,6 +90,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     protected void initView() {
         dataBinding.setView(this);
         movieBean = JSON.parseObject(getIntent().getStringExtra("json"), XmlMovieBean.class);
+        BaseApplication.getInstance().setSaveProgress(true);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment, PlayFragment.getInstance(""))
                 .commit();
@@ -169,12 +170,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         adapter.notifyDataSetChanged();
         adapter.setOnItemClickListener(new PlayAddressAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(String typeId, String typeName,String name) {
+            public void onItemClick(String typeId, String typeName, String name) {
 
                 playUrl = typeName;
                 initAddress();
                 dataBinding.group.selectLocation(Integer.parseInt(typeId));
-                LiveEventBus.get("movieName",String.class).post(name);
+                LiveEventBus.get("movieName", String.class).post(name);
             }
         });
     }
@@ -195,6 +196,8 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     }
 
     private void initAddress() {
+
+        PreferencesUtils.putString(this, Constant.urlIng, playUrl);
 
         LiveEventBus.get(Constant.playUrl, String.class).post(playUrl);
 
@@ -508,7 +511,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         dataBinding.group.selectLocation(getLocation() - 1);
         playUrl = playBeans.get(getLocation() - 1).getUrl();
-        LiveEventBus.get("movieName",String.class).post(playBeans.get(getLocation()).getName());
+        LiveEventBus.get("movieName", String.class).post(playBeans.get(getLocation()).getName());
         initAddress();
     }
 
@@ -529,7 +532,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         dataBinding.group.selectLocation(getLocation() + 1);
         playUrl = playBeans.get(getLocation() + 1).getUrl();
-        LiveEventBus.get("movieName",String.class).post(playBeans.get(getLocation()).getName());
+        LiveEventBus.get("movieName", String.class).post(playBeans.get(getLocation()).getName());
         initAddress();
     }
 
