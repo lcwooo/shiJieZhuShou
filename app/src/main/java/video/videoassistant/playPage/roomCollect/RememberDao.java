@@ -15,6 +15,9 @@ public interface RememberDao {
     @Query("select * from rememberentity where url=:url")
     RememberEntity get(String url);
 
+    @Query("select * from RememberEntity")
+    List<RememberEntity> getAll();
+
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(RememberEntity entity);

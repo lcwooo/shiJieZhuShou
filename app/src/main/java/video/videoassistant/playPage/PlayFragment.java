@@ -32,6 +32,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     //视频信息 解析播放地址 时长
     private String jieUrl;
     private long duration;
+    private long betweenTime = 120000;
 
     @Override
     protected PlayModel initViewModel() {
@@ -180,6 +181,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         viewModel.playProgress.observe(this, new Observer<Long>() {
             @Override
             public void onChanged(Long aLong) {
+                UiUtil.showToastSafe("记忆播放");
                 dataBinding.player.seekTo(aLong);
             }
         });
@@ -187,6 +189,9 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     public void play(String url) {
+        if(dataBinding.player.isPlaying()){
+            saveProgress();
+        }
         jieUrl = PreferencesUtils.getString(context, Constant.urlIng, "");
         playUrl = url;
         dataBinding.player.release();
@@ -200,8 +205,8 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         Log.i(TAG, "play: 保存播放进度" + "\n" + "上个播放视频的时长:" + duration);
         //获取当前播放的时间
         long time = dataBinding.player.getCurrentPosition();
-        Log.i(TAG, "saveProgress: "+time);
-        if (time < 180000 || time > (duration - 180000)) {
+        Log.i(TAG, "saveProgress: " + time);
+        if (time < betweenTime || time > (duration - betweenTime)) {
             return;
         }
 

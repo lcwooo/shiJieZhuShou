@@ -83,8 +83,13 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
         initWeb();
         initPage();
         startServer();
+        initProgress();
         test();
 
+    }
+
+    private void initProgress() {
+        viewModel.initProgress();
     }
 
     private void test() {
