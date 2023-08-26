@@ -41,6 +41,7 @@ import video.videoassistant.R;
 import video.videoassistant.databinding.FragmentCloudListBinding;
 import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudListBinding> implements ByRecyclerView.OnRefreshListener, ByRecyclerView.OnLoadMoreListener {
@@ -157,6 +158,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
             @Override
             public void onChanged(String s) {
 
+
+
                 page = 1;
                 if (!TextUtils.isEmpty(s)) {
                     keyword = s;
@@ -166,6 +169,9 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 toGo();
             }
         });
+
+        //队列是否请求完毕监听
+
 
     }
 
@@ -273,7 +279,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         Intent intent = new Intent(context, PlayActivity.class);
         String jsonUrl = url + "?ac=detail&ids=" + bean.getId();
         intent.putExtra("url", jsonUrl);
-        intent.putExtra("json", JSON.toJSONString(bean));
+        PreferencesUtils.putString(context,Constant.movieData,JSON.toJSONString(bean));
+
         startActivity(intent);
     }
 
@@ -372,7 +379,7 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
                 Intent intent = new Intent(context, PlayActivity.class);
                 String jsonUrl = url + "?ac=detail&ids=" + xmlMovieBean.getId();
                 intent.putExtra("url", jsonUrl);
-                intent.putExtra("json", JSON.toJSONString(xmlMovieBean));
+                PreferencesUtils.putString(context,Constant.movieData,JSON.toJSONString(xmlMovieBean));
                 startActivity(intent);
             }
 
@@ -384,6 +391,9 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
         dataBinding.recyclerView.setOnRefreshListener(this);
         dataBinding.recyclerView.setOnLoadMoreListener(this);
     }
+
+    //创建一个解析数据的方法
+
 
     private void initJson(String s) {
         ListMovieBean bean = JSON.parseObject(s, ListMovieBean.class);
@@ -465,5 +475,8 @@ public class CloudListFragment extends BaseFragment<CloudModel, FragmentCloudLis
 
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

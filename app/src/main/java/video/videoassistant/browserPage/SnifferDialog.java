@@ -45,17 +45,24 @@ public class SnifferDialog {
     }
 
     private void init() {
+        binding.clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                model.clearXiu.postValue(true);
+            }
+        });
+
         for (String s : list) {
             View view = View.inflate(mContext, R.layout.item_browser_a, null);
             TextView url = view.findViewById(R.id.url);
             TextView x5 = view.findViewById(R.id.x5);
             TextView play = view.findViewById(R.id.play);
             url.setText(s);
-            if (s.contains(".m3u8")) {
+/*            if (s.contains(".m3u8")) {
                 x5.setVisibility(View.VISIBLE);
             } else {
                 x5.setVisibility(View.GONE);
-            }
+            }*/
             x5.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -78,5 +85,9 @@ public class SnifferDialog {
 
             binding.add.addView(view);
         }
+    }
+
+    public void dismiss(){
+        dialog.dismiss();
     }
 }

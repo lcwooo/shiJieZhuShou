@@ -9,25 +9,27 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
 
 
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
-        android:requestLegacyExternalStorage="true"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/log"
+        android:icon="@drawable/logo_ai"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:requestLegacyExternalStorage="true"
+        android:roundIcon="@drawable/logo_ai"
         android:supportsRtl="true"
         android:theme="@style/Theme.VideoAssistant">
 
-        <meta-data android:name="ScopedStorage" android:value="true" />
-
-
+        <meta-data
+            android:name="ScopedStorage"
+            android:value="true" />
 
 
         <activity android:name=".mainPage.MainActivity">
@@ -63,7 +65,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".playPage.PlayActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:supportsPictureInPicture="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".browserPage.BrowserActivity"
@@ -84,6 +87,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".importAndExport.ManageActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".about.AboutActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
 

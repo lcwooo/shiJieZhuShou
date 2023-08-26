@@ -1,6 +1,7 @@
 package video.videoassistant.base;
 
 import android.content.ClipboardManager;
+import android.view.KeyEvent;
 
 import androidx.databinding.ViewDataBinding;
 import androidx.lifecycle.Observer;
@@ -90,6 +91,8 @@ public abstract class BaseActivity<VM extends BaseViewModel, DB extends ViewData
     protected void onPause() {
         super.onPause();
     }
+
+
 
 
 }

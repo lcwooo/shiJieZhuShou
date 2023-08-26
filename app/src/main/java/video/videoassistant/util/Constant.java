@@ -34,5 +34,12 @@ public class Constant {
 
     public static String urlIng = "urlIng";
 
+    public static String movieData = "movieData";
 
+    public static String showList = "showList";
+
+
+    public static String searchData = "searchData";
+
+    public static String searchMaxQuantity = "searchMaxQuantity";
 }

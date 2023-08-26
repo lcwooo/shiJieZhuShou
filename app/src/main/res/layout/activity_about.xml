@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/log" />
+
+            <TextView
+                android:id="@+id/version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="软件版本:"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/dp_13" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="说明:本APP仅供个人开发学习使用，如果用于其他用途，发生的法律和相关问题的责任由使用者自己负责。"
+                android:textColor="@color/textColor"
+                android:textSize="@dimen/dp_13" />
+
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="开源地址:https://github.com/lcwooo/shiJieZhuShou"
+                android:textColor="@color/blue"
+                android:textSize="@dimen/dp_13" />
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>

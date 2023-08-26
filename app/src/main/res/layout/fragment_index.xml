@@ -18,6 +18,7 @@
 
         <RelativeLayout
             android:id="@+id/layout"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/shap_guige3">
@@ -31,8 +32,9 @@
                 android:src="@mipmap/delete"
                 android:visibility="gone" />
 
-            <EditText
+            <TextView
                 android:id="@+id/word"
+                android:onClick="@{()->view.so()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="30dp"
@@ -44,17 +46,16 @@
                 android:maxLines="1"
                 android:singleLine="true"
                 android:padding="5dp"
-                android:text="@={model.keyword}"
                 android:textColor="@color/textColor"
                 android:textSize="@dimen/dp_15" />
 
             <ImageView
                 android:id="@+id/so"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:onClick="@{()->view.so()}"
                 android:src="@mipmap/so_blue" />
 
         </RelativeLayout>

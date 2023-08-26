@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hjq.permissions.OnPermissionCallback;
 import com.hjq.permissions.Permission;
 import com.hjq.permissions.XXPermissions;
+import com.jeremyliao.liveeventbus.LiveEventBus;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.Server;
 
@@ -170,6 +171,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
             public void onChanged(RuleVersionBean ruleVersionBean) {
                 initAdGuard(ruleVersionBean);
                 initVersion(ruleVersionBean);
+                LiveEventBus.get("configApp",RuleVersionBean.class).post(ruleVersionBean);
             }
         });
     }

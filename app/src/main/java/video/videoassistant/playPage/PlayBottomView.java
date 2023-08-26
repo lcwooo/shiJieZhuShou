@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -51,7 +52,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
 
 
     protected ControlWrapper mControlWrapper;
-    private TextView mTotalTime, mCurrTime, next, up, json, website, rate, push;
+    private TextView mTotalTime, mCurrTime, next, up, json, website, rate, push,smallWindow;
     private ImageView mFullScreen;
     private LinearLayout mBottomContainer;
     private SeekBar mVideoProgress;
@@ -62,6 +63,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
     private static final String TAG = "VodControlView";
     private boolean mIsDragging;
     private boolean mIsShowBottomProgress = true;
+
 
 
     public PlayBottomView(@NonNull Context context) {
@@ -105,6 +107,7 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         website = findViewById(R.id.website);
         rate = findViewById(R.id.rate);
         push = findViewById(R.id.push);
+        smallWindow = findViewById(R.id.smallWindow);
 
         next.setOnClickListener(this);
         up.setOnClickListener(this::onClick);
@@ -112,6 +115,8 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
         website.setOnClickListener(this::onClick);
         rate.setOnClickListener(this::onClick);
         push.setOnClickListener(this::onClick);
+        smallWindow.setOnClickListener(this::onClick);
+
     }
 
 
@@ -127,12 +132,16 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
                 }
             }
         });
+
+
+
+
     }
 
-    public void setHideBottom(int state){
-        if(state==1){
+    public void setHideBottom(int state) {
+        if (state == 1) {
             mSet.setVisibility(GONE);
-        }else {
+        } else {
             mSet.setVisibility(VISIBLE);
         }
     }
@@ -336,6 +345,8 @@ public class PlayBottomView extends FrameLayout implements IControlComponent, Vi
             initSpeedView();
         } else if (id == R.id.push) {
             setState(6);
+        } else if (id == R.id.smallWindow) {
+            setState(7);
         }
     }
 

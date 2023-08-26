@@ -318,6 +318,17 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
                 }
             }
         });
+
+        viewModel.clearXiu.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (snifferDialog != null) {
+                    snifferDialog.dismiss();
+                    playList.clear();
+                    dataBinding.sum.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     private void initMenu(Integer integer) {
@@ -438,6 +449,7 @@ public class BrowserActivity extends BaseActivity<BrowserModel, ActivityBrowserB
     }
 
     public void xiu() {
+
         if (UiUtil.listIsEmpty(playList)) {
             return;
         }

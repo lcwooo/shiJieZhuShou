@@ -7,6 +7,9 @@ import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.azhon.basic.utils.ActivityUtil;
@@ -65,7 +68,7 @@ public class UiUtil {
         Activity a = ActivityUtil.getInstance().getActivity();
         try {
             if (a != null) {
-                Toast.makeText(a, str, Toast.LENGTH_SHORT).show();
+                Toast.makeText(a, str, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Log.i("haha", "showToast: is null");
@@ -205,6 +208,14 @@ public class UiUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void removeViewFormParent(View v) {
+        if (v == null) return;
+        ViewParent parent = v.getParent();
+        if (parent instanceof FrameLayout) {
+            ((FrameLayout) parent).removeView(v);
+        }
     }
 
 

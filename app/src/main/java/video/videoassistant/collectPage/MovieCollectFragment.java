@@ -28,6 +28,7 @@ import video.videoassistant.indexPage.MovieUtils;
 import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 public class MovieCollectFragment extends BaseFragment<CollectModel, FragmentMovieCollectBinding> {
@@ -116,7 +117,7 @@ public class MovieCollectFragment extends BaseFragment<CollectModel, FragmentMov
         Intent intent = new Intent(context, PlayActivity.class);
         String jsonUrl = clickUrl + "?ac=detail&ids=" + bean.getId();
         intent.putExtra("url", jsonUrl);
-        intent.putExtra("json", JSON.toJSONString(bean));
+        PreferencesUtils.putString(context,Constant.movieData,JSON.toJSONString(bean));
         startActivity(intent);
     }
 

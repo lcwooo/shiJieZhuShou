@@ -1,25 +1,39 @@
 package video.videoassistant.playPage;
 
+import android.app.PictureInPictureParams;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Rational;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.azhon.basic.base.BaseFragment;
+import com.bumptech.glide.Glide;
 import com.jeremyliao.liveeventbus.LiveEventBus;
 
 import video.videoassistant.R;
 import video.videoassistant.base.BaseApplication;
 import video.videoassistant.databinding.FragmentPlayBinding;
+import video.videoassistant.playPage.playUnit.PIPManager;
 import video.videoassistant.util.Constant;
 
 import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
-import xyz.doikki.videocontroller.component.GestureView;
 import xyz.doikki.videoplayer.player.BaseVideoView;
 import xyz.doikki.videoplayer.player.VideoView;
 
@@ -34,6 +48,11 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     private String jieUrl;
     private long duration;
     private long betweenTime = 120000;
+    private PlayBottomView vodControlView;
+
+
+    private StandardVideoController controller;
+
 
     @Override
     protected PlayModel initViewModel() {
@@ -79,6 +98,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
 
     @Override
     protected void initView() {
+
         requireActivity().getOnBackPressedDispatcher()
                 .addCallback(getViewLifecycleOwner(), backPressed);
         initPlay();
@@ -91,7 +111,8 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     private void initPlay() {
-        StandardVideoController controller = new StandardVideoController(context);
+
+        controller = new StandardVideoController(context);
         titleView = new TitleView(context);
         controller.addControlComponent(titleView);
         RightControlView rightControlView = new RightControlView(context);
@@ -107,7 +128,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
         if (getArguments() != null) {
             state = getArguments().getInt("state", 0);
         }
-        PlayBottomView vodControlView = new PlayBottomView(context);
+        vodControlView = new PlayBottomView(context);
         vodControlView.setHideBottom(state);
         controller.addControlComponent(vodControlView);
         controller.addDefaultControlComponent(false);
@@ -187,10 +208,33 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             }
         });
 
+        LiveEventBus.get(Constant.playState, Integer.class)
+                .observe(this, new Observer<Integer>() {
+                    @Override
+                    public void onChanged(Integer integer) {
+                        if (integer == 7) {
+                            startSmall();
+                        }
+                    }
+                });
+
+
+    }
+
+    private void startSmall() {
+
+        // 进入画中画模式
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Rational aspectRatio = new Rational(16, 9);
+            PictureInPictureParams params = new PictureInPictureParams.Builder()
+                    .setAspectRatio(aspectRatio)
+                    .build();
+            getActivity().enterPictureInPictureMode(params);
+        }
     }
 
     public void play(String url) {
-        if(dataBinding.player.isPlaying()){
+        if (dataBinding.player.isPlaying()) {
             saveProgress();
         }
         jieUrl = PreferencesUtils.getString(context, Constant.urlIng, "");
@@ -202,7 +246,7 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
     }
 
     private void saveProgress() {
-        if(!BaseApplication.getInstance().isSaveProgress()){
+        if (!BaseApplication.getInstance().isSaveProgress()) {
             return;
         }
         //180000
@@ -250,6 +294,23 @@ public class PlayFragment extends BaseFragment<PlayModel, FragmentPlayBinding> {
             }
         }
     };
+
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode);
+        if (isInPictureInPictureMode) {
+            //进入画中画模式,并且开始播放视频
+            if (!dataBinding.player.isPlaying()) {
+                dataBinding.player.start();
+            }
+        } else {
+            // 退出画中画模式
+            if (dataBinding.player.isPlaying()) {
+                dataBinding.player.pause();
+            }
+
+        }
+    }
 
     public String getPlayUrl() {
         return playUrl;

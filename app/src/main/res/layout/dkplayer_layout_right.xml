@@ -106,6 +106,7 @@
                             android:text="2.0"
                             android:textColor="@drawable/color_radiobutton"
                             android:textSize="13sp" />
+
                     </RadioGroup>
 
                     <TextView

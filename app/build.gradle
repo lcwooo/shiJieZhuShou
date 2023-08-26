@@ -21,6 +21,10 @@ android {
                                      "$projectDir/schemas".toString()]
             }
         }
+
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a'
+        }
     }
 
 

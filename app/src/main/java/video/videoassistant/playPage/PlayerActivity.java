@@ -40,8 +40,9 @@ public class PlayerActivity extends BaseActivity<PlayModel, AcitivityPlayerBindi
 
 
     public void openFill() {
-        LiveEventBus.get(Constant.fullScreen, String.class)
-                .post("");
+/*        LiveEventBus.get(Constant.fullScreen, String.class)
+                .post("");*/
+        UiUtil.showToastSafe("请在视频内打开");
     }
 
     public void changePlay() {

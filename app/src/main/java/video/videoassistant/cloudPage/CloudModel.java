@@ -44,6 +44,8 @@ public class CloudModel extends BaseViewModel {
     public MutableLiveData<String> typeData = new MutableLiveData<>();
     public MutableLiveData<String> keyword = new MutableLiveData<>();
     public MutableLiveData<SoSumBean> soSum = new MutableLiveData<>();
+
+
     private static final String TAG = "CloudModel";
 
     private Queue<Flowable<String>> mQueue = new LinkedList<>();
@@ -71,7 +73,6 @@ public class CloudModel extends BaseViewModel {
                 newMap.put(key, map.get(key));
             }
         }
-
         showDialog.setValue(true, "数据加载中...", true);
 
         Flowable<String> api = Api.getApi().initListJson(url, newMap);
@@ -93,21 +94,23 @@ public class CloudModel extends BaseViewModel {
     }
 
     public void getAllType(String url, Map<String, String> map) {
-        Log.i(TAG, "getAllType: " + url + "\n" + JSON.toJSONString(map));
+        //Log.i(TAG, "getAllType: " + url + "\n" + JSON.toJSONString(map));
         Flowable<String> api = Api.getApi().initListType(url, map);
         showDialog.setValue(true, "数据加载中...", true);
         request(api, new ResultListener<String>() {
             @Override
             public void onSucceed(String data) {
-                typeData.postValue(data);
                 showDialog.setValue(false);
+                typeData.postValue(data);
+
             }
 
             @Override
             public void onFail(String t) {
-                UiUtil.showToastSafe(t);
                 showDialog.setValue(false);
-                Log.i(TAG, "onFail: "+t);
+                UiUtil.showToastSafe(t);
+
+                //Log.i(TAG, "onFail: "+t);
             }
         });
     }
@@ -135,6 +138,7 @@ public class CloudModel extends BaseViewModel {
                         return;
                     }
                     int size = mQueue.size();
+                    Log.i(TAG, "subscribe: " + size);
                     request.subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe(new Consumer<String>() {
@@ -156,6 +160,7 @@ public class CloudModel extends BaseViewModel {
                             });
                 }
                 emitter.onComplete();
+                Log.i(TAG, "accept: 2");
             }
         }, BackpressureStrategy.BUFFER).subscribe();
     }

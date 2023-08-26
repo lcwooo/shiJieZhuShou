@@ -35,6 +35,7 @@ import video.videoassistant.mainPage.MainActivity;
 import video.videoassistant.playPage.PlayActivity;
 import video.videoassistant.playPage.roomCollect.CollectEntity;
 import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 
 
@@ -78,6 +79,8 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
                 initCollectList(collectEntities);
             }
         });
+
+
 
         LiveEventBus.get(Constant.refreshCollectMovie, String.class).observe(this, new Observer<String>() {
             @Override
@@ -180,16 +183,6 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
             }
         });
 
-        dataBinding.word.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    closeKeybord(dataBinding.word);
-                    return true;
-                }
-                return false;
-            }
-        });
 
         viewModel.jsonData.observe(this, new Observer<String>() {
             @Override
@@ -220,16 +213,12 @@ public class IndexFragment extends BaseFragment<IndexModel, FragmentIndexBinding
         Intent intent = new Intent(context, PlayActivity.class);
         String jsonUrl = clickUrl + "?ac=videolist&ids=" + bean.getId();
         intent.putExtra("url", jsonUrl);
-        intent.putExtra("json", JSON.toJSONString(bean));
+        PreferencesUtils.putString(context,Constant.movieData,JSON.toJSONString(bean));
         startActivity(intent);
     }
 
     public void so() {
-        if (TextUtils.isEmpty(dataBinding.word.getText().toString())) {
-            return;
-        }
-        LiveEventBus.get(Constant.soWord, String.class)
-                .post(dataBinding.word.getText().toString().trim());
+
         if (getActivity() instanceof MainActivity) {
             ((MainActivity) getActivity()).selectPage(1);
         }

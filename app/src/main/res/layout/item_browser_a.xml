@@ -29,6 +29,7 @@
             android:id="@+id/x5"
             android:layout_gravity="center"
             android:textSize="@dimen/dp_18"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"

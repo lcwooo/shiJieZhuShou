@@ -84,7 +84,7 @@
                     android:drawableTop="@drawable/more_set"
                     android:gravity="center"
                     android:onClick="@{() -> view.moreSet()}"
-                    android:text="更多操作"
+                    android:text="复制地址"
                     android:textSize="@dimen/dp_13" />
             </LinearLayout>
 

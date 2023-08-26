@@ -40,6 +40,8 @@ public class BrowserModel extends BaseViewModel {
     //输新
     public MutableLiveData<Integer> menuState = new MutableLiveData<>();
 
+    public MutableLiveData<Boolean> clearXiu = new MutableLiveData<>();
+
     public BrowserModel() {
         handleDao = BaseRoom.getInstance(BaseApplication.getContext()).getHandleDao();
         bookmarkDao = BaseRoom.getInstance(BaseApplication.getContext()).getBookmarkDao();

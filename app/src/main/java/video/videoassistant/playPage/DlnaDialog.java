@@ -67,7 +67,7 @@ public class DlnaDialog {
         initState();
         setSelectItem(0);
         initRecyc();
-        initDlna();
+        loadDlna();
 
     }
 
@@ -141,27 +141,24 @@ public class DlnaDialog {
         });
     }
 
-    private void initDlna() {
-        DLNACastManager.getInstance().registerDeviceListener(new OnDeviceRegistryListener() {
-            @Override
-            public void onDeviceAdded(Device<?, ?, ?> device) {
-
-                if (!deviceList.contains(device)) {
-                    dlnaAdapter.addData(device);
-                }
-
+    private OnDeviceRegistryListener deviceRegistryListener = new OnDeviceRegistryListener() {
+        @Override
+        public void onDeviceAdded(Device<?, ?, ?> device) {
+            if (device == null) {
+                return;
             }
-
-            @Override
-            public void onDeviceUpdated(Device<?, ?, ?> device) {
-
-            }
-
-            @Override
-            public void onDeviceRemoved(Device<?, ?, ?> device) {
-
-            }
-        });
+            String name = device.getDetails().getFriendlyName();
+            Log.i(TAG, "onDeviceAdded: " + name);
+        }
+        @Override
+        public void onDeviceUpdated(Device<?, ?, ?> device) {
+        }
+        @Override
+        public void onDeviceRemoved(Device<?, ?, ?> device) {
+        }
+    };
+    private void loadDlna() {
+        DLNACastManager.getInstance().registerDeviceListener(deviceRegistryListener);
     }
 
     public void dismiss(){

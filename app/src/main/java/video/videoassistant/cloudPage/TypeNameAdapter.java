@@ -2,6 +2,7 @@ package video.videoassistant.cloudPage;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -14,9 +15,11 @@ import video.videoassistant.BR;
 import video.videoassistant.R;
 import video.videoassistant.databinding.AdapteTypeBinding;
 import video.videoassistant.me.jointManage.JointEntity;
+import video.videoassistant.util.UiUtil;
 
 public class TypeNameAdapter extends BaseDBRVAdapter<JointEntity, AdapteTypeBinding> {
 
+    private static final String TAG = "TypeNameAdapter";
     private int selectPosition = 0;
     public SelectItem selectItem;
     public List<TextView> textViewList = new ArrayList<>();
@@ -67,11 +70,18 @@ public class TypeNameAdapter extends BaseDBRVAdapter<JointEntity, AdapteTypeBind
     }
 
     public void setSum(int index, int sum) {
-        if (sum > 0) {
-            textViewList.get(index).setVisibility(View.VISIBLE);
-            textViewList.get(index).setText(sum + "");
-        } else {
-            textViewList.get(index).setVisibility(View.GONE);
+
+        Log.i(TAG, "setSum: " + textViewList.size() + "----请求的位置：" + index);
+
+        try {
+            if (sum > 0) {
+                textViewList.get(index).setVisibility(View.VISIBLE);
+                textViewList.get(index).setText(sum + "");
+            } else {
+                textViewList.get(index).setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            UiUtil.showToastSafe("TypeNameAdapter(84)：" + e.getMessage());
         }
     }
 

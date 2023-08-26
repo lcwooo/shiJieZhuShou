@@ -1,12 +1,15 @@
 package video.videoassistant.playPage;
 
+import android.app.PictureInPictureParams;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Rational;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -89,56 +92,51 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     @Override
     protected void initView() {
         dataBinding.setView(this);
-        movieBean = JSON.parseObject(getIntent().getStringExtra("json"), XmlMovieBean.class);
+        String json = PreferencesUtils.getString(context, Constant.movieData);
+        movieBean = JSON.parseObject(json, XmlMovieBean.class);
         BaseApplication.getInstance().setSaveProgress(true);
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment, PlayFragment.getInstance(""))
                 .commit();
+
         getSupportFragmentManager().beginTransaction().replace(R.id.web, new X5PlayFragment())
                 .commit();
         loadView();
-        //loadDlna();
+
     }
 
-
-    private void loadDlna() {
-        DLNACastManager.getInstance().registerDeviceListener(new OnDeviceRegistryListener() {
-            @Override
-            public void onDeviceAdded(Device<?, ?, ?> device) {
-                if (device == null) {
-                    return;
-                }
-                String name = device.getDetails().getFriendlyName();
-                Log.i(TAG, "onDeviceAdded: " + name);
-            }
-
-            @Override
-            public void onDeviceUpdated(Device<?, ?, ?> device) {
-
-            }
-
-            @Override
-            public void onDeviceRemoved(Device<?, ?, ?> device) {
-
-            }
-        });
-    }
 
     public void loadView() {
-        if (movieBean != null) {
-            dataBinding.name.setText(movieBean.getName());
-            dataBinding.remark.setText(movieBean.getName().length() > 15 ?
-                    movieBean.getName().substring(0, 15) : movieBean.getName()
-                    + "/导演:" + movieBean.getDirector() + "(" + movieBean.getYear() + ")");
-            dataBinding.info.setText("主演:" + movieBean.getActor() + "     " + movieBean.getInfo());
-            initType();
-            try {
-                initGroup(movieBean.getMovieItemBeans().get(0));
-            } catch (Exception e) {
-                e.printStackTrace();
-                UiUtil.showToastSafe("数据异常");
-            }
+        if (movieBean == null) {
+            return;
         }
+
+        String name = movieBean.getName();
+        dataBinding.name.setText(name);
+
+        dataBinding.remark.setText(movieBean.getName().length() > 15 ?
+                movieBean.getName().substring(0, 15) : movieBean.getName()
+                + "/导演:" + movieBean.getDirector() + "(" + movieBean.getYear() + ")");
+        String info = "主演:" + movieBean.getActor() + "     " + movieBean.getInfo();
+        dataBinding.info.setText(info);
+
+        initType();
+
+        List<MovieItemBean> movieItemBeans = movieBean.getMovieItemBeans();
+        if (movieItemBeans != null && !movieItemBeans.isEmpty()) {
+            initGroup(movieItemBeans.get(0));
+        } else {
+            UiUtil.showToastSafe("数据异常");
+        }
+
+        dataBinding.name.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                copyUrl(dataBinding.name.getText().toString());
+                return true;
+            }
+        });
     }
 
     private void initGroup(MovieItemBean movieItemBean) {
@@ -148,37 +146,46 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             String[] arr = from.split("#");
             for (String a : arr) {
                 if (a.contains("$")) {
-                    PlayBean bean = new PlayBean();
-                    bean.setName(a.split("\\$")[0]);
-                    bean.setUrl(a.split("\\$")[1]);
-                    playBeans.add(bean);
+                    String[] splitArr = a.split("\\$");
+                    if (splitArr.length >= 2) {
+                        PlayBean bean = new PlayBean();
+                        bean.setName(splitArr[0]);
+                        bean.setUrl(splitArr[1]);
+                        playBeans.add(bean);
+                    }
                 }
             }
         } else {
             if (from.contains("$")) {
-                PlayBean bean = new PlayBean();
-                bean.setName(from.split("\\$")[0]);
-                bean.setUrl(from.split("\\$")[1]);
-                playBeans.add(bean);
+                String[] splitArr = from.split("\\$");
+                if (splitArr.length >= 2) {
+                    PlayBean bean = new PlayBean();
+                    bean.setName(splitArr[0]);
+                    bean.setUrl(splitArr[1]);
+                    playBeans.add(bean);
+                }
             }
         }
-        postAddress(playBeans.get(0).getUrl());
-        playUrl = playBeans.get(0).getUrl();
-        dataBinding.group.removeAllViews();
-        PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
-        dataBinding.group.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-        adapter.setOnItemClickListener(new PlayAddressAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(String typeId, String typeName, String name) {
-
-                playUrl = typeName;
-                initAddress();
-                dataBinding.group.selectLocation(Integer.parseInt(typeId));
-                LiveEventBus.get("movieName", String.class).post(name);
-            }
-        });
+        if (!playBeans.isEmpty()) {
+            String firstUrl = playBeans.get(0).getUrl();
+            postAddress(firstUrl);
+            playUrl = firstUrl;
+            dataBinding.group.removeAllViews();
+            PlayAddressAdapter adapter = new PlayAddressAdapter(playBeans, context);
+            dataBinding.group.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            adapter.setOnItemClickListener(new PlayAddressAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(String typeId, String typeName, String name) {
+                    playUrl = typeName;
+                    initAddress();
+                    dataBinding.group.selectLocation(Integer.parseInt(typeId));
+                    LiveEventBus.get("movieName", String.class).post(name);
+                }
+            });
+        }
     }
+
 
     private void postAddress(String playUrl) {
         new CountDownTimer(1000, 1000) {
@@ -201,10 +208,11 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
 
         LiveEventBus.get(Constant.playUrl, String.class).post(playUrl);
 
-        if (playUrl.contains(".m3u8")) {
+        if (playUrl.endsWith(".m3u8")) {
             PlayFragment.getInstance(playUrl);
             return;
         }
+
 
         if (handleEntity == null && jsonEntity == null) {
             UiUtil.showToastSafe("请先添加解析");
@@ -238,6 +246,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
         handleAddress();
 
     }
+
 
     private void handleAddress() {
 
@@ -424,6 +433,7 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             }
         });
     }
+
 
     private void downM3u8(String s) {
         String url = s;
@@ -625,12 +635,12 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
     }
 
     public void moreSet() {
-
+        copyUrl(playUrl);
     }
 
     public void collectMovie() {
         String url = getIntent().getStringExtra("url");
-        String json = getIntent().getStringExtra("json");
+        String json = PreferencesUtils.getString(context, Constant.movieData);
         if (TextUtils.isEmpty(url) || TextUtils.isEmpty(json)) {
             UiUtil.showToastSafe("数据出错");
             return;

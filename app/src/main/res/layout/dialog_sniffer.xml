@@ -7,17 +7,27 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="10dp"
-        android:layout_height="wrap_content">
+        android:padding="10dp">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
+        <TextView
+            android:id="@+id/clear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/add" />
+            android:gravity="right"
+            android:text="清空数据"
+            android:textColor="@color/red"
+            android:textSize="@dimen/dp_13" />
+
+        <LinearLayout
+            android:id="@+id/add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/clear"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical" />
 
     </RelativeLayout>
 </layout>

@@ -2,6 +2,7 @@ package video.videoassistant.mainPage;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.List;
 
 
 public class RuleVersionBean {
@@ -21,6 +22,16 @@ public class RuleVersionBean {
     @JSONField(name = "description")
     private String description;
 
+    @JSONField(name = "other")
+    private List<OtherBean> otherBeans;
+
+    public List<OtherBean> getOtherBeans() {
+        return otherBeans;
+    }
+
+    public void setOtherBeans(List<OtherBean> otherBeans) {
+        this.otherBeans = otherBeans;
+    }
 
     public String getDescription() {
         return description;

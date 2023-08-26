@@ -63,7 +63,6 @@ public class RightControlView extends FrameLayout implements IControlComponent {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.x) {
                     mControlWrapper.setSpeed(0.5f);
-                    Log.i(TAG, "onCheckedChanged: 0.5");
                 } else if (checkedId == R.id.xx) {
                     mControlWrapper.setSpeed(1.0f);
                 } else if (checkedId == R.id.xxs) {
@@ -72,7 +71,6 @@ public class RightControlView extends FrameLayout implements IControlComponent {
                     mControlWrapper.setSpeed(1.5f);
                 } else if (checkedId == R.id.xxxx) {
                     mControlWrapper.setSpeed(2.0f);
-                    Log.i(TAG, "onCheckedChanged: 2.0"+(mControlWrapper==null));
                 }
             }
         });

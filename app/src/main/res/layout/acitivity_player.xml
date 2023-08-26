@@ -184,6 +184,7 @@
                     android:drawableTop="@drawable/cling"
                     android:drawablePadding="10dp"
                     android:gravity="center"
+                    android:visibility="invisible"
                     android:onClick="@{() -> view.touPing()}"
                     android:padding="15dp"
                     android:text="投屏"
