@@ -36,16 +36,14 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:id="@+id/url"
-                android:textSize="@dimen/dp_13"
-                android:text="233dy.top" />
+                android:textSize="@dimen/dp_13" />
 
             <TextView
                 android:id="@+id/remark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:textSize="@dimen/dp_13"
-                android:text="233dy.top" />
+                android:textSize="@dimen/dp_13" />
 
         </LinearLayout>
 

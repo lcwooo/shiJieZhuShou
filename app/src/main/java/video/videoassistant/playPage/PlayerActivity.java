@@ -27,7 +27,7 @@ public class PlayerActivity extends BaseActivity<PlayModel, AcitivityPlayerBindi
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this website!");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "https://www.233dy.top/jiexi/?url=" + url);
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "留档" + url);
             startActivity(Intent.createChooser(shareIntent, "Share link via"));
         } catch (Exception e) {
             UiUtil.showToastSafe("没有应用可以打开");

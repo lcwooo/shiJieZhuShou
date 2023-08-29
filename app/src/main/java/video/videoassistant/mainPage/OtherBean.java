@@ -12,6 +12,17 @@ public class OtherBean {
     @JSONField(name = "data")
     private String data;
 
+    @JSONField(name = "isShow")
+    private boolean isShow;
+
+    public boolean isShow() {
+        return isShow;
+    }
+
+    public void setShow(boolean show) {
+        isShow = show;
+    }
+
     public int getType() {
         return type;
     }

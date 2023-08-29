@@ -49,6 +49,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import video.videoassistant.R;
 import video.videoassistant.base.BaseActivity;
+import video.videoassistant.base.BaseApplication;
 import video.videoassistant.cloudPage.CloudFragment;
 import video.videoassistant.databinding.ActivityMainBinding;
 import video.videoassistant.indexPage.IndexFragment;
@@ -163,7 +164,14 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
 
     @Override
     protected void initData() {
-        viewModel.getAdRule();
+
+        String url = PreferencesUtils.getString(this, Constant.hostUrl, "");
+
+        if (!url.isEmpty()) {
+            viewModel.getAdRule(url);
+        } else {
+            UiUtil.showToastSafe("无APP更新地址");
+        }
 
 
         viewModel.versionBeanData.observe(this, new Observer<RuleVersionBean>() {
@@ -171,7 +179,7 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
             public void onChanged(RuleVersionBean ruleVersionBean) {
                 initAdGuard(ruleVersionBean);
                 initVersion(ruleVersionBean);
-                LiveEventBus.get("configApp",RuleVersionBean.class).post(ruleVersionBean);
+                LiveEventBus.get("configApp", RuleVersionBean.class).post(ruleVersionBean);
             }
         });
     }
@@ -249,14 +257,14 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
             return;
         }
 
-        int version = PreferencesUtils.getInt(context, Constant.adRuleVersion, 0);
-        if (ruleVersionBean.getAdVersion() <= version) {
-            return;
+        String week = UiUtil.getWeekOfDate();
+        String date = PreferencesUtils.getString(this, Constant.adRuleDate, "");
+
+        if (week.equals("周一") && !date.equals(UiUtil.getTodayDate())) {
+            file.delete();
+            downRule(ruleVersionBean, fs);
         }
 
-        file.delete();
-
-        downRule(ruleVersionBean, fs);
     }
 
     public void downRule(RuleVersionBean ruleVersionBean, String file) {
@@ -271,8 +279,8 @@ public class MainActivity extends BaseActivity<MainModel, ActivityMainBinding>
                     @Override
                     public void onSuccess(File file, Progress progress) {
                         if (progress.status == 5) {
-                            UiUtil.showToastSafe("广告拦截库同步完成版本：" + ruleVersionBean.getAdVersion());
-                            PreferencesUtils.putInt(context, Constant.adRuleVersion, ruleVersionBean.getAdVersion());
+                            UiUtil.showToastSafe("广告拦截库：" + UiUtil.getTodayDate());
+                            PreferencesUtils.putString(context, Constant.adRuleDate, UiUtil.getTodayDate());
                         }
                     }
 

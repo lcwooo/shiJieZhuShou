@@ -218,5 +218,20 @@ public class UiUtil {
         }
     }
 
+    //判断今天是星期几
+    public static String getWeekOfDate() {
+        Date date = new Date();
+        String[] weekDays = {"周日", "周一", "周二", "周三", "周四", "周五", "周六"};//星期数组
+        int w = date.getDay();//获取当前星期的值
+        return weekDays[w];
+    }
+
+    //获取当天日期
+    public static String getTodayDate() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date curDate = new Date(System.currentTimeMillis());
+        return formatter.format(curDate);
+    }
+
 
 }

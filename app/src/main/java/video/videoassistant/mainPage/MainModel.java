@@ -12,12 +12,15 @@ import java.util.List;
 import io.reactivex.Flowable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import video.videoassistant.base.BaseActivity;
 import video.videoassistant.base.BaseApplication;
 import video.videoassistant.base.BaseRoom;
 import video.videoassistant.net.Api;
 import video.videoassistant.playPage.PlayBean;
 import video.videoassistant.playPage.roomCollect.RememberDao;
 import video.videoassistant.playPage.roomCollect.RememberEntity;
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 
 public class MainModel extends BaseViewModel {
 
@@ -29,8 +32,10 @@ public class MainModel extends BaseViewModel {
     }
 
 
-    public void getAdRule() {
-        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean("https://www.233dy.top/public/config.json");
+    public void getAdRule(String url) {
+
+
+        Flowable<RuleVersionBean> api = Api.getApi().getVersionBean(url);
 
         request(api, new ResultListener<RuleVersionBean>() {
             @Override

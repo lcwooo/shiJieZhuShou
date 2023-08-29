@@ -20,6 +20,8 @@ import java.util.List;
 
 import video.videoassistant.me.handleManage.HandleEntity;
 import video.videoassistant.me.jsonManage.JsonEntity;
+import video.videoassistant.util.Constant;
+import video.videoassistant.util.PreferencesUtils;
 import video.videoassistant.util.UiUtil;
 import xyz.doikki.videoplayer.BuildConfig;
 import xyz.doikki.videoplayer.ijk.IjkPlayerFactory;
@@ -118,7 +120,7 @@ public class BaseApplication extends MultiDexApplication {
              */
             @Override
             public void onViewInitFinished(boolean isX5) {
-                UiUtil.showToastSafe("是否x5："+isX5);
+                UiUtil.showToastSafe("是否x5：" + isX5);
                 // hint: you can use QbSdk.getX5CoreLoadHelp(context) anytime to get help.
             }
         });
@@ -196,4 +198,16 @@ public class BaseApplication extends MultiDexApplication {
     public void setSaveProgress(boolean saveProgress) {
         this.saveProgress = saveProgress;
     }
+
+    public static String getHost() {
+        String host = PreferencesUtils.getString(context, Constant.hostUrl, "");
+        if (host.isEmpty()) {
+            host = "https://www.baidu.com/";
+        } else {
+            host = host + "/";
+        }
+        return host;
+    }
+
+
 }

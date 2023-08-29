@@ -81,17 +81,20 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
     private void initOther(List<OtherBean> otherBeans) {
         //dataBinding.add.removeAllViews();
         for (OtherBean bean : otherBeans) {
-            View view = View.inflate(context, R.layout.me_other, null);
-            TextView tittle = view.findViewById(R.id.title);
-            Log.i(TAG, "initOther: " + bean.getTittle());
-            tittle.setText(bean.getTittle());
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    clickOther(bean);
-                }
-            });
-            dataBinding.add.addView(view);
+            if (bean.isShow()) {
+                View view = View.inflate(context, R.layout.me_other, null);
+                TextView tittle = view.findViewById(R.id.title);
+                Log.i(TAG, "initOther: " + bean.getTittle());
+                tittle.setText(bean.getTittle());
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickOther(bean);
+                    }
+                });
+                dataBinding.add.addView(view);
+            }
+
         }
     }
 
@@ -210,5 +213,9 @@ public class MeFragment extends BaseFragment<MeModel, FragmentMeBinding> {
         ClipboardManager cm = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
         cm.setText(url);
         UiUtil.showToastSafe("已复制验证码");
+    }
+
+    public void moreSet() {
+        toActivity(SetActivity.class);
     }
 }

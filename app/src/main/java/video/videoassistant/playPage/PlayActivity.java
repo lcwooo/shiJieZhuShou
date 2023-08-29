@@ -417,7 +417,14 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
                     public void onChanged(PlayInfoBean playInfoBean) {
                         infoBean = playInfoBean;
                         dataBinding.rl.setVisibility(View.VISIBLE);
-                        dataBinding.movieInfo.setText("分辨率:" + playInfoBean.getInfo());
+                        String json = PreferencesUtils.getString(context, Constant.defaultCloud, "");
+                        String name = "";
+                        if (!TextUtils.isEmpty(json)) {
+                            String[] arr = json.split("\\|\\|");
+                            name = arr[1];
+                        }
+
+                        dataBinding.movieInfo.setText("分辨率:" + playInfoBean.getInfo() + "  解析:" + name);
                         dataBinding.movieUrl.setText("播放地址:" + playInfoBean.getUrl());
                     }
                 });
@@ -591,8 +598,10 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int i = item.getItemId();
+                JsonEntity entity = list.get(i - 1);
                 LiveEventBus.get(Constant.selectJiexi, Object.class)
-                        .post(list.get(i - 1));
+                        .post(entity);
+                PreferencesUtils.putString(context, Constant.defaultCloud, "2||" + entity.getName() + "||" + entity.getUrl());
                 return true;
             }
         });
@@ -625,8 +634,10 @@ public class PlayActivity extends BaseActivity<PlayModel, ActivityPlayBinding> {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int i = item.getItemId();
+                HandleEntity entity = list.get(i - 1);
                 LiveEventBus.get(Constant.selectJiexi, Object.class)
-                        .post(list.get(i - 1));
+                        .post(entity);
+                PreferencesUtils.putString(context, Constant.defaultCloud, "1||" + entity.getName() + "||" + entity.getUrl());
                 return true;
             }
         });

@@ -10,6 +10,7 @@ import retrofit2.http.GET;
 import retrofit2.http.QueryMap;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
+import video.videoassistant.base.BaseApplication;
 import video.videoassistant.cloudPage.ListMovieBean;
 import video.videoassistant.mainPage.RuleVersionBean;
 import video.videoassistant.playPage.PlayBean;
@@ -27,7 +28,7 @@ import video.videoassistant.playPage.PlayBean;
 public interface ApiService {
 
 
-    String URL = "https://www.233dy.top/";
+    String URL = "https://www.baidu.com/";
 
 
     @GET()

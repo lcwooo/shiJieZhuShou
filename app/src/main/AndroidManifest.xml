@@ -14,7 +14,6 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
 
-
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
@@ -66,8 +65,8 @@
         <activity
             android:name=".playPage.PlayActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
-            android:supportsPictureInPicture="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:supportsPictureInPicture="true" />
         <activity
             android:name=".browserPage.BrowserActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -91,6 +90,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".about.AboutActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".me.SetActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait" />
 

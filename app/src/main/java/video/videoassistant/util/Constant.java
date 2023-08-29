@@ -10,7 +10,7 @@ public class Constant {
 
     public static final String urlChange = "urlChange";
     public static final String jointChange = "jointChange";
-    public static final String adRuleVersion = "adRuleVersion";
+    public static final String adRuleDate = "adRuleDate";
 
     public static final String defaultCloud = "defaultCloud";
 
@@ -42,4 +42,6 @@ public class Constant {
     public static String searchData = "searchData";
 
     public static String searchMaxQuantity = "searchMaxQuantity";
+
+    public static String hostUrl = "hostUrl";
 }
