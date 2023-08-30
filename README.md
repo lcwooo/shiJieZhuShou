@@ -1,7 +1,12 @@
 # shiJieZhuShou
-仅供个人开发和学习使用
+仅供个人开发和学习使用.
+
+注意：正常情况是一个无法运作的APP,请导入数据才可以正常运行。
+测试源(APP的资源导入和导出-从链接导入-把网址添加到里面导入就可以了)
+：[https://www.233dy.top/init.json](https://github.com/lcwooo/shiJieZhuShou/blob/main/init.json)
 
 
 
 <img src="https://github.com/lcwooo/shiJieZhuShou/assets/16715898/41b4b4af-d9b6-4f1a-89fa-8b6384810417" alt="图片描述" width="400" height="600">
 
+<img src="https://github-production-user-asset-6210df.s3.amazonaws.com/16715898/264326300-e9b7f875-52b3-44ab-aa34-b38364b8e5d8.jpg" alt="图片描述" width="400" height="600">
