@@ -3,7 +3,7 @@
 
 注意：正常情况是一个无法运作的APP,请导入数据才可以正常运行。
 测试源(APP的资源导入和导出-从链接导入-把网址添加到里面导入就可以了)
-：[https://www.233dy.top/init.json](https://github.com/lcwooo/shiJieZhuShou/blob/main/init.json)
+：[[https://www.233dy.top/init.json](https://github.com/lcwooo/shiJieZhuShou/blob/main/init.json)](https://github.com/lcwooo/shiJieZhuShou/blob/main/init.json)
 
 
 
