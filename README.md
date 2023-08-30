@@ -16,4 +16,4 @@ https://github.com/lcwooo/shiJieZhuShou/blob/main/init.json
 
 
 
-<img src="https://github.com/lcwooo/shiJieZhuShou/assets/16715898/41b4b4af-d9b6-4f1a-89fa-8b6384810417" alt="图片描述" width="400" height="600"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/16715898/264326300-e9b7f875-52b3-44ab-aa34-b38364b8e5d8.jpg" alt="图片描述" width="400" height="600">
+<img src="https://github.com/lcwooo/shiJieZhuShou/assets/16715898/41b4b4af-d9b6-4f1a-89fa-8b6384810417" alt="图片描述" width="400" height="800"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/16715898/264326300-e9b7f875-52b3-44ab-aa34-b38364b8e5d8.jpg" alt="图片描述" width="400" height="800">
